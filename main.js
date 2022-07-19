@@ -221,7 +221,9 @@ client.on('interactionCreate', async (interaction) => {
         const count = interaction.options.getInteger('count') ?? 5;
 
         const roles = interaction.guild.roles
-        if (!member.kickable) {
+        if (!interaction.member.permissions.has('ADMINISTRATOR')) {
+          interaction.reply('管理者権限がありません')
+        } else if (!member.kickable) {
           interaction.reply(user.toString() + 'をキックする権限がありません')
         } else if (roles.comparePositions(member.roles.highest, interaction.member.roles.highest) > 0) {
           interaction.reply('自分より上のロールがある人の投票をとることはできません'); 
@@ -265,8 +267,10 @@ client.on('interactionCreate', async (interaction) => {
         const member = interaction.guild.members.resolve(user);
         const count = interaction.options.getInteger('count') ?? 5;
 
-        const roles = interaction.guild.roles
-        if (!member.bannable) {
+        const roles = interaction.guild.roles;
+        if (!interaction.member.permissions.has('ADMINISTRATOR')) {
+          interaction.reply('管理者権限がありません')
+        } else if (!member?.bannable ?? true) {
           interaction.reply(user.toString() + 'をBANする権限がありません')
         } else if (roles.comparePositions(member.roles.highest, interaction.member.roles.highest) > 0) {
           interaction.reply('自分より上のロールがある人の投票をとることはできません');
@@ -290,10 +294,9 @@ client.on('interactionCreate', async (interaction) => {
               end: (vote, msg, counts, total) => {
                 const user = client.users.cache.get(vote.user);
                 if (user == null) return;
-                const member = msg.guild.members.resolve(user);
 
                 if (counts['⭕'] > total * 0.8) {
-                  member.ban({reason: '投票でBANするが8割を超えたため'})
+                  reaction.message.member.ban(user, {reason: '投票でBANするが8割を超えたため'})
                     .then(() => msg.channel.send('投票により' + user.toString() + 'をBANしました'))
                     .catch(() => msg.channel.send(user.toString() + 'をBANできませんでした'));
                 } else {
