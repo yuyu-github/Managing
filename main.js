@@ -141,8 +141,6 @@ client.on('interactionCreate', async (interaction) => {
           interaction.reply('投票を終了する人数を3人未満にすることはできません');
         } else if (!role.editable) {
           interaction.reply(role.name + 'を付与/削除する権限がありません')
-        } else if (!member.manageable) {
-          interaction.reply(user.toString() + 'に' + role.name + 'を付与/削除する権限がありません')
         } else {
           vote(
             user.tag + 'に' + role.name + 'を付与/削除する',
