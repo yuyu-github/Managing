@@ -137,7 +137,7 @@ client.on('interactionCreate', async (interaction) => {
         const roles = [...interaction.guild.roles.cache.keys()]
         if (interaction.member.roles.cache.size == 0 || roles.indexOf(role.id) < roles.indexOf(interaction.member.roles.cache.keyAt(0))) {
           interaction.reply('自分より上のロールの投票をとることはできません');
-        } else if (count < 3) {
+        } else if (count < 3 && !(dev.isDev && interaction.guildId == dev.serverId)) {
           interaction.reply('投票を終了する人数を3人未満にすることはできません');
         } else if (!role.editable) {
           interaction.reply(role.name + 'を付与/削除する権限がありません')
