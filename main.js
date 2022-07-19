@@ -270,7 +270,7 @@ client.on('interactionCreate', async (interaction) => {
         const roles = interaction.guild.roles;
         if (!interaction.member.permissions.has('ADMINISTRATOR')) {
           interaction.reply('管理者権限がありません')
-        } else if (!member?.bannable ?? true) {
+        } else if (!member.bannable) {
           interaction.reply(user.toString() + 'をBANする権限がありません')
         } else if (roles.comparePositions(member.roles.highest, interaction.member.roles.highest) > 0) {
           interaction.reply('自分より上のロールがある人の投票をとることはできません');
