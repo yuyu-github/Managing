@@ -124,6 +124,23 @@ client.once('ready', async () => {
         },
       ]
     },
+    {
+      name: 'banvote',
+      description: 'BANするか投票をとる',
+      options: [
+        {
+          type: 'USER',
+          name: 'user',
+          description: '投票をとるユーザー',
+          required: true,
+        },
+        {
+          type: 'INTEGER',
+          name: 'count',
+          description: '投票終了する人数',
+        },
+      ]
+    },
   ];
 
   if (dev.isDev) await client.application.commands.set(commands, dev.ServerId);
@@ -236,6 +253,51 @@ client.on('interactionCreate', async (interaction) => {
                     .catch(() => msg.channel.send(user.toString() + 'をキックできませんでした'));
                 } else {
                   msg.channel.send('投票により' + user.toString() + 'はキックされませんでした');
+                }
+              }
+            }
+          )
+        }
+      }
+      break;
+      case 'banvote': {
+        const user = interaction.options.getUser('user');
+        const member = interaction.guild.members.resolve(user);
+        const count = interaction.options.getInteger('count') ?? 5;
+
+        const roles = interaction.guild.roles
+        if (!member.bannable) {
+          interaction.reply(user.toString() + 'をBANする権限がありません')
+        } else if (roles.comparePositions(member.roles.highest, interaction.member.roles.highest) > 0) {
+          interaction.reply('自分より上のロールがある人の投票をとることはできません');
+        } else if (count < 5 && !(dev.isDev && interaction.guildId == dev.serverId)) {
+          interaction.reply('投票を終了する人数を5人未満にすることはできません');
+        } else {
+          vote(
+            user.tag + 'をBANする',
+            'BANするが8割を超えた場合BAN',
+            [['⭕', 'BANする'], ['❌', 'BANしない']],
+            {
+              user: user.id,
+              count: count,
+            },
+            {
+              send: data => {
+                interaction.reply(data)
+                return interaction.fetchReply();
+              },
+              reactionAdd: (vote, reaction, user, reactionCount) => reactionCount >= vote.count,
+              end: (vote, msg, counts, total) => {
+                const user = client.users.cache.get(vote.user);
+                if (user == null) return;
+                const member = msg.guild.members.resolve(user);
+
+                if (counts['⭕'] > total * 0.8) {
+                  member.ban({reason: '投票でBANするが8割を超えたため'})
+                    .then(() => msg.channel.send('投票により' + user.toString() + 'をBANしました'))
+                    .catch(() => msg.channel.send(user.toString() + 'をBANできませんでした'));
+                } else {
+                  msg.channel.send('投票により' + user.toString() + 'はBANされませんでした');
                 }
               }
             }
