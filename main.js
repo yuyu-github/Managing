@@ -56,7 +56,31 @@ function deleteData(serverId, path) {
     }
   });
   fs.writeFileSync(fileName, JSON.stringify(data));
-} 
+}
+
+const voteFuncs = {}
+function vote(title, description, choices, data, funcs) {  
+  const sendFn = funcs.send;
+  Promise.resolve(sendFn({
+    embeds: [
+      {
+        title: title,
+        description: description + '\n\n' + choices.map(v => `${v[0]} ${v[1]}`).join('\n'),
+      }
+    ]
+  })).then(msg => {
+    for (let choice of choices) {
+      msg.react(choice[0]);
+    }
+
+    setData(msg.guildId, ['votes', msg.channelId, msg.id], {
+      ...data,
+      choices: choices,
+    })
+
+    voteFuncs[msg.id] = funcs;
+  })
+}
 
 client.once('ready', async () => {
   const commands = [
@@ -90,7 +114,7 @@ client.once('ready', async () => {
 
   for (let guild of client.guilds.cache) {
     let channels = client.channels.cache;
-    let votes = getData(guild[1].id, ['rolevotes']);
+    let votes = getData(guild[1].id, ['votes']);
     for (let id of Object.keys(votes ?? {})) {
       for (let vote of Object.keys(votes[id])) {
         channels.get(id).messages.fetch(vote);
@@ -120,27 +144,42 @@ client.on('interactionCreate', async (interaction) => {
         } else if (!member.manageable) {
           interaction.reply(user.toString() + 'に' + role.name + 'を付与/削除する権限がありません')
         } else {
-          interaction.channel.send({
-            embeds: [
-              {
-                title: user.tag + 'に' + role.name + 'を付与/削除する',
-                description: `付与するが6割を超えた場合ロールを付与、付与しないが6割を超えた場合ロールを削除します
-  
-                :o: 付与する
-                :x: 付与しない`,
-              }
-            ]
-          }).then(msg => {
-            msg.react('⭕');
-            msg.react('❌');
-  
-            setData(interaction.guildId, ['rolevotes', msg.channelId, msg.id], {
+          vote(
+            user.tag + 'に' + role.name + 'を付与/削除する',
+            '付与するが6割を超えた場合ロールを付与、付与しないが6割を超えた場合ロールを削除します',
+            [['⭕', '付与する'], ['❌', '付与しない']],
+            {
               user: user.id,
               role: role.id,
               count: count,
-            })
-          })
-          interaction.reply({content: user.toString() + 'に' + role.name + 'を付与するか投票を作成しました', ephemeral: true});
+            },
+            {
+              send: data => {
+                interaction.reply(data)
+                return interaction.fetchReply();
+              },
+              reactionAdd: (vote, reaction, user, reactionCount) => reactionCount >= vote.count,
+              end: (vote, msg, counts, total) => {
+                const user = client.users.cache.get(vote.user);
+                if (user == null) return;
+                const member = msg.guild.members.resolve(user);
+                const role = msg.guild.roles.cache.get(vote.role);
+                if (role == null) return;
+
+                if (counts['⭕'] > total * 0.6) {
+                  member.roles.add(role)
+                    .then(() => msg.channel.send('投票により' + user.toString() + 'に' + role.name + 'を付与しました'))
+                    .catch(() => msg.channel.send(role.name + 'を付与できませんでした'));
+                } else if (counts['❌'] > total * 0.6) {
+                  member.roles.remove(role)
+                    .then(() => msg.channel.send('投票により' + user.toString() + 'から' + role.name + 'を削除しました'))
+                    .catch(() => msg.channel.send(role.name + 'を削除できませんでした'));
+                } else {
+                  reaction.message.channel.send('投票により' + user.toString() + 'に' + role.name + 'の付与や削除はされませんでした');
+                }
+              }
+            }
+          )
         }
       }
       break;
@@ -149,15 +188,17 @@ client.on('interactionCreate', async (interaction) => {
 })
 
 client.on('messageReactionAdd', (reaction, user) => {
-  let votes = getData(reaction.message.guildId, ['rolevotes', reaction.message.channelId]);
+  const votes = getData(reaction.message.guildId, ['votes', reaction.message.channelId]);
   if (Object.keys(votes)?.includes?.(reaction.message.id)) {
+    const vote = votes[reaction.message.id];
+
     if (user.id == client.user.id) return;
 
-    if (user.bot || user.id == votes[reaction.message.id].user) {
+    if (user.bot || user.id == vote.user) {
       reaction.users.remove(user); 
       return;
     }
-    if (reaction.emoji.name != '⭕' && reaction.emoji.name != '❌') {
+    if (!vote.choices.map(v => v[0]).includes(reaction.emoji.name)) {
       reaction.remove();
       return;
     }
@@ -171,34 +212,15 @@ client.on('messageReactionAdd', (reaction, user) => {
       }
     }
 
-    if (reactionCount >= votes[reaction.message.id].count) {
-      deleteData(reaction.message.guildId, ['rolevotes', reaction.message.channelId, reaction.message.id])
+    if (voteFuncs[reaction.message.id].reactionAdd(vote, reaction, user, reactionCount)) {
+      deleteData(reaction.message.guildId, ['votes', reaction.message.channelId, reaction.message.id])
 
-      let oCount = 0;
-      let xCount = 0;
+      let counts = {}
       for (let item of reaction.message.reactions.cache) {
-        if (item[0] == '⭕') oCount += item[1].count - 1;
-        if (item[0] == '❌') xCount += item[1].count - 1;
+        counts[item[0]] = item[1].count - 1;
       }
-      let total = oCount + xCount;
-      
-      const user = client.users.cache.get(votes[reaction.message.id].user);
-      if (user == null) return;
-      const member = reaction.message.guild.members.resolve(user);
-      const role = reaction.message.guild.roles.cache.get(votes[reaction.message.id].role);
-      if (role == null) return;
 
-      if (oCount > total * 0.6) {
-        member.roles.add(role)
-          .then(() => reaction.message.channel.send('投票により' + user.toString() + 'に' + role.name + 'を付与しました'))
-          .catch(() => reaction.message.channel.send(role.name + 'を付与できませんでした'));
-      } else if (xCount > total * 0.6) {
-        member.roles.remove(role)
-          .then(() => reaction.message.channel.send('投票により' + user.toString() + 'から' + role.name + 'を削除しました'))
-          .catch(() => reaction.message.channel.send(role.name + 'を削除できませんでした'));
-      } else {
-        reaction.message.channel.send('投票により' + user.toString() + 'に' + role.name + 'の付与や削除はされませんでした');
-      }
+      voteFuncs[reaction.message.id].end(vote, reaction.message, counts, reactionCount);
     }
   }
 })
