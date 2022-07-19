@@ -107,6 +107,23 @@ client.once('ready', async () => {
         },
       ]
     },
+    {
+      name: 'kickvote',
+      description: 'キックするか投票をとる',
+      options: [
+        {
+          type: 'USER',
+          name: 'user',
+          description: '投票をとるユーザー',
+          required: true,
+        },
+        {
+          type: 'INTEGER',
+          name: 'count',
+          description: '投票終了する人数',
+        },
+      ]
+    },
   ];
 
   if (dev.isDev) await client.application.commands.set(commands, dev.ServerId);
@@ -134,8 +151,8 @@ client.on('interactionCreate', async (interaction) => {
         const role = interaction.options.getRole('role');
         const count = interaction.options.getInteger('count') ?? 5;
  
-        const roles = [...interaction.guild.roles.cache.keys()]
-        if (interaction.member.roles.cache.size == 0 || roles.indexOf(role.id) < roles.indexOf(interaction.member.roles.cache.keyAt(0))) {
+        const roles = interaction.guild.roles
+        if (roles.comparePositions(role, interaction.member.roles.highest) > 0) {
           interaction.reply('自分より上のロールの投票をとることはできません');
         } else if (count < 3 && !(dev.isDev && interaction.guildId == dev.serverId)) {
           interaction.reply('投票を終了する人数を3人未満にすることはできません');
@@ -167,13 +184,58 @@ client.on('interactionCreate', async (interaction) => {
                 if (counts['⭕'] > total * 0.6) {
                   member.roles.add(role)
                     .then(() => msg.channel.send('投票により' + user.toString() + 'に' + role.name + 'を付与しました'))
-                    .catch(() => msg.channel.send(role.name + 'を付与できませんでした'));
+                    .catch(() => msg.channel.send(user.toString() + 'に' + role.name + 'を付与できませんでした'));
                 } else if (counts['❌'] > total * 0.6) {
                   member.roles.remove(role)
                     .then(() => msg.channel.send('投票により' + user.toString() + 'から' + role.name + 'を削除しました'))
-                    .catch(() => msg.channel.send(role.name + 'を削除できませんでした'));
+                    .catch(() => msg.channel.send(user.toString() + 'に' + role.name + 'を削除できませんでした'));
                 } else {
-                  reaction.message.channel.send('投票により' + user.toString() + 'に' + role.name + 'の付与や削除はされませんでした');
+                  msg.channel.send('投票により' + user.toString() + 'に' + role.name + 'の付与や削除はされませんでした');
+                }
+              }
+            }
+          )
+        }
+      }
+      break;
+      case 'kickvote': {
+        const user = interaction.options.getUser('user');
+        const member = interaction.guild.members.resolve(user);
+        const count = interaction.options.getInteger('count') ?? 5;
+
+        const roles = interaction.guild.roles
+        if (!member.kickable) {
+          interaction.reply(user.toString() + 'をキックする権限がありません')
+        } else if (roles.comparePositions(member.roles.highest, interaction.member.roles.highest) > 0) {
+          interaction.reply('自分より上のロールがある人の投票をとることはできません'); 
+        } else if (count < 4 && !(dev.isDev && interaction.guildId == dev.serverId)) {
+          interaction.reply('投票を終了する人数を4人未満にすることはできません');
+        } else {
+          vote(
+            user.tag + 'をキックする',
+            'キックするが7割を超えた場合キック',
+            [['⭕', 'キックする'], ['❌', 'キックしない']],
+            {
+              user: user.id,
+              count: count,
+            },
+            {
+              send: data => {
+                interaction.reply(data)
+                return interaction.fetchReply();
+              },
+              reactionAdd: (vote, reaction, user, reactionCount) => reactionCount >= vote.count,
+              end: (vote, msg, counts, total) => {
+                const user = client.users.cache.get(vote.user);
+                if (user == null) return;
+                const member = msg.guild.members.resolve(user);
+
+                if (counts['⭕'] > total * 0.7) {
+                  member.kick('投票でキックするが7割を超えたため')
+                    .then(() => msg.channel.send('投票により' + user.toString() + 'をキックしました'))
+                    .catch(() => msg.channel.send(user.toString() + 'をキックできませんでした'));
+                } else {
+                  msg.channel.send('投票により' + user.toString() + 'はキックされませんでした');
                 }
               }
             }
