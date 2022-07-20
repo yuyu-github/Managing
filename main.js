@@ -58,9 +58,58 @@ function deleteData(serverId, path) {
   fs.writeFileSync(fileName, JSON.stringify(data));
 }
 
-const voteFuncs = {}
-function vote(title, description, choices, data, funcs) {  
-  const sendFn = funcs.send;
+const onReactionAddFn = {
+  'rolevote': (vote, reaction, user, reactionCount) => reactionCount >= vote.count,
+  'kickvote': (vote, reaction, user, reactionCount) => reactionCount >= vote.count,
+  'banvote': (vote, reaction, user, reactionCount) => reactionCount >= vote.count,
+};
+const endFn = {
+  'rolevote': (vote, msg, counts, total) => {
+    const user = client.users.cache.get(vote.user);
+    if (user == null) return;
+    const member = msg.guild.members.resolve(user);
+    const role = msg.guild.roles.cache.get(vote.role);
+    if (role == null) return;
+
+    if (counts['⭕'] > total * 0.6) {
+      member.roles.add(role)
+        .then(() => msg.channel.send('投票により' + user.toString() + 'に' + role.name + 'を付与しました'))
+        .catch(() => msg.channel.send(user.toString() + 'に' + role.name + 'を付与できませんでした'));
+    } else if (counts['❌'] > total * 0.6) {
+      member.roles.remove(role)
+        .then(() => msg.channel.send('投票により' + user.toString() + 'から' + role.name + 'を削除しました'))
+        .catch(() => msg.channel.send(user.toString() + 'に' + role.name + 'を削除できませんでした'));
+    } else {
+      msg.channel.send('投票により' + user.toString() + 'に' + role.name + 'の付与や削除はされませんでした');
+    }
+  },
+  'kickvote': (vote, msg, counts, total) => {
+    const user = client.users.cache.get(vote.user);
+    if (user == null) return;
+    const member = msg.guild.members.resolve(user);
+
+    if (counts['⭕'] > total * 0.7) {
+      member.kick('投票でキックするが7割を超えたため')
+        .then(() => msg.channel.send('投票により' + user.toString() + 'をキックしました'))
+        .catch(() => msg.channel.send(user.toString() + 'をキックできませんでした'));
+    } else {
+      msg.channel.send('投票により' + user.toString() + 'はキックされませんでした');
+    }
+  },
+  'banvote': (vote, msg, counts, total) => {
+    const user = client.users.cache.get(vote.user);
+    if (user == null) return;
+
+    if (counts['⭕'] > total * 0.8) {
+      reaction.message.member.ban(user, { reason: '投票でBANするが8割を超えたため' })
+        .then(() => msg.channel.send('投票により' + user.toString() + 'をBANしました'))
+        .catch(() => msg.channel.send(user.toString() + 'をBANできませんでした'));
+    } else {
+      msg.channel.send('投票により' + user.toString() + 'はBANされませんでした');
+    }
+  }
+};
+function vote(type, title, description, choices, data, sendFn) {
   Promise.resolve(sendFn({
     embeds: [
       {
@@ -75,10 +124,9 @@ function vote(title, description, choices, data, funcs) {
 
     setData(msg.guildId, ['votes', msg.channelId, msg.id], {
       ...data,
+      type: type,
       choices: choices,
     })
-
-    voteFuncs[msg.id] = funcs;
   })
 }
 
@@ -177,6 +225,7 @@ client.on('interactionCreate', async (interaction) => {
           interaction.reply(role.name + 'を付与/削除する権限がありません')
         } else {
           vote(
+            'rolevote',
             user.tag + 'に' + role.name + 'を付与/削除する',
             '付与するが6割を超えた場合ロールを付与、付与しないが6割を超えた場合ロールを削除します',
             [['⭕', '付与する'], ['❌', '付与しない']],
@@ -185,32 +234,10 @@ client.on('interactionCreate', async (interaction) => {
               role: role.id,
               count: count,
             },
-            {
-              send: data => {
-                interaction.reply(data)
-                return interaction.fetchReply();
-              },
-              reactionAdd: (vote, reaction, user, reactionCount) => reactionCount >= vote.count,
-              end: (vote, msg, counts, total) => {
-                const user = client.users.cache.get(vote.user);
-                if (user == null) return;
-                const member = msg.guild.members.resolve(user);
-                const role = msg.guild.roles.cache.get(vote.role);
-                if (role == null) return;
-
-                if (counts['⭕'] > total * 0.6) {
-                  member.roles.add(role)
-                    .then(() => msg.channel.send('投票により' + user.toString() + 'に' + role.name + 'を付与しました'))
-                    .catch(() => msg.channel.send(user.toString() + 'に' + role.name + 'を付与できませんでした'));
-                } else if (counts['❌'] > total * 0.6) {
-                  member.roles.remove(role)
-                    .then(() => msg.channel.send('投票により' + user.toString() + 'から' + role.name + 'を削除しました'))
-                    .catch(() => msg.channel.send(user.toString() + 'に' + role.name + 'を削除できませんでした'));
-                } else {
-                  msg.channel.send('投票により' + user.toString() + 'に' + role.name + 'の付与や削除はされませんでした');
-                }
-              }
-            }
+            data => {
+              interaction.reply(data)
+              return interaction.fetchReply();
+            },
           )
         }
       }
@@ -231,6 +258,7 @@ client.on('interactionCreate', async (interaction) => {
           interaction.reply('投票を終了する人数を4人未満にすることはできません');
         } else {
           vote(
+            'kickvote',
             user.tag + 'をキックする',
             'キックするが7割を超えた場合キック',
             [['⭕', 'キックする'], ['❌', 'キックしない']],
@@ -238,26 +266,10 @@ client.on('interactionCreate', async (interaction) => {
               user: user.id,
               count: count,
             },
-            {
-              send: data => {
-                interaction.reply(data)
-                return interaction.fetchReply();
-              },
-              reactionAdd: (vote, reaction, user, reactionCount) => reactionCount >= vote.count,
-              end: (vote, msg, counts, total) => {
-                const user = client.users.cache.get(vote.user);
-                if (user == null) return;
-                const member = msg.guild.members.resolve(user);
-
-                if (counts['⭕'] > total * 0.7) {
-                  member.kick('投票でキックするが7割を超えたため')
-                    .then(() => msg.channel.send('投票により' + user.toString() + 'をキックしました'))
-                    .catch(() => msg.channel.send(user.toString() + 'をキックできませんでした'));
-                } else {
-                  msg.channel.send('投票により' + user.toString() + 'はキックされませんでした');
-                }
-              }
-            }
+            data => {
+              interaction.reply(data)
+              return interaction.fetchReply();
+            },
           )
         }
       }
@@ -278,6 +290,7 @@ client.on('interactionCreate', async (interaction) => {
           interaction.reply('投票を終了する人数を5人未満にすることはできません');
         } else {
           vote(
+            'banvote',
             user.tag + 'をBANする',
             'BANするが8割を超えた場合BAN',
             [['⭕', 'BANする'], ['❌', 'BANしない']],
@@ -285,25 +298,10 @@ client.on('interactionCreate', async (interaction) => {
               user: user.id,
               count: count,
             },
-            {
-              send: data => {
-                interaction.reply(data)
-                return interaction.fetchReply();
-              },
-              reactionAdd: (vote, reaction, user, reactionCount) => reactionCount >= vote.count,
-              end: (vote, msg, counts, total) => {
-                const user = client.users.cache.get(vote.user);
-                if (user == null) return;
-
-                if (counts['⭕'] > total * 0.8) {
-                  reaction.message.member.ban(user, {reason: '投票でBANするが8割を超えたため'})
-                    .then(() => msg.channel.send('投票により' + user.toString() + 'をBANしました'))
-                    .catch(() => msg.channel.send(user.toString() + 'をBANできませんでした'));
-                } else {
-                  msg.channel.send('投票により' + user.toString() + 'はBANされませんでした');
-                }
-              }
-            }
+            data => {
+              interaction.reply(data)
+              return interaction.fetchReply();
+            },
           )
         }
       }
@@ -337,7 +335,7 @@ client.on('messageReactionAdd', (reaction, user) => {
       }
     }
 
-    if (voteFuncs[reaction.message.id].reactionAdd(vote, reaction, user, reactionCount)) {
+    if (onReactionAddFn[vote.type]?.(vote, reaction, user, reactionCount)) {
       deleteData(reaction.message.guildId, ['votes', reaction.message.channelId, reaction.message.id])
 
       let counts = {}
@@ -345,7 +343,7 @@ client.on('messageReactionAdd', (reaction, user) => {
         counts[item[0]] = item[1].count - 1;
       }
 
-      voteFuncs[reaction.message.id].end(vote, reaction.message, counts, reactionCount);
+      endFn[vote.type]?.(vote, reaction.message, counts, reactionCount);
     }
   }
 })
