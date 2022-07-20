@@ -64,8 +64,8 @@ const onReactionAddFn = {
   'banvote': (vote, reaction, user, reactionCount) => reactionCount >= vote.count,
 };
 const endFn = {
-  'rolevote': (vote, msg, counts, total) => {
-    const user = client.users.cache.get(vote.user);
+  'rolevote': async (vote, msg, counts, total) => {
+    const user = await client.users.fetch(vote.user);
     if (user == null) return;
     const member = msg.guild.members.resolve(user);
     const role = msg.guild.roles.cache.get(vote.role);
@@ -83,8 +83,8 @@ const endFn = {
       msg.channel.send('投票により' + user.toString() + 'に' + role.name + 'の付与や削除はされませんでした');
     }
   },
-  'kickvote': (vote, msg, counts, total) => {
-    const user = client.users.cache.get(vote.user);
+  'kickvote': async (vote, msg, counts, total) => {
+    const user = await client.users.cache.get(vote.user);
     if (user == null) return;
     const member = msg.guild.members.resolve(user);
 
@@ -96,8 +96,8 @@ const endFn = {
       msg.channel.send('投票により' + user.toString() + 'はキックされませんでした');
     }
   },
-  'banvote': (vote, msg, counts, total) => {
-    const user = client.users.cache.get(vote.user);
+  'banvote': async (vote, msg, counts, total) => {
+    const user = await client.users.cache.get(vote.user);
     if (user == null) return;
 
     if (counts['⭕'] > total * 0.8) {
