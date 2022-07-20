@@ -84,7 +84,7 @@ const endFn = {
     }
   },
   'kickvote': async (vote, msg, counts, total) => {
-    const user = await client.users.cache.get(vote.user);
+    const user = await client.users.fetch(vote.user);
     if (user == null) return;
     const member = msg.guild.members.resolve(user);
 
@@ -97,7 +97,7 @@ const endFn = {
     }
   },
   'banvote': async (vote, msg, counts, total) => {
-    const user = await client.users.cache.get(vote.user);
+    const user = await client.users.fetch(vote.user);
     if (user == null) return;
 
     if (counts['⭕'] > total * 0.8) {
