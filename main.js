@@ -101,7 +101,7 @@ const endFn = {
     if (user == null) return;
 
     if (counts['⭕'] > total * 0.8) {
-      msg.member.ban(user, { reason: '投票でBANするが8割を超えたため' })
+      msg.guild.members.ban(user, { reason: '投票でBANするが8割を超えたため' })
         .then(() => msg.channel.send('投票により' + user.toString() + 'をBANしました'))
         .catch(() => msg.channel.send(user.toString() + 'をBANできませんでした'));
     } else {
