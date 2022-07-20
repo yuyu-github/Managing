@@ -62,6 +62,7 @@ const onReactionAddFn = {
   'rolevote': (vote, reaction, user, reactionCount) => reactionCount >= vote.count,
   'kickvote': (vote, reaction, user, reactionCount) => reactionCount >= vote.count,
   'banvote': (vote, reaction, user, reactionCount) => reactionCount >= vote.count,
+  'unbanvote': (vote, reaction, user, reactionCount) => reactionCount >= vote.count,
 };
 const endFn = {
   'rolevote': async (vote, msg, counts, total) => {
@@ -106,6 +107,18 @@ const endFn = {
         .catch(() => msg.channel.send(user.toString() + 'をBANできませんでした'));
     } else {
       msg.channel.send('投票により' + user.toString() + 'はBANされませんでした');
+    }
+  },
+  'unbanvote': async (vote, msg, counts, total) => {
+    const user = await client.users.fetch(vote.user);
+    if (user == null) return;
+
+    if (counts['⭕'] > total * 0.7) {
+      msg.guild.members.unban(user, '投票でBAN解除するが7割を超えたため')
+        .then(() => msg.channel.send('投票により' + user.toString() + 'をBAN解除しました'))
+        .catch(() => msg.channel.send(user.toString() + 'をBAN解除できませんでした'));
+    } else {
+      msg.channel.send('投票により' + user.toString() + 'はBAN解除されませんでした');
     }
   }
 };
@@ -180,6 +193,23 @@ client.once('ready', async () => {
           type: 'USER',
           name: 'user',
           description: '投票をとるユーザー',
+          required: true,
+        },
+        {
+          type: 'INTEGER',
+          name: 'count',
+          description: '投票終了する人数',
+        },
+      ]
+    },
+    {
+      name: 'unbanvote',
+      description: 'BAN解除するか投票をとる',
+      options: [
+        {
+          type: 'STRING',
+          name: 'user',
+          description: '投票をとるユーザーのタグ',
           required: true,
         },
         {
@@ -304,6 +334,39 @@ client.on('interactionCreate', async (interaction) => {
             },
           )
         }
+      }
+      break;
+      case 'unbanvote': {
+        const userTag = interaction.options.getString('user');
+        interaction.guild.bans.fetch().then(banUsers => {
+          const user = banUsers.find((v) => v.user.tag == userTag)?.user;
+          if (user == null) {
+            interaction.reply('無効なユーザーです');
+            return;
+          }
+          const count = interaction.options.getInteger('count') ?? 5;
+
+          if (!interaction.member.permissions.has('ADMINISTRATOR')) {
+            interaction.reply('管理者権限がありません')
+          } else if (count < 5 && !(dev.isDev && interaction.guildId == dev.serverId)) {
+            interaction.reply('投票を終了する人数を5人未満にすることはできません');
+          } else {
+            vote(
+              'unbanvote',
+              user.tag + 'をBAN解除する',
+              'BAN解除するが7割を超えた場合BAN解除',
+              [['⭕', 'BAN解除する'], ['❌', 'BAN解除しない']],
+              {
+                user: user.id,
+                count: count,
+              },
+              data => {
+                interaction.reply(data)
+                return interaction.fetchReply();
+              },
+            )
+          }
+        })
       }
       break;
     }
