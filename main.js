@@ -391,7 +391,7 @@ client.on('messageReactionAdd', (reaction, user) => {
 
     let reactionCount = 0
     for (let item of reaction.message.reactions.cache) {
-      reactionCount += item[1].count - 1;
+      reactionCount += item[1].count - (item[1].users.cache.has(client.user.id) ? 1 : 0);
       if (item[0] != reaction.emoji.name && item[1].users.cache.has(user.id)) {
         item[1].users.remove(user);
         reactionCount--;
@@ -403,11 +403,18 @@ client.on('messageReactionAdd', (reaction, user) => {
 
       let counts = {}
       for (let item of reaction.message.reactions.cache) {
-        counts[item[0]] = item[1].count - 1;
+        counts[item[0]] = item[1].count - (item[1].users.cache.has(client.user.id) ? 1 : 0);
       }
 
       endFn[vote.type]?.(vote, reaction.message, counts, reactionCount);
     }
+  }
+})
+
+client.on('messageReactionRemove', (reaction, user) => {
+  const votes = getData(reaction.message.guildId, ['votes', reaction.message.channelId]);
+  if (Object.keys(votes)?.includes?.(reaction.message.id)) {
+    if (user.id == client.user.id) reaction.message.react(reaction.emoji.name)
   }
 })
 
