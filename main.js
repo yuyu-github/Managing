@@ -258,7 +258,7 @@ client.on('interactionCreate', async (interaction) => {
           vote(
             'rolevote',
             user.tag + 'に' + role.name + 'を付与/削除する',
-            '付与するが6割を超えた場合ロールを付与、付与しないが6割を超えた場合ロールを削除します',
+            '付与するが6割を超えた場合ロールを付与、付与しないが6割を超えた場合ロールを削除します\n投票終了人数 ' + count + '人',
             [['⭕', '付与する'], ['❌', '付与しない']],
             {
               user: user.id,
@@ -291,7 +291,7 @@ client.on('interactionCreate', async (interaction) => {
           vote(
             'kickvote',
             user.tag + 'をキックする',
-            'キックするが7割を超えた場合キック',
+            'キックするが7割を超えた場合キックします\n投票終了人数 ' + count + '人',
             [['⭕', 'キックする'], ['❌', 'キックしない']],
             {
               user: user.id,
@@ -323,7 +323,7 @@ client.on('interactionCreate', async (interaction) => {
           vote(
             'banvote',
             user.tag + 'をBANする',
-            'BANするが8割を超えた場合BAN',
+            'BANするが8割を超えた場合BANします\n投票終了人数 ' + count + '人',
             [['⭕', 'BANする'], ['❌', 'BANしない']],
             {
               user: user.id,
@@ -355,15 +355,15 @@ client.on('interactionCreate', async (interaction) => {
             vote(
               'unbanvote',
               user.tag + 'をBAN解除する',
-              'BAN解除するが7割を超えた場合BAN解除',
+              'BAN解除するが7割を超えた場合BAN解除します\n投票終了人数 ' + count + '人',
               [['⭕', 'BAN解除する'], ['❌', 'BAN解除しない']],
               {
                 user: user.id,
                 count: count,
               },
               data => {
-                interaction.reply(data)
-                return interaction.fetchReply();
+                interaction.reply('投票を作成しました')
+                return interaction.channel.send(data)
               },
             )
           }
