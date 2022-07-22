@@ -123,12 +123,16 @@ const endFn = {
     }
   }
 };
-function vote(type, title, description, choices, data, sendFn) {
+function vote(type, title, description, choices, data, author, sendFn) {
   Promise.resolve(sendFn({
     embeds: [
       {
         title: title,
         description: description + '\n\n' + choices.map(v => `${v[0]} ${v[1]}`).join('\n'),
+        footer: {
+          iconURL: author.avatarURL(),
+          text: author.tag,
+        }
       }
     ]
   })).then(msg => {
@@ -265,6 +269,7 @@ client.on('interactionCreate', async (interaction) => {
               role: role.id,
               count: count,
             },
+            interaction.user,
             data => {
               interaction.reply('投票を作成しました')
               return interaction.channel.send(data)
@@ -297,6 +302,7 @@ client.on('interactionCreate', async (interaction) => {
               user: user.id,
               count: count,
             },
+            interaction.user,
             data => {
               interaction.reply('投票を作成しました')
               return interaction.channel.send(data)
@@ -329,6 +335,7 @@ client.on('interactionCreate', async (interaction) => {
               user: user.id,
               count: count,
             },
+            interaction.user,
             data => {
               interaction.reply('投票を作成しました')
               return interaction.channel.send(data)
@@ -361,6 +368,7 @@ client.on('interactionCreate', async (interaction) => {
                 user: user.id,
                 count: count,
               },
+              interaction.user,
               data => {
                 interaction.reply('投票を作成しました')
                 return interaction.channel.send(data)
