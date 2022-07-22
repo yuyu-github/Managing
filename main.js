@@ -6,6 +6,7 @@ const client = new Client({
   intents: [
     Intents.FLAGS.GUILDS,
     Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+    Intents.FLAGS.GUILD_MESSAGES,
   ]
 });
 
@@ -265,8 +266,8 @@ client.on('interactionCreate', async (interaction) => {
               count: count,
             },
             data => {
-              interaction.reply(data)
-              return interaction.fetchReply();
+              interaction.reply('投票を作成しました')
+              return interaction.channel.send(data)
             },
           )
         }
@@ -297,8 +298,8 @@ client.on('interactionCreate', async (interaction) => {
               count: count,
             },
             data => {
-              interaction.reply(data)
-              return interaction.fetchReply();
+              interaction.reply('投票を作成しました')
+              return interaction.channel.send(data)
             },
           )
         }
@@ -329,8 +330,8 @@ client.on('interactionCreate', async (interaction) => {
               count: count,
             },
             data => {
-              interaction.reply(data)
-              return interaction.fetchReply();
+              interaction.reply('投票を作成しました')
+              return interaction.channel.send(data)
             },
           )
         }
