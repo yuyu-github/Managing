@@ -383,7 +383,7 @@ client.on('interactionCreate', async (interaction) => {
 })
 
 client.on('messageReactionAdd', (reaction, user) => {
-  const votes = getData(reaction.message.guildId, ['votes', reaction.message.channelId]);
+  const votes = getData(reaction.message.guildId, ['votes', reaction.message.channelId]) ?? {};
   if (Object.keys(votes)?.includes?.(reaction.message.id)) {
     const vote = votes[reaction.message.id];
 
