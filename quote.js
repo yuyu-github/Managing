@@ -7,7 +7,6 @@ module.exports = (client, message) => {
     if (match[2] != null) {
       channel.messages.fetch(match[2]).then(urlMessage => {
         if (urlMessage == null) return;
-
         message.reply({
           embeds: [
             {
@@ -21,8 +20,15 @@ module.exports = (client, message) => {
                 text: urlMessage.guild.name + ' #' + urlMessage.channel.name,
               }
             }
-          ]
+          ],
         })
+
+        let files = [...urlMessage.attachments.values()];
+        if (files.length != 0) {
+          message.reply({
+            files: files,
+          })
+        }
       });
     } else {
       message.reply({
