@@ -1,3 +1,5 @@
+const https = require('https')
+
 const dev = require('../dev');
 const { vote } = require('../vote/vote');
 
@@ -135,6 +137,17 @@ module.exports = (client, interaction) => {
             },
           )
         }
+      })
+    }
+    break;
+    case 'translate': {
+      const text = interaction.options.getString('text');
+      const source = interaction.options.getString('source');
+      const target = interaction.options.getString('target');
+      
+      let url = `https://script.google.com/macros/s/AKfycbwSdQYdmkBKmh1FoJ86xuovTcz-Bfx9eAj3fyKskLqWVGp_ZLPK-ycKmnTTsoMxQLjY/exec?text=${text}${source == null ? '' : '&source=' + source}${target == null ? '' : '&target=' + target}`
+      import('node-fetch').then(({default: fetch}) => {
+        fetch(url).then(res => res.text()).then(body => interaction.reply(body)).catch(() => interaction.reply('翻訳に失敗しました'));
       })
     }
     break;

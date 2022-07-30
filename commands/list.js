@@ -73,4 +73,28 @@ module.exports = [
       },
     ]
   },
+  {
+    name: 'translate',
+    description: '文章を翻訳する',
+    options: [
+      {
+        type: 'STRING',
+        name: 'text',
+        description: '翻訳する文章',
+        required: true,
+      },
+      {
+        type: 'STRING',
+        name: 'source',
+        description: '翻訳元の言語',
+        choices: require('./langs'),
+      },
+      {
+        type: 'STRING',
+        name: 'target',
+        description: '翻訳先の言語',
+        choices: require('./langs'),
+      },
+    ]
+  },
 ];
