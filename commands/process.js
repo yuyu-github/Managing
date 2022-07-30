@@ -41,9 +41,10 @@ module.exports = (client, interaction) => {
       const member = interaction.guild.members.resolve(user);
       const count = interaction.options.getInteger('count') ?? 5;
 
-      const roles = interaction.guild.roles
-      if (!interaction.member.permissions.has('ADMINISTRATOR')) {
-        interaction.reply('管理者権限がありません')
+      const roles = interaction.guild.roles;
+      const permissions = interaction.member.permissions;
+      if (!(permissions.has('ADMINISTRATOR') || permissions.has('KICK_MEMBERS'))) {
+        interaction.reply(interaction.user.toString() + 'にキックする権限がありません')
       } else if (!member.kickable) {
         interaction.reply(user.toString() + 'をキックする権限がありません')
       } else if (roles.comparePositions(member.roles.highest, interaction.member.roles.highest) > 0) {
@@ -75,8 +76,9 @@ module.exports = (client, interaction) => {
       const count = interaction.options.getInteger('count') ?? 5;
 
       const roles = interaction.guild.roles;
-      if (!interaction.member.permissions.has('ADMINISTRATOR')) {
-        interaction.reply('管理者権限がありません')
+      const permissions = interaction.member.permissions;
+      if (!(permissions.has('ADMINISTRATOR') || permissions.has('BAN_MEMBERS'))) {
+        interaction.reply(interaction.user.toString() + 'にBANする権限がありません')
       } else if (!member.bannable) {
         interaction.reply(user.toString() + 'をBANする権限がありません')
       } else if (roles.comparePositions(member.roles.highest, interaction.member.roles.highest) > 0) {
