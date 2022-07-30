@@ -7,7 +7,7 @@ exports.vote = (type, title, description, choices, data, author, sendFn) => {
         title: title,
         description: description + '\n\n' + choices.map(v => `${v[0]} ${v[1]}`).join('\n'),
         footer: {
-          iconURL: author.avatarURL(),
+          iconURL: author.displayAvatarURL(),
           text: author.tag,
         }
       }

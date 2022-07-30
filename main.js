@@ -3,8 +3,8 @@ const botToken = require('./token');
 const client = new Client({
   intents: [
     Intents.FLAGS.GUILDS,
-    Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
     Intents.FLAGS.GUILD_MESSAGES,
+    Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
   ]
 });
 
@@ -13,6 +13,7 @@ const commands = require('./commands/list');
 const commandProcess = require('./commands/process');
 const loadVotes = require('./vote/load_votes');
 const voteEvents = require('./vote/events');
+const quote = require('./quote');
 
 client.once('ready', async () => {
   if (dev.isDev) await client.application.commands.set(commands, dev.ServerId);
@@ -21,6 +22,10 @@ client.once('ready', async () => {
   loadVotes(client);
   
   console.log('Managing Ready');
+})
+
+client.on('messageCreate', message => {
+  quote(client, message);
 })
 
 client.on('interactionCreate', async (interaction) => {
