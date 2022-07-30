@@ -8,7 +8,7 @@ module.exports = (client, message) => {
       channel.messages.fetch(match[2]).then(urlMessage => {
         if (urlMessage == null) return;
 
-        message.channel.send({
+        message.reply({
           embeds: [
             {
               author: {
@@ -25,7 +25,7 @@ module.exports = (client, message) => {
         })
       });
     } else {
-      message.channel.send({
+      message.reply({
         embeds: [
           {
             title: '#' + channel.name,
