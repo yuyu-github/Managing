@@ -29,7 +29,7 @@ module.exports = (client, interaction) => {
           },
           interaction.user,
           data => {
-            interaction.reply('投票を作成しました')
+            interaction.reply({ content: '投票を作成しました', ephemeral: true })
             return interaction.channel.send(data)
           },
         )
@@ -63,7 +63,7 @@ module.exports = (client, interaction) => {
           },
           interaction.user,
           data => {
-            interaction.reply('投票を作成しました')
+            interaction.reply({ content: '投票を作成しました', ephemeral: true })
             return interaction.channel.send(data)
           },
         )
@@ -97,7 +97,7 @@ module.exports = (client, interaction) => {
           },
           interaction.user,
           data => {
-            interaction.reply('投票を作成しました')
+            interaction.reply({ content: '投票を作成しました', ephemeral: true })
             return interaction.channel.send(data)
           },
         )
@@ -129,8 +129,8 @@ module.exports = (client, interaction) => {
               count: count,
             },
             interaction.user,
-            data => {
-              interaction.reply('投票を作成しました')
+            async data => {
+              await interaction.reply({ content: '投票を作成しました', ephemeral: true })
               return interaction.channel.send(data)
             },
           )
