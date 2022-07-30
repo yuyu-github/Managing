@@ -19,7 +19,8 @@ module.exports = (client, message) => {
                 iconURL: urlMessage.guild.iconURL(),
                 text: urlMessage.guild.name + ' #' + urlMessage.channel.name,
               }
-            }
+            },
+            ...urlMessage.embeds,
           ],
         })
 
