@@ -137,7 +137,7 @@ module.exports = (client, interaction) => {
             },
           )
         }
-      })
+      }).catch(e => console.error(e));
     }
     break;
     case 'translate': {
@@ -147,8 +147,12 @@ module.exports = (client, interaction) => {
       
       let url = `https://script.google.com/macros/s/AKfycbwSdQYdmkBKmh1FoJ86xuovTcz-Bfx9eAj3fyKskLqWVGp_ZLPK-ycKmnTTsoMxQLjY/exec?text=${text}${source == null ? '' : '&source=' + source}${target == null ? '' : '&target=' + target}`
       import('node-fetch').then(({default: fetch}) => {
-        fetch(url).then(res => res.text()).then(body => interaction.reply(body)).catch(() => interaction.reply('翻訳に失敗しました'));
-      })
+        fetch(url).then(res => res.text()).catch(e => console.error(e))
+          .then(body => interaction.reply(body)).catch(e => {
+            interaction.reply('翻訳に失敗しました');
+            console.error(e);
+          });
+      }).catch(e => console.error(e));
     }
     break;
   }

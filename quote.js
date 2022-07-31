@@ -30,7 +30,7 @@ module.exports = (client, message) => {
             files: files,
           })
         }
-      });
+      }).catch(e => console.error(e));
     } else {
       message.reply({
         embeds: [
