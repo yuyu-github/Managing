@@ -7,6 +7,16 @@ module.exports = (client, message) => {
     if (match[2] != null) {
       channel.messages.fetch(match[2]).then(urlMessage => {
         if (urlMessage == null) return;
+
+        let images = [];
+        let embeds = urlMessage.embeds.filter(i => {
+          if (i.type == 'image') {
+            images.push(i.url)
+            return false;
+          }
+          else return true;
+        });
+
         message.reply({
           embeds: [
             {
@@ -20,15 +30,13 @@ module.exports = (client, message) => {
                 text: urlMessage.guild.name + ' #' + urlMessage.channel.name,
               }
             },
-            ...urlMessage.embeds,
+            ...embeds,
           ],
         })
 
-        let files = [...urlMessage.attachments.values()];
+        let files = [...urlMessage.attachments.values()].map(i => i.url).concat(images).join('\n');
         if (files.length != 0) {
-          message.reply({
-            files: files,
-          })
+          message.reply(files)
         }
       }).catch(e => console.error(e));
     } else {
