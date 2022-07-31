@@ -1,4 +1,4 @@
-module.exports = (client, message) => {
+module.exports = async (client, message) => {
   let matches = message.content.matchAll(/https?:\/\/discord.com\/channels\/[0-9]+\/([0-9]+)(?:\/([0-9]+))?/g);
   for (let match of matches) {
     let channel = client.channels.cache.get(match[1]);

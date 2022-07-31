@@ -3,7 +3,7 @@ const { setData, getData, deleteData } = require('../data');
 const onReactionAddFn = require('./funcs/onReactionAdd');
 const endFn = require('./funcs/end');
 
-exports.onReactionAdd = (client, reaction, user) => {
+exports.onReactionAdd = async (client, reaction, user) => {
   const votes = getData(reaction.message.guildId, ['votes', reaction.message.channelId]) ?? {};
   if (Object.keys(votes)?.includes?.(reaction.message.id)) {
     const vote = votes[reaction.message.id];
@@ -36,12 +36,12 @@ exports.onReactionAdd = (client, reaction, user) => {
         counts[item[0]] = item[1].count - (item[1].users.cache.has(client.user.id) ? 1 : 0);
       }
 
-      endFn[vote.type]?.(client, vote, reaction.message, counts, reactionCount);
+      await endFn[vote.type]?.(client, vote, reaction.message, counts, reactionCount);
     }
   }
 }
 
-exports.onReactionRemove = (client, reaction, user) => {
+exports.onReactionRemove = async (client, reaction, user) => {
   const votes = getData(reaction.message.guildId, ['votes', reaction.message.channelId]);
   if (Object.keys(votes)?.includes?.(reaction.message.id)) {
     if (user.id == client.user.id) reaction.message.react(reaction.emoji.name)
