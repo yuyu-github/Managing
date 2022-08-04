@@ -40,6 +40,10 @@ module.exports = [
     ]
   },
   {
+    type: 'USER',
+    name: 'キック投票',
+  },
+  {
     name: 'banvote',
     description: 'BANするか投票をとる',
     options: [
@@ -57,6 +61,10 @@ module.exports = [
     ]
   },
   {
+    type: 'USER',
+    name: 'BAN投票',
+  },
+  {
     name: 'unbanvote',
     description: 'BAN解除するか投票をとる',
     options: [
@@ -72,6 +80,10 @@ module.exports = [
         description: '投票終了する人数',
       },
     ]
+  },
+  {
+    type: 'USER',
+    name: 'BAN解除投票',
   },
   {
     name: 'translate',

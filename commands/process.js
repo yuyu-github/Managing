@@ -39,104 +39,20 @@ module.exports = async (client, interaction) => {
       break;
       case 'kickvote': {
         const user = interaction.options.getUser('user');
-        const member = interaction.guild.members.resolve(user);
         const count = interaction.options.getInteger('count') ?? 5;
-
-        const roles = interaction.guild.roles;
-        const permissions = interaction.member.permissions;
-        if (!(permissions.has('ADMINISTRATOR') || permissions.has('KICK_MEMBERS'))) {
-          interaction.reply(interaction.user.toString() + 'にキックする権限がありません')
-        } else if (!member.kickable) {
-          interaction.reply(user.toString() + 'をキックする権限がありません')
-        } else if (roles.comparePositions(member.roles.highest, interaction.member.roles.highest) > 0) {
-          interaction.reply('自分より上のロールがある人の投票をとることはできません');
-        } else if (count < 4 && !(dev.isDev && interaction.guildId == dev.serverId)) {
-          interaction.reply('投票を終了する人数を4人未満にすることはできません');
-        } else {
-          vote(
-            'kickvote',
-            user.tag + 'をキックする',
-            'キックするが7割を超えた場合キックします\n投票終了人数 ' + count + '人',
-            [['⭕', 'キックする'], ['❌', 'キックしない']],
-            {
-              user: user.id,
-              count: count,
-            },
-            interaction.user,
-            data => {
-              interaction.reply({ content: '投票を作成しました', ephemeral: true })
-              return interaction.channel.send(data)
-            },
-          )
-        }
+        require('./kickvote/kickvote')(interaction, user, count);
       }
       break;
       case 'banvote': {
         const user = interaction.options.getUser('user');
-        const member = interaction.guild.members.resolve(user);
         const count = interaction.options.getInteger('count') ?? 5;
-
-        const roles = interaction.guild.roles;
-        const permissions = interaction.member.permissions;
-        if (!(permissions.has('ADMINISTRATOR') || permissions.has('BAN_MEMBERS'))) {
-          interaction.reply(interaction.user.toString() + 'にBANする権限がありません')
-        } else if (!member.bannable) {
-          interaction.reply(user.toString() + 'をBANする権限がありません')
-        } else if (roles.comparePositions(member.roles.highest, interaction.member.roles.highest) > 0) {
-          interaction.reply('自分より上のロールがある人の投票をとることはできません');
-        } else if (count < 5 && !(dev.isDev && interaction.guildId == dev.serverId)) {
-          interaction.reply('投票を終了する人数を5人未満にすることはできません');
-        } else {
-          vote(
-            'banvote',
-            user.tag + 'をBANする',
-            'BANするが8割を超えた場合BANします\n投票終了人数 ' + count + '人',
-            [['⭕', 'BANする'], ['❌', 'BANしない']],
-            {
-              user: user.id,
-              count: count,
-            },
-            interaction.user,
-            data => {
-              interaction.reply({ content: '投票を作成しました', ephemeral: true })
-              return interaction.channel.send(data)
-            },
-          )
-        }
+        require('./banvote/banvote')(interaction, user, count);
       }
       break;
       case 'unbanvote': {
         const userTag = interaction.options.getString('user');
-        interaction.guild.bans.fetch().then(banUsers => {
-          const user = banUsers.find((v) => v.user.tag == userTag)?.user;
-          if (user == null) {
-            interaction.reply('無効なユーザーです');
-            return;
-          }
-          const count = interaction.options.getInteger('count') ?? 5;
-
-          if (!interaction.member.permissions.has('ADMINISTRATOR')) {
-            interaction.reply('管理者権限がありません')
-          } else if (count < 5 && !(dev.isDev && interaction.guildId == dev.serverId)) {
-            interaction.reply('投票を終了する人数を5人未満にすることはできません');
-          } else {
-            vote(
-              'unbanvote',
-              user.tag + 'をBAN解除する',
-              'BAN解除するが7割を超えた場合BAN解除します\n投票終了人数 ' + count + '人',
-              [['⭕', 'BAN解除する'], ['❌', 'BAN解除しない']],
-              {
-                user: user.id,
-                count: count,
-              },
-              interaction.user,
-              async data => {
-                await interaction.reply({ content: '投票を作成しました', ephemeral: true })
-                return interaction.channel.send(data)
-              },
-            )
-          }
-        }).catch(e => console.error(e));
+        const count = interaction.options.getInteger('count') ?? 5;
+        require('./unbanvote/unbanvote')(interaction, userTag, count);
       }
       break;
       case 'translate': {
@@ -156,6 +72,21 @@ module.exports = async (client, interaction) => {
     }
   } else if (interaction.isContextMenu()) {
     switch (interaction.commandName) {
+      case 'キック投票': {
+        const user = interaction.options.getUser('user');
+        require('./kickvote/kickvote')(interaction, user)
+      }
+      break;
+      case 'BAN投票': {
+        const user = interaction.options.getUser('user');
+        require('./banvote/banvote')(interaction, user)
+      }
+      break;
+      case 'BAN解除投票': {
+        const user = interaction.options.getUser('user');
+        require('./unbanvote/unbanvote')(interaction, user.tag)
+      }
+      break;
       case 'ピン留め': {
         const message = interaction.options.getMessage('message');
         await message.pin();
@@ -167,7 +98,7 @@ module.exports = async (client, interaction) => {
         await message.unpin();
         interaction.reply('メッセージをピン留め解除しました')
       }
-        break;
+      break;
     }
   }
 }
