@@ -38,9 +38,7 @@ client.on('messageCreate', async message => {
 
 client.on('interactionCreate', async (interaction) => {
   try {
-    if (interaction.isCommand()) {
-      await commandProcess(client, interaction);
-    }
+    await commandProcess(client, interaction);
   } catch (e) {
     console.error(e);
   }

@@ -97,4 +97,12 @@ module.exports = [
       },
     ]
   },
+  {
+    type: 'MESSAGE',
+    name: 'ピン留め',
+  },
+  {
+    type: 'MESSAGE',
+    name: 'ピン留め解除',
+  }
 ];
