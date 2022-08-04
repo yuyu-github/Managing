@@ -87,13 +87,13 @@ module.exports = [
         type: 'STRING',
         name: 'source',
         description: '翻訳元の言語',
-        choices: require('./langs'),
+        choices: require('./translate/langs'),
       },
       {
         type: 'STRING',
         name: 'target',
         description: '翻訳先の言語',
-        choices: require('./langs'),
+        choices: require('./translate/langs'),
       },
     ]
   },
