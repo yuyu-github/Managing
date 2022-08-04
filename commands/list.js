@@ -116,5 +116,16 @@ module.exports = [
   {
     type: 'MESSAGE',
     name: 'ピン留め解除',
-  }
+  },
+  {
+    name: 'delete-message',
+    description: 'メッセージを削除する',
+    options: [
+      {
+        type: 'INTEGER',
+        name: 'count',
+        description: '削除するメッセージ数'
+      }
+    ]
+  },
 ];
