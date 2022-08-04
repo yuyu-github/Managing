@@ -6,7 +6,7 @@ module.exports = async (client) => {
     let votes = getData(guild[1].id, ['votes']);
     for (let id of Object.keys(votes ?? {})) {
       for (let vote of Object.keys(votes[id])) {
-        channels.get(id).messages.fetch(vote);
+        channels.get(id).messages.fetch(vote).catch(e => {});
       }
     }
   }
