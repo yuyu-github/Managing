@@ -1,5 +1,38 @@
 module.exports = [
   {
+    name: 'vote',
+    description: '投票を作成',
+    options: [
+      {
+        type: 'STRING',
+        name: 'name',
+        description: '投票の名前',
+        required: true,
+      },
+      {
+        type: 'BOOLEAN',
+        name: 'multiple',
+        description: '複数投票可能にする'
+      },
+      {
+        type: 'INTEGER',
+        name: 'count',
+        description: '投票終了する人数'
+      },
+      {
+        type: 'MENTIONABLE',
+        name: 'mention1',
+        description: 'メンション'
+      },
+      {
+        type: 'MENTIONABLE',
+        name: 'mention2',
+        description: 'メンション'
+      },
+      ...require('./vote/choices_options'),
+    ]
+  },
+  {
     name: 'rolevote',
     description: 'ロールを付与/削除するか投票をとる',
     options: [

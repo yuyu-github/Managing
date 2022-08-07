@@ -19,16 +19,26 @@ exports.onReactionAdd = async (client, reaction, user) => {
       return;
     }
 
-    let reactionCount = 0
+    let reactionCount = 0;
+    let reactionMemberCount = 0;
+    let reactionMembers = []
     for (let item of reaction.message.reactions.cache) {
       reactionCount += item[1].count - (item[1].users.cache.has(client.user.id) ? 1 : 0);
-      if (item[0] != reaction.emoji.name && item[1].users.cache.has(user.id)) {
+
+      for (let id of item[1].users.cache.keys()) {
+        if (!reactionMembers.includes(id) && id != client.user.id) {
+          reactionMemberCount++;
+          reactionMembers.push(id);
+        }
+      }
+
+      if (!(vote.multiple ?? false) && item[0] != reaction.emoji.name && item[1].users.cache.has(user.id)) {
         item[1].users.remove(user);
         reactionCount--;
       }
     }
 
-    if (onReactionAddFn[vote.type]?.(client, vote, reaction, user, reactionCount)) {
+    if (onReactionAddFn[vote.type]?.(client, vote, reaction, user, reactionCount, reactionMemberCount)) {
       deleteData(reaction.message.guildId, ['votes', reaction.message.channelId, reaction.message.id])
 
       let counts = {}

@@ -4,6 +4,37 @@ const { vote } = require('../vote/vote');
 module.exports = async (client, interaction) => {
   if (interaction.isCommand()) {
     switch (interaction.commandName) {
+      case 'vote': {
+        const name = interaction.options.getString('name');
+        const multiple = interaction.options.getBoolean('multiple')
+        const count = interaction.options.getInteger('count') ?? 0;
+        const mentions = [...Array(2).keys()].map(i => interaction.options.getMentionable('mention' + (i + 1))).filter(i => i != null);
+        let choices = [...Array(20).keys()].map(i => interaction.options.getString('choice' + (i + 1))).filter(i => i != null);
+
+        if (choices.length == 0) {
+          choices = [['⭕', ''], ['❌', '']];
+        } else {
+          let list = ['🇦', '🇧', '🇨', '🇩', '🇪', '🇫', '🇬', '🇭', '🇮', '🇯', '🇰', '🇱', '🇲', '🇳', '🇴', '🇵', '🇶', '🇷', '🇸', '🇹', '🇺', '🇻', '🇼', '🇽', '🇾', '🇿']
+          choices = choices.map((item, i) => [list[i], item]);
+        }
+
+        vote(
+          'normal',
+          name,
+          mentions.reduce((str, i) => str + ' ' + i.toString(), ''),
+          choices,
+          {
+            multiple: multiple,
+            count: count,
+          },
+          interaction.user,
+          data => {
+            interaction.reply({ content: '投票を作成しました', ephemeral: true })
+            return interaction.channel.send(data);
+          }
+        )
+      }
+      break;
       case 'rolevote': {
         const user = interaction.options.getUser('user');
         const member = interaction.guild.members.resolve(user);

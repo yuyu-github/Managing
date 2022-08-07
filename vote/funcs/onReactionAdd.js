@@ -1,6 +1,7 @@
 module.exports = {
-  'rolevote': (client, vote, reaction, user, reactionCount) => reactionCount >= vote.count,
-  'kickvote': (client, vote, reaction, user, reactionCount) => reactionCount >= vote.count,
-  'banvote': (client, vote, reaction, user, reactionCount) => reactionCount >= vote.count,
-  'unbanvote': (client, vote, reaction, user, reactionCount) => reactionCount >= vote.count,
+  'normal': (client, vote, reaction, user, rCount, rMemberCount) => vote.count != 0 && rMemberCount >= vote.count,
+  'rolevote': (client, vote, reaction, user, rCount, rMemberCount) => rMemberCount >= vote.count,
+  'kickvote': (client, vote, reaction, user, rCount, rMemberCount) => rMemberCount >= vote.count,
+  'banvote': (client, vote, reaction, user, rCount, rMemberCount) => rMemberCount >= vote.count,
+  'unbanvote': (client, vote, reaction, user, rCount, rMemberCount) => rMemberCount >= vote.count,
 };

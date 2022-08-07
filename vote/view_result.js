@@ -1,5 +1,5 @@
 module.exports = (vote, message, counts) => {
-  const total = Object.values(counts ?? {}).reduce((sum, i) => sum + i);
+  const total = Object.values(counts ?? {}).reduce((sum, i) => sum + i, 0);
 
   message.reply({
     embeds: [
