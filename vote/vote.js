@@ -21,6 +21,7 @@ exports.vote = (type, title, description, choices, data, author, sendFn) => {
       ...data,
       type: type,
       choices: choices,
+      author: author.id,
     })
   }).catch(e => console.error(e));
 }

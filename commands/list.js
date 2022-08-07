@@ -37,6 +37,10 @@ module.exports = [
     name: '投票集計',
   },
   {
+    type: 'MESSAGE',
+    name: '投票終了',
+  },
+  {
     name: 'rolevote',
     description: 'ロールを付与/削除するか投票をとる',
     options: [
