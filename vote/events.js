@@ -5,7 +5,7 @@ const endFn = require('./funcs/end');
 
 exports.onReactionAdd = async (client, reaction, user) => {
   const votes = getData(reaction.message.guildId, ['votes', reaction.message.channelId]) ?? {};
-  if (Object.keys(votes)?.includes?.(reaction.message.id)) {
+  if (Object.keys(votes ?? {})?.includes?.(reaction.message.id)) {
     const vote = votes[reaction.message.id];
 
     if (user.id == client.user.id) return;
@@ -43,7 +43,7 @@ exports.onReactionAdd = async (client, reaction, user) => {
 
 exports.onReactionRemove = async (client, reaction, user) => {
   const votes = getData(reaction.message.guildId, ['votes', reaction.message.channelId]);
-  if (Object.keys(votes)?.includes?.(reaction.message.id)) {
+  if (Object.keys(votes ?? {})?.includes?.(reaction.message.id)) {
     if (user.id == client.user.id) reaction.message.react(reaction.emoji.name)
   }
 }
