@@ -36,6 +36,7 @@ exports.onReactionAdd = async (client, reaction, user) => {
         counts[item[0]] = item[1].count - (item[1].users.cache.has(client.user.id) ? 1 : 0);
       }
 
+      require('./view_result')(vote, reaction.message, counts);
       await endFn[vote.type]?.(client, vote, reaction.message, counts, reactionCount);
     }
   }
