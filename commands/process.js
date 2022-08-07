@@ -1,3 +1,5 @@
+const { setData, getData, deleteData } = require('../data');
+
 const dev = require('../dev');
 const { vote } = require('../vote/vote');
 
@@ -120,6 +122,22 @@ module.exports = async (client, interaction) => {
     }
   } else if (interaction.isContextMenu()) {
     switch (interaction.commandName) {
+      case '投票集計': {
+        const message = interaction.options.getMessage('message');
+        const votes = getData(message.guildId, ['votes', message.channelId]) ?? {};
+
+        if (!Object.keys(votes ?? {}).includes(message.id)) {
+          interaction.reply('このメッセージは投票ではありません')
+        } else {
+          let counts = {}
+          for (let item of await message.reactions.cache) {
+            counts[item[0]] = item[1].count - ((await item[1].users.fetch()).has(client.user.id) ? 1 : 0);
+          }
+          interaction.reply('投票を集計しました', {ephemeral: true});
+          require('../vote/view_result')(votes[message.id], message, counts);
+        }
+      }
+      break;
       case 'キック投票': {
         const user = interaction.options.getUser('user');
         require('./kickvote/kickvote')(interaction, user)

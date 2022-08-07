@@ -33,6 +33,10 @@ module.exports = [
     ]
   },
   {
+    type: 'MESSAGE',
+    name: '投票集計',
+  },
+  {
     name: 'rolevote',
     description: 'ロールを付与/削除するか投票をとる',
     options: [
