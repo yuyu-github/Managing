@@ -9,9 +9,7 @@ module.exports = (interaction, userTag, count = 5) => {
       return;
     }
 
-    if (!interaction.member.permissions.has('ADMINISTRATOR')) {
-      interaction.reply('管理者権限がありません')
-    } else if (count < 5 && !(dev.isDev && interaction.guildId == dev.serverId)) {
+    if (count < 5 && !(dev.isDev && interaction.guildId == dev.serverId)) {
       interaction.reply('投票を終了する人数を5人未満にすることはできません');
     } else {
       vote(

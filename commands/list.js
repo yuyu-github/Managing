@@ -1,3 +1,5 @@
+const { Permissions } = require('discord.js');
+
 module.exports = [
   {
     name: 'vote',
@@ -66,6 +68,7 @@ module.exports = [
   {
     name: 'kickvote',
     description: 'キックするか投票をとる',
+    defaultMemberPermissions: Permissions.FLAGS.KICK_MEMBERS,
     options: [
       {
         type: 'USER',
@@ -83,10 +86,12 @@ module.exports = [
   {
     type: 'USER',
     name: 'キック投票',
+    defaultMemberPermissions: Permissions.FLAGS.KICK_MEMBERS,
   },
   {
     name: 'banvote',
     description: 'BANするか投票をとる',
+    defaultMemberPermissions: Permissions.FLAGS.BAN_MEMBERS,
     options: [
       {
         type: 'USER',
@@ -104,10 +109,12 @@ module.exports = [
   {
     type: 'USER',
     name: 'BAN投票',
+    defaultMemberPermissions: Permissions.FLAGS.BAN_MEMBERS,
   },
   {
     name: 'unbanvote',
     description: 'BAN解除するか投票をとる',
+    defaultMemberPermissions: Permissions.FLAGS.BAN_MEMBERS,
     options: [
       {
         type: 'STRING',
@@ -125,6 +132,7 @@ module.exports = [
   {
     type: 'USER',
     name: 'BAN解除投票',
+    defaultMemberPermissions: Permissions.FLAGS.BAN_MEMBERS,
   },
   {
     name: 'translate',
@@ -161,6 +169,7 @@ module.exports = [
   {
     name: 'delete-message',
     description: 'メッセージを削除する',
+    defaultMemberPermissions: Permissions.FLAGS.MANAGE_MESSAGES,
     options: [
       {
         type: 'INTEGER',

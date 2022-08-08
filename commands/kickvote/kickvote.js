@@ -5,9 +5,7 @@ module.exports = (interaction, user, count = 5) => {
   const member = interaction.guild.members.resolve(user);
   const roles = interaction.guild.roles;
   const permissions = interaction.member.permissions;
-  if (!(permissions.has('ADMINISTRATOR') || permissions.has('KICK_MEMBERS'))) {
-    interaction.reply(interaction.user.toString() + 'にキックする権限がありません')
-  } else if (!member.kickable) {
+  if (!member.kickable) {
     interaction.reply(user.toString() + 'をキックする権限がありません')
   } else if (roles.comparePositions(member.roles.highest, interaction.member.roles.highest) > 0) {
     interaction.reply('自分より上のロールがある人の投票をとることはできません');

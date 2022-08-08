@@ -106,9 +106,7 @@ module.exports = async (client, interaction) => {
         const count = interaction.options.getInteger('count') ?? 1;
 
         const permissions = interaction.member.permissions;
-        if (!(permissions.has('ADMINISTRATOR') || permissions.has('MANAGE_MESSAGES'))) {
-          interaction.reply('メッセージの管理権限がありません');
-        } else if (count > 100) {
+        if (count > 100) {
           interaction.reply('メッセージは100件までしか削除できません');
         } else if (!permissions.has('ADMINISTRATOR') && count > 15) {
           interaction.reply('管理者権限がない場合メッセージは15件までしか削除できません');
