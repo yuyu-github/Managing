@@ -25,7 +25,7 @@ module.exports = (interaction, user, count = 5) => {
       },
       interaction.user,
       data => {
-        interaction.reply({ content: '投票を作成しました', ephemeral: true })
+        await interaction.reply({ content: '投票を作成しました', ephemeral: true })
         return interaction.channel.send(data)
       },
     )
