@@ -1,7 +1,7 @@
 const fs = require('fs');
 
 exports.setData = (serverId, path, value) => {
-  let fileName = 'data/' + serverId + '.json'
+  let fileName = '../data/' + serverId + '.json'
   let data = fs.existsSync(fileName) ? JSON.parse(fs.readFileSync(fileName)) : {}
   let parent = data;
   path.forEach((key, i) => {
@@ -15,7 +15,7 @@ exports.setData = (serverId, path, value) => {
 }
 
 exports.getData = (serverId, path) => {
-  let fileName = 'data/' + serverId + '.json'
+  let fileName = '../data/' + serverId + '.json'
   let data = fs.existsSync(fileName) ? JSON.parse(fs.readFileSync(fileName)) : {}
   let parent = data;
   let value;
@@ -36,7 +36,7 @@ exports.getData = (serverId, path) => {
 }
 
 exports.deleteData = (serverId, path) => {
-  let fileName = 'data/' + serverId + '.json'
+  let fileName = '../data/' + serverId + '.json'
   let data = fs.existsSync(fileName) ? JSON.parse(fs.readFileSync(fileName)) : {}
   let parent = data;
   path.forEach((key, i) => {
