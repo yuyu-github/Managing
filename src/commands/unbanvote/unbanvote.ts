@@ -1,8 +1,10 @@
-const dev = require('../../dev');
-const { vote } = require('../../vote/vote');
+import { CommandInteraction, ContextMenuInteraction } from 'discord.js';
 
-module.exports = (interaction, userTag, count = 5) => {
-  interaction.guild.bans.fetch().then(banUsers => {
+import * as dev from '../../dev';
+import { vote } from '../../vote/vote';
+
+export default function(interaction: CommandInteraction | ContextMenuInteraction, userTag: string, count = 5): void {
+  interaction.guild?.bans.fetch().then(banUsers => {
     const user = banUsers.find((v) => v.user.tag == userTag)?.user;
     if (user == null) {
       interaction.reply('無効なユーザーです');
@@ -24,7 +26,7 @@ module.exports = (interaction, userTag, count = 5) => {
         interaction.user,
         async data => {
           await interaction.reply({ content: '投票を作成しました', ephemeral: true })
-          return interaction.channel.send(data)
+          return interaction.channel?.send(data)
         },
       )
     }

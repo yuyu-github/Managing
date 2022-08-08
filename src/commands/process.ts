@@ -1,9 +1,15 @@
-const { setData, getData, deleteData } = require('../data');
+import { Client, Interaction } from 'discord.js';
 
-const dev = require('../dev');
-const { vote } = require('../vote/vote');
+import { setData, getData, deleteData } from '../data';
 
-module.exports = async (client, interaction) => {
+import * as dev from '../dev';
+import { vote } from '../vote/vote';
+import kickvote from './kickvote/kickvote';
+import banvote from './banvote/banvote';
+import unbanvote from './unbanvote/unbanvote';
+import voteViewResult from '../vote/view_result';
+
+export default async function (client: Client, interaction: Interaction) {
   if (interaction.isCommand()) {
     switch (interaction.commandName) {
       case 'vote': {
@@ -11,19 +17,20 @@ module.exports = async (client, interaction) => {
         const multiple = interaction.options.getBoolean('multiple')
         const count = interaction.options.getInteger('count') ?? 0;
         const mentions = [...Array(2).keys()].map(i => interaction.options.getMentionable('mention' + (i + 1))).filter(i => i != null);
-        let choices = [...Array(20).keys()].map(i => interaction.options.getString('choice' + (i + 1))).filter(i => i != null);
+        let choicesName = [...Array(20).keys()].map(i => interaction.options.getString('choice' + (i + 1))).filter(i => i != null);
 
-        if (choices.length == 0) {
+        let choices: string[][];
+        if (choicesName.length == 0) {
           choices = [['⭕', ''], ['❌', '']];
         } else {
           let list = ['🇦', '🇧', '🇨', '🇩', '🇪', '🇫', '🇬', '🇭', '🇮', '🇯', '🇰', '🇱', '🇲', '🇳', '🇴', '🇵', '🇶', '🇷', '🇸', '🇹', '🇺', '🇻', '🇼', '🇽', '🇾', '🇿']
-          choices = choices.map((item, i) => [list[i], item]);
+          choices = choicesName.map((item, i) => [list[i], item ?? '']);
         }
 
         vote(
           'normal',
-          name,
-          mentions.reduce((str, i) => str + ' ' + i.toString(), ''),
+          name ?? '',
+          mentions.reduce((str, i) => str + ' ' + i?.toString(), ''),
           choices,
           {
             multiple: multiple,
@@ -32,19 +39,23 @@ module.exports = async (client, interaction) => {
           interaction.user,
           async data => {
             await interaction.reply({ content: '投票を作成しました', ephemeral: true })
-            return interaction.channel.send(data);
+            return interaction.channel?.send(data);
           }
         )
       }
       break;
       case 'rolevote': {
         const user = interaction.options.getUser('user');
-        const member = interaction.guild.members.resolve(user);
+        if (user == null) return;
         const role = interaction.options.getRole('role');
+        if (role == null || !('createdAt' in role)) return;
         const count = interaction.options.getInteger('count') ?? 5;
 
-        const roles = interaction.guild.roles
-        if (roles.comparePositions(role, interaction.member.roles.highest) > 0) {
+        const guildRoles = interaction.guild?.roles;
+        if (guildRoles == null) return;
+        const roles = interaction.member?.roles;
+        if (roles == undefined || !('highest' in roles)) return;
+        if (guildRoles.comparePositions(role, roles.highest) > 0) {
           interaction.reply('自分より上のロールの投票をとることはできません');
         } else if (count < 3 && !(dev.isDev && interaction.guildId == dev.serverId)) {
           interaction.reply('投票を終了する人数を3人未満にすることはできません');
@@ -64,7 +75,7 @@ module.exports = async (client, interaction) => {
             interaction.user,
             async data => {
               await interaction.reply({ content: '投票を作成しました', ephemeral: true })
-              return interaction.channel.send(data)
+              return interaction.channel?.send(data)
             },
           )
         }
@@ -72,29 +83,32 @@ module.exports = async (client, interaction) => {
       break;
       case 'kickvote': {
         const user = interaction.options.getUser('user');
+        if (user == null) return;
         const count = interaction.options.getInteger('count') ?? 5;
-        require('./kickvote/kickvote')(interaction, user, count);
+        kickvote(interaction, user, count);
       }
       break;
       case 'banvote': {
         const user = interaction.options.getUser('user');
+        if (user == null) return;
         const count = interaction.options.getInteger('count') ?? 5;
-        require('./banvote/banvote')(interaction, user, count);
+        banvote(interaction, user, count);
       }
       break;
       case 'unbanvote': {
         const userTag = interaction.options.getString('user');
+        if (userTag == null) return;
         const count = interaction.options.getInteger('count') ?? 5;
-        require('./unbanvote/unbanvote')(interaction, userTag, count);
+        unbanvote(interaction, userTag, count);
       }
       break;
       case 'translate': {
-        const text = interaction.options.getString('text');
+        const text = interaction.options.getString('text') ?? '';
         const source = interaction.options.getString('source');
         const target = interaction.options.getString('target');
         
         let url = `https://script.google.com/macros/s/AKfycbwSdQYdmkBKmh1FoJ86xuovTcz-Bfx9eAj3fyKskLqWVGp_ZLPK-ycKmnTTsoMxQLjY/exec?text=${text}${source == null ? '' : '&source=' + source}${target == null ? '' : '&target=' + target}`
-        import('node-fetch').then(({default: fetch}) => {
+        new Function('return import("node-fetch")')().then(({default: fetch}) => {
           fetch(url).then(res => res.text()).then(body => interaction.reply(body)).catch(e => {
             interaction.reply('翻訳に失敗しました');
             console.error(e);
@@ -105,14 +119,15 @@ module.exports = async (client, interaction) => {
       case 'delete-message': {
         const count = interaction.options.getInteger('count') ?? 1;
 
-        const permissions = interaction.member.permissions;
+        const permissions = interaction.member?.permissions;
+        if (permissions == null || typeof permissions == 'string') return;
         if (count > 100) {
           interaction.reply('メッセージは100件までしか削除できません');
         } else if (!permissions.has('ADMINISTRATOR') && count > 15) {
           interaction.reply('管理者権限がない場合メッセージは15件までしか削除できません');
         } else {
-          const messages = await interaction.channel.messages.fetch({limit: count})
-          messages.each(message => message.delete());
+          const messages = await interaction.channel?.messages.fetch({limit: count})
+          messages?.each(message => message.delete());
           interaction.reply(count + '件のメッセージを削除しました');
         }
       }
@@ -122,6 +137,7 @@ module.exports = async (client, interaction) => {
     switch (interaction.commandName) {
       case '投票集計': {
         const message = interaction.options.getMessage('message');
+        if (message == null || !('guildId' in message)) return;
         const votes = getData(message.guildId, ['votes', message.channelId]) ?? {};
 
         if (!Object.keys(votes ?? {}).includes(message.id)) {
@@ -129,15 +145,16 @@ module.exports = async (client, interaction) => {
         } else {
           let counts = {}
           for (let item of await message.reactions.cache) {
-            counts[item[0]] = item[1].count - ((await item[1].users.fetch()).has(client.user.id) ? 1 : 0);
+            counts[item[0]] = item[1].count - ((await item[1].users.fetch()).has(client.user?.id ?? '') ? 1 : 0);
           }
           interaction.reply('投票を集計しました');
-          require('../vote/view_result')(votes[message.id], message, counts);
+          voteViewResult(votes[message.id], message, counts);
         }
       }
       break;
       case '投票終了': {
         const message = interaction.options.getMessage('message');
+        if (message == null || !('guildId' in message)) return;
         const votes = getData(message.guildId, ['votes', message.channelId]) ?? {};
 
         if (!Object.keys(votes ?? {}).includes(message.id)) {
@@ -151,37 +168,42 @@ module.exports = async (client, interaction) => {
 
           let counts = {}
           for (let item of message.reactions.cache) {
-            counts[item[0]] = item[1].count - ((await item[1].users.fetch()).has(client.user.id) ? 1 : 0);
+            counts[item[0]] = item[1].count - ((await item[1].users.fetch()).has(client.user?.id ?? '') ? 1 : 0);
           }
 
           interaction.reply('投票を終了しました');
-          require('../vote/view_result')(votes[message.id], message, counts);
+          voteViewResult(votes[message.id], message, counts);
         }
       }
       break;
       case 'キック投票': {
         const user = interaction.options.getUser('user');
-        require('./kickvote/kickvote')(interaction, user)
+        if (user == null) return;
+        kickvote(interaction, user)
       }
       break;
       case 'BAN投票': {
         const user = interaction.options.getUser('user');
-        require('./banvote/banvote')(interaction, user)
+        if (user == null) return;
+        banvote(interaction, user)
       }
       break;
       case 'BAN解除投票': {
         const user = interaction.options.getUser('user');
-        require('./unbanvote/unbanvote')(interaction, user.tag)
+        if (user == null) return;
+        unbanvote(interaction, user.tag)
       }
       break;
       case 'ピン留め': {
         const message = interaction.options.getMessage('message');
+        if (message == null || !('pin' in message)) return;
         await message.pin();
         interaction.reply('メッセージをピン留めしました')
       }
       break;
       case 'ピン留め解除': {
         const message = interaction.options.getMessage('message');
+        if (message == null || !('unpin' in message)) return;
         await message.unpin();
         interaction.reply('メッセージをピン留め解除しました')
       }

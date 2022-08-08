@@ -1,13 +1,19 @@
-const dev = require('../../dev');
-const { vote } = require('../../vote/vote');
+import { CommandInteraction, ContextMenuInteraction, User } from 'discord.js';
 
-module.exports = (interaction, user, count = 5) => {
-  const member = interaction.guild.members.resolve(user);
-  const roles = interaction.guild.roles;
-  const permissions = interaction.member.permissions;
+import * as dev from '../../dev';
+import { vote } from '../../vote/vote';
+
+export default function(interaction: CommandInteraction | ContextMenuInteraction, user: User, count = 5): void {
+  const member = interaction.guild?.members.resolve(user);
+  if (member == null) return;
+  const guildRoles = interaction.guild?.roles;
+  if (guildRoles == null) return;
+
+  const roles = interaction.member?.roles;
+  if (roles == null || Array.isArray(roles)) return;
   if (!member.kickable) {
     interaction.reply(user.toString() + 'をキックする権限がありません')
-  } else if (roles.comparePositions(member.roles.highest, interaction.member.roles.highest) > 0) {
+  } else if (guildRoles.comparePositions(member.roles.highest, roles.highest) > 0) {
     interaction.reply('自分より上のロールがある人の投票をとることはできません');
   } else if (count < 4 && !(dev.isDev && interaction.guildId == dev.serverId)) {
     interaction.reply('投票を終了する人数を4人未満にすることはできません');
@@ -24,7 +30,7 @@ module.exports = (interaction, user, count = 5) => {
       interaction.user,
       async data => {
         await interaction.reply({ content: '投票を作成しました', ephemeral: true })
-        return interaction.channel.send(data)
+        return interaction.channel?.send(data)
       },
     )
   }

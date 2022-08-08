@@ -1,17 +1,19 @@
-module.exports = async (client, message) => {
+import { Client, Message } from "discord.js";
+
+export default async function(client: Client, message: Message) {
   let matches = message.content.matchAll(/https?:\/\/discord.com\/channels\/[0-9]+\/([0-9]+)(?:\/([0-9]+))?/g);
   for (let match of matches) {
     let channel = client.channels.cache.get(match[1]);
-    if (channel == null) continue;
+    if (channel == null || !('messages' in channel)) continue;
 
     if (match[2] != null) {
       channel.messages.fetch(match[2]).then(urlMessage => {
         if (urlMessage == null) return;
 
-        let images = [];
+        let images: string[] = [];
         let embeds = urlMessage.embeds.filter(i => {
           if (i.type == 'image') {
-            images.push(i.url)
+            images.push(i.url ?? '')
             return false;
           }
           else return true;
@@ -26,8 +28,8 @@ module.exports = async (client, message) => {
               },
               description: urlMessage.content,
               footer: {
-                iconURL: urlMessage.guild.iconURL(),
-                text: urlMessage.guild.name + ' #' + urlMessage.channel.name,
+                iconURL: urlMessage.guild?.iconURL() ?? undefined,
+                text: urlMessage.guild?.name + ('name' in urlMessage.channel ? ' #' + urlMessage.channel.name : ''),
               }
             },
             ...embeds,
@@ -40,12 +42,13 @@ module.exports = async (client, message) => {
         }
       }).catch(e => console.error(e));
     } else {
+      if (!('name' in channel)) return;
       message.reply({
         embeds: [
           {
             title: '#' + channel.name,
             footer: {
-              iconURL: channel.guild.iconURL(),
+              iconURL: channel.guild.iconURL() ?? undefined,
               text: channel.guild.name,
             }
           }

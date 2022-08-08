@@ -1,6 +1,11 @@
-const { setData, getData, deleteData } = require('../data');
+import { Message, User } from 'discord.js';
 
-exports.vote = (type, title, description, choices, data, author, sendFn) => {
+import { setData, getData, deleteData } from '../data';
+
+type VoteType = 'normal' | 'rolevote' | 'kickvote' | 'banvote' | 'unbanvote'
+
+export function vote(type: VoteType, title: string, description: string, choices: string[][], data: object, author: User,
+  sendFn: (data: object | string) => Message | undefined | Promise<Message | undefined>): void {
   Promise.resolve(sendFn({
     embeds: [
       {
@@ -13,6 +18,8 @@ exports.vote = (type, title, description, choices, data, author, sendFn) => {
       }
     ]
   })).then(msg => {
+    if (msg == null) return;
+
     for (let choice of choices) {
       msg.react(choice[0]);
     }

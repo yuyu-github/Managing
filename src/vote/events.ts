@@ -1,14 +1,17 @@
-const { setData, getData, deleteData } = require('../data');
+import { Client, MessageReaction, PartialMessageReaction, PartialUser, ReactionManager, User } from 'discord.js';
 
-const onReactionAddFn = require('./funcs/onReactionAdd');
-const endFn = require('./funcs/end');
+import { setData, getData, deleteData } from '../data';
 
-exports.onReactionAdd = async (client, reaction, user) => {
+import onReactionAddFn from './funcs/onReactionAdd';
+import endFn from './funcs/end';
+import viewResult from './view_result';
+
+export async function onReactionAdd(client: Client, reaction: MessageReaction | PartialMessageReaction, user: User) {
   const votes = getData(reaction.message.guildId, ['votes', reaction.message.channelId]) ?? {};
   if (Object.keys(votes ?? {})?.includes?.(reaction.message.id)) {
     const vote = votes[reaction.message.id];
 
-    if (user.id == client.user.id) return;
+    if (user.id == client.user?.id) return;
 
     if (user.bot || user.id == vote.user) {
       reaction.users.remove(user);
@@ -21,12 +24,12 @@ exports.onReactionAdd = async (client, reaction, user) => {
 
     let reactionCount = 0;
     let reactionMemberCount = 0;
-    let reactionMembers = []
+    let reactionMembers: string[] = []
     for (let item of reaction.message.reactions.cache) {
-      reactionCount += item[1].count - (item[1].users.cache.has(client.user.id) ? 1 : 0);
+      reactionCount += item[1].count - (item[1].users.cache.has(client.user?.id ?? '') ? 1 : 0);
 
       for (let id of item[1].users.cache.keys()) {
-        if (!reactionMembers.includes(id) && id != client.user.id) {
+        if (!reactionMembers.includes(id) && id != client.user?.id) {
           reactionMemberCount++;
           reactionMembers.push(id);
         }
@@ -43,18 +46,18 @@ exports.onReactionAdd = async (client, reaction, user) => {
 
       let counts = {}
       for (let item of reaction.message.reactions.cache) {
-        counts[item[0]] = item[1].count - (item[1].users.cache.has(client.user.id) ? 1 : 0);
+        counts[item[0]] = item[1].count - (item[1].users.cache.has(client.user?.id ?? '') ? 1 : 0);
       }
 
-      require('./view_result')(vote, reaction.message, counts);
+      viewResult(vote, reaction.message, counts);
       await endFn[vote.type]?.(client, vote, reaction.message, counts, reactionCount);
     }
   }
 }
 
-exports.onReactionRemove = async (client, reaction, user) => {
+export async function onReactionRemove(client: Client, reaction: MessageReaction | PartialMessageReaction, user: User | PartialUser) {
   const votes = getData(reaction.message.guildId, ['votes', reaction.message.channelId]);
   if (Object.keys(votes ?? {})?.includes?.(reaction.message.id)) {
-    if (user.id == client.user.id) reaction.message.react(reaction.emoji.name)
+    if (user.id == client.user?.id) reaction.message.react(reaction.emoji.name ?? '')
   }
 }

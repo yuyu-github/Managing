@@ -1,6 +1,9 @@
-const { Permissions } = require('discord.js');
+import { ApplicationCommandDataResolvable, Permissions } from 'discord.js';
 
-module.exports = [
+import voteChoicesOptions from './vote/choices_options';
+import translateLangs from './translate/langs';
+
+export default [
   {
     name: 'vote',
     description: '投票を作成',
@@ -31,7 +34,7 @@ module.exports = [
         name: 'mention2',
         description: 'メンション'
       },
-      ...require('./vote/choices_options'),
+      ...voteChoicesOptions,
     ]
   },
   {
@@ -148,13 +151,13 @@ module.exports = [
         type: 'STRING',
         name: 'source',
         description: '翻訳元の言語',
-        choices: require('./translate/langs'),
+        choices: translateLangs,
       },
       {
         type: 'STRING',
         name: 'target',
         description: '翻訳先の言語',
-        choices: require('./translate/langs'),
+        choices: translateLangs,
       },
     ]
   },
@@ -178,4 +181,4 @@ module.exports = [
       }
     ]
   },
-];
+] as any[];

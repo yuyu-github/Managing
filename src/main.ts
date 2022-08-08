@@ -1,5 +1,5 @@
-const { Client, Intents } = require('discord.js');
-const botToken = require('./token');
+import { Client, Intents, Interaction, Message } from 'discord.js';
+import botToken from './token';
 const client = new Client({
   intents: [
     Intents.FLAGS.GUILDS,
@@ -8,17 +8,17 @@ const client = new Client({
   ]
 });
 
-const dev = require('./dev');
-const commands = require('./commands/list');
-const commandProcess = require('./commands/process');
-const loadVotes = require('./vote/load_votes');
-const voteEvents = require('./vote/events');
-const quote = require('./quote');
+import * as dev from './dev';
+import commands from './commands/list';
+import commandProcess from './commands/process';
+import loadVotes from './vote/load_votes';
+import * as voteEvents from './vote/events';
+import quote from './quote';
 
 client.once('ready', async () => {
   try {
-    if (dev.isDev) await client.application.commands.set(commands, dev.ServerId);
-    else await client.application.commands.set(commands);
+    if (dev.isDev) await client.application?.commands.set(commands, dev.serverId);
+    else await client.application?.commands.set(commands);
 
     await loadVotes(client);
 
@@ -46,6 +46,7 @@ client.on('interactionCreate', async (interaction) => {
 
 client.on('messageReactionAdd', async (reaction, user) => {
   try {
+    if (!('_equals' in user)) return;
     await voteEvents.onReactionAdd(client, reaction, user);
   } catch (e) {
     console.error(e);

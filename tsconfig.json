@@ -3,10 +3,10 @@
     "target": "ESNext",
     "module": "CommonJS",
     "outDir": "./build",
-    "allowJs": true,
     "rootDir": "./src",
     "removeComments": true,
     "strict": true,
+    "noImplicitAny": false,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true
   },

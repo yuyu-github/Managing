@@ -1,4 +1,4 @@
-module.exports = [
+export default [
   { name: 'アラビア語', value: 'ar' },
   { name: '簡体字', value: 'zh-CN' },
   { name: '繁体字', value: 'zh-TW' },
