@@ -30,7 +30,7 @@ module.exports = async (client, interaction) => {
             count: count,
           },
           interaction.user,
-          data => {
+          async data => {
             await interaction.reply({ content: '投票を作成しました', ephemeral: true })
             return interaction.channel.send(data);
           }
@@ -62,7 +62,7 @@ module.exports = async (client, interaction) => {
               count: count,
             },
             interaction.user,
-            data => {
+            async data => {
               await interaction.reply({ content: '投票を作成しました', ephemeral: true })
               return interaction.channel.send(data)
             },
