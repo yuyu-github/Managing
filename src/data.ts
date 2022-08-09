@@ -1,9 +1,9 @@
 import * as fs from 'fs';
 
-export function setData(serverId: string | null, path: string[], value: Object): void {
-  if (serverId == null) return;
+export function setData(guildId: string | null, path: string[], value: Object): void {
+  if (guildId == null) return;
 
-  let fileName = './data/' + serverId + '.json'
+  let fileName = './data/' + guildId + '.json'
   let data: object = fs.existsSync(fileName) ? JSON.parse(fs.readFileSync(fileName).toString()) : {}
   let parent = data;
   path.forEach((key, i) => {
@@ -16,10 +16,10 @@ export function setData(serverId: string | null, path: string[], value: Object):
   fs.writeFileSync(fileName, JSON.stringify(data));
 }
 
-export function getData(serverId: string | null, path: string[]): Object | null {
-  if (serverId == null) return null;
+export function getData(guildId: string | null, path: string[]): Object | null {
+  if (guildId == null) return null;
 
-  let fileName = './data/' + serverId + '.json'
+  let fileName = './data/' + guildId + '.json'
   let data: object = fs.existsSync(fileName) ? JSON.parse(fs.readFileSync(fileName).toString()) : {}
   let parent = data;
   let value: Object | null = null;
@@ -39,10 +39,10 @@ export function getData(serverId: string | null, path: string[]): Object | null 
   return value;
 }
 
-export function deleteData(serverId: string | null, path: string[]): void {
-  if (serverId == null) return;
+export function deleteData(guildId: string | null, path: string[]): void {
+  if (guildId == null) return;
 
-  let fileName = './data/' + serverId + '.json'
+  let fileName = './data/' + guildId + '.json'
   let data: object = fs.existsSync(fileName) ? JSON.parse(fs.readFileSync(fileName).toString()) : {}
   let parent = data;
   path.forEach((key, i) => {
