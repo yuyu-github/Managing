@@ -28,7 +28,7 @@ export async function onReactionAdd(client: Client, reaction: MessageReaction | 
     for (let item of reaction.message.reactions.cache) {
       reactionCount += item[1].count - (item[1].users.cache.has(client.user?.id ?? '') ? 1 : 0);
 
-      for (let id of item[1].users.cache.keys()) {
+      for (let id of (await item[1].users.fetch()).keys()) {
         if (!reactionMembers.includes(id) && id != client.user?.id) {
           reactionMemberCount++;
           reactionMembers.push(id);
