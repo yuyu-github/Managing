@@ -15,7 +15,8 @@ import loadVotes from './vote/load_votes';
 import * as voteEvents from './vote/events';
 import quote from './quote';
 
-process.chdir('../');
+process.chdir(__dirname + '\\..\\');
+console.log(process.cwd())
 
 client.once('ready', async () => {
   try {
