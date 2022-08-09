@@ -43,6 +43,7 @@ export default async function(client: Client, message: Message) {
       }).catch(e => console.error(e));
     } else {
       if (!('name' in channel)) return;
+      if (channel.type == 'GUILD_VOICE') return;
       message.reply({
         embeds: [
           {
