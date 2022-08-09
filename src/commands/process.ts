@@ -2,104 +2,29 @@ import { Client, Interaction } from 'discord.js';
 
 import { setData, getData, deleteData } from '../data';
 
-import * as dev from '../dev';
-import { vote } from '../vote/vote';
-import kickvote from './kickvote/kickvote';
-import banvote from './banvote/banvote';
-import unbanvote from './unbanvote/unbanvote';
-import voteViewResult from '../vote/view_result';
+import * as votes from './processes/votes';
 
 export default async function (client: Client, interaction: Interaction) {
   if (interaction.isCommand()) {
     switch (interaction.commandName) {
       case 'vote': {
-        const name = interaction.options.getString('name');
-        const multiple = interaction.options.getBoolean('multiple')
-        const count = interaction.options.getInteger('count') ?? 0;
-        const mentions = [...Array(2).keys()].map(i => interaction.options.getMentionable('mention' + (i + 1))).filter(i => i != null);
-        let choicesName = [...Array(20).keys()].map(i => interaction.options.getString('choice' + (i + 1))).filter(i => i != null);
-
-        let choices: string[][];
-        if (choicesName.length == 0) {
-          choices = [['⭕', ''], ['❌', '']];
-        } else {
-          let list = ['🇦', '🇧', '🇨', '🇩', '🇪', '🇫', '🇬', '🇭', '🇮', '🇯', '🇰', '🇱', '🇲', '🇳', '🇴', '🇵', '🇶', '🇷', '🇸', '🇹', '🇺', '🇻', '🇼', '🇽', '🇾', '🇿']
-          choices = choicesName.map((item, i) => [list[i], item ?? '']);
-        }
-
-        vote(
-          'normal',
-          name ?? '',
-          mentions.reduce((str, i) => str + ' ' + i?.toString(), ''),
-          choices,
-          {
-            multiple: multiple,
-            count: count,
-          },
-          interaction.user,
-          async data => {
-            await interaction.reply({ content: '投票を作成しました', ephemeral: true })
-            return interaction.channel?.send(data);
-          }
-        )
+        votes.vote(client, interaction);
       }
       break;
       case 'rolevote': {
-        const user = interaction.options.getUser('user');
-        if (user == null) return;
-        const role = interaction.options.getRole('role');
-        if (role == null || !('createdAt' in role)) return;
-        const count = interaction.options.getInteger('count') ?? 5;
-
-        const guildRoles = interaction.guild?.roles;
-        if (guildRoles == null) return;
-        const roles = interaction.member?.roles;
-        if (roles == undefined || !('highest' in roles)) return;
-        if (guildRoles.comparePositions(role, roles.highest) > 0) {
-          interaction.reply('自分より上のロールの投票をとることはできません');
-        } else if (count < 3 && !(interaction.guildId == dev.serverId)) {
-          interaction.reply('投票を終了する人数を3人未満にすることはできません');
-        } else if (!role.editable) {
-          interaction.reply(role.name + 'を付与/削除する権限がありません')
-        } else {
-          vote(
-            'rolevote',
-            user.tag + 'に' + role.name + 'を付与/削除する',
-            '付与するが6割を超えた場合ロールを付与、付与しないが6割を超えた場合ロールを削除します\n投票終了人数 ' + count + '人',
-            [['⭕', '付与する'], ['❌', '付与しない']],
-            {
-              user: user.id,
-              role: role.id,
-              count: count,
-            },
-            interaction.user,
-            async data => {
-              await interaction.reply({ content: '投票を作成しました', ephemeral: true })
-              return interaction.channel?.send(data)
-            },
-          )
-        }
+        votes.roleVote(client, interaction);
       }
       break;
       case 'kickvote': {
-        const user = interaction.options.getUser('user');
-        if (user == null) return;
-        const count = interaction.options.getInteger('count') ?? 5;
-        kickvote(interaction, user, count);
+        votes.kickVote(client, interaction);
       }
       break;
       case 'banvote': {
-        const user = interaction.options.getUser('user');
-        if (user == null) return;
-        const count = interaction.options.getInteger('count') ?? 5;
-        banvote(interaction, user, count);
+        votes.banVote(client, interaction);
       }
       break;
       case 'unbanvote': {
-        const userTag = interaction.options.getString('user');
-        if (userTag == null) return;
-        const count = interaction.options.getInteger('count') ?? 5;
-        unbanvote(interaction, userTag, count);
+        votes.unbanVote(client, interaction);
       }
       break;
       case 'translate': {
@@ -136,62 +61,23 @@ export default async function (client: Client, interaction: Interaction) {
   } else if (interaction.isContextMenu()) {
     switch (interaction.commandName) {
       case '投票集計': {
-        const message = interaction.options.getMessage('message');
-        if (message == null || !('guildId' in message)) return;
-        const votes = getData(message.guildId, ['votes', message.channelId]) ?? {};
-
-        if (!Object.keys(votes ?? {}).includes(message.id)) {
-          interaction.reply('このメッセージは投票ではありません')
-        } else {
-          let counts = {}
-          for (let item of await message.reactions.cache) {
-            counts[item[0]] = item[1].count - ((await item[1].users.fetch()).has(client.user?.id ?? '') ? 1 : 0);
-          }
-          interaction.reply('投票を集計しました');
-          voteViewResult(votes[message.id], message, counts);
-        }
+        votes.voteCount(client, interaction);
       }
       break;
       case '投票終了': {
-        const message = interaction.options.getMessage('message');
-        if (message == null || !('guildId' in message)) return;
-        const votes = getData(message.guildId, ['votes', message.channelId]) ?? {};
-
-        if (!Object.keys(votes ?? {}).includes(message.id)) {
-          interaction.reply('このメッセージは投票ではありません')
-        } else if (votes[message.id].type != 'normal') {
-          interaction.reply('この投票は終了できません')
-        } else if (votes[message.id].author != interaction.user.id) {
-          interaction.reply('作成者以外は終了できません');
-        } else {
-          deleteData(message.guildId, ['votes', message.channelId, message.id])
-
-          let counts = {}
-          for (let item of message.reactions.cache) {
-            counts[item[0]] = item[1].count - ((await item[1].users.fetch()).has(client.user?.id ?? '') ? 1 : 0);
-          }
-
-          interaction.reply('投票を終了しました');
-          voteViewResult(votes[message.id], message, counts);
-        }
+        votes.endVote(client, interaction);
       }
       break;
       case 'キック投票': {
-        const user = interaction.options.getUser('user');
-        if (user == null) return;
-        kickvote(interaction, user)
+        votes.kickVote(client, interaction);
       }
       break;
       case 'BAN投票': {
-        const user = interaction.options.getUser('user');
-        if (user == null) return;
-        banvote(interaction, user)
+        votes.banVote(client, interaction);
       }
       break;
       case 'BAN解除投票': {
-        const user = interaction.options.getUser('user');
-        if (user == null) return;
-        unbanvote(interaction, user.tag)
+        votes.unbanVote(client, interaction);
       }
       break;
       case 'ピン留め': {
