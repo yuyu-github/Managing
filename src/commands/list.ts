@@ -48,6 +48,7 @@ export default [
   {
     name: 'rolevote',
     description: 'ロールを付与/削除するか投票をとる',
+    defaultMemberPermission: Permissions.FLAGS.MANAGE_ROLES,
     options: [
       {
         type: 'USER',
