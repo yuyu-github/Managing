@@ -15,6 +15,8 @@ import loadVotes from './vote/load_votes';
 import * as voteEvents from './vote/events';
 import quote from './quote';
 
+process.chdir('../');
+
 client.once('ready', async () => {
   try {
     if (dev.isDev) await client.application?.commands.set(commands, dev.serverId);
