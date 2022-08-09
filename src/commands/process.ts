@@ -8,23 +8,23 @@ export default async function (client: Client, interaction: Interaction) {
   if (interaction.isCommand()) {
     switch (interaction.commandName) {
       case 'vote': {
-        votes.vote(client, interaction);
+        await votes.vote(client, interaction);
       }
       break;
       case 'rolevote': {
-        votes.roleVote(client, interaction);
+        await votes.roleVote(client, interaction);
       }
       break;
       case 'kickvote': {
-        votes.kickVote(client, interaction);
+        await votes.kickVote(client, interaction);
       }
       break;
       case 'banvote': {
-        votes.banVote(client, interaction);
+        await votes.banVote(client, interaction);
       }
       break;
       case 'unbanvote': {
-        votes.unbanVote(client, interaction);
+        await votes.unbanVote(client, interaction);
       }
       break;
       case 'translate': {
@@ -61,23 +61,23 @@ export default async function (client: Client, interaction: Interaction) {
   } else if (interaction.isContextMenu()) {
     switch (interaction.commandName) {
       case '投票集計': {
-        votes.voteCount(client, interaction);
+        await votes.voteCount(client, interaction);
       }
       break;
       case '投票終了': {
-        votes.endVote(client, interaction);
+        await votes.endVote(client, interaction);
       }
       break;
       case 'キック投票': {
-        votes.kickVote(client, interaction);
+        await votes.kickVote(client, interaction);
       }
       break;
       case 'BAN投票': {
-        votes.banVote(client, interaction);
+        await votes.banVote(client, interaction);
       }
       break;
       case 'BAN解除投票': {
-        votes.unbanVote(client, interaction);
+        await votes.unbanVote(client, interaction);
       }
       break;
       case 'ピン留め': {
