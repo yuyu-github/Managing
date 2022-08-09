@@ -15,7 +15,7 @@ export default function(interaction: CommandInteraction | ContextMenuInteraction
     interaction.reply(user.toString() + 'をBANする権限がありません')
   } else if (guildRoles.comparePositions(member.roles.highest, roles.highest) > 0) {
     interaction.reply('自分より上のロールがある人の投票をとることはできません');
-  } else if (count < 5 && !(dev.isDev && interaction.guildId == dev.serverId)) {
+  } else if (count < 5 && !(interaction.guildId == dev.serverId)) {
     interaction.reply('投票を終了する人数を5人未満にすることはできません');
   } else {
     vote(
