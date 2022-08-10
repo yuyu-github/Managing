@@ -16,7 +16,6 @@ function startMeasuringTime(name, guildId, userId) {
   startTime[name] ??= {};
   startTime[name][guildId] ??= {};
   startTime[name][guildId][userId] = Math.floor(Date.now() / 1000 / 60);
-  console.log(startTime);
 }
 
 function endMeasuringTime(name, guildId, userId) {
