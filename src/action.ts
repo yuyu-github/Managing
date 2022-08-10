@@ -21,6 +21,7 @@ function endMeasuringTime(name, guildId, userId) {
   if (startTime[name]?.[guildId]?.[userId] == null) return;
   setData(guildId, ['memberData', 'time', name, userId],
     Math.floor(Date.now() / 1000 / 60) - startTime[name][guildId][userId], '+');
+    startTime[name][guildId][userId] = null;
 }
 
 export function init(client: Client) {
@@ -47,4 +48,13 @@ export function action(guildId: string | null, userId: string, type: actionType)
 
   if (type == 'leftVoiceChannel') endMeasuringTime('inVoiceChannel', guildId, userId);
   if (type == 'leftStageChannel') endMeasuringTime('inStageChannel', guildId, userId);
+}
+
+export function updateData(guildId: string | null, userId: string) {
+  for (let name in startTime) {
+    if (startTime[name][guildId][userId] != null) {
+      endMeasuringTime(name, guildId, userId);
+      startMeasuringTime(name, guildId, userId);
+    }
+  }
 }

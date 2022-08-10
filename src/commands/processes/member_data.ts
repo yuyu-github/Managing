@@ -2,8 +2,12 @@ import { Client, CommandInteraction } from 'discord.js';
 
 import { setData, getData, deleteData } from '../../data';
 
+import { updateData } from '../../action';
+
 export async function memberData(client: Client, interaction: CommandInteraction) {
   const user = interaction.options.getUser('user') ?? interaction.user;
+
+  updateData(interaction.guildId, user.id);
 
   const memberData = getData(interaction.guildId, ['memberData']);
   const getAction = (name, unit) => `${memberData?.['action']?.[name]?.[user.id] ?? 0}${unit} (#${getRank(memberData?.['action']?.[name])})`;
