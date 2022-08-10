@@ -29,6 +29,15 @@ export function init(client: Client) {
     if (i.type == 'GUILD_STAGE_VOICE') i.members.each(member => startMeasuringTime('inStageChannel', member.guild.id, member.user.id));
   })
 }
+export function onExit() {
+  for (let name in startTime) {
+    for (let guildId in startTime[name]) {
+      for (let userId in startTime[name][guildId]) {
+        endMeasuringTime(name, guildId, userId);
+      }
+    }
+  }
+}
 
 export function action(guildId: string | null, userId: string, type: actionType) {
   setData(guildId, ['memberData', 'action', type, userId], 1, '+');

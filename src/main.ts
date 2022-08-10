@@ -15,14 +15,22 @@ import commandProcess from './commands/process';
 import loadVotes from './vote/load_votes';
 import * as voteEvents from './vote/events';
 import quote from './quote';
-import { action, init as actionInit } from './action';
+import { action, init as actionInit, onExit as actionOnExit } from './action';
 
 process.chdir(__dirname + '\\..\\');
+
+process.on('exit', () => {
+  actionOnExit();
+})
+process.on('SIGHUP', () => process.exit(0));
+process.on('SIGINT', () => process.exit(0));
+process.on('SIGBREAK', () => process.exit(0));
+process.on('SIGTERM', () => process.exit(0));
 
 client.once('ready', async () => {
   try {
     actionInit(client);
-    
+
     if (dev.isDev) await client.application?.commands.set(commands, dev.serverId);
     else await client.application?.commands.set(commands);
 
