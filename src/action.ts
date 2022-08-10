@@ -28,7 +28,6 @@ export function init(client: Client) {
     if (i.type == 'GUILD_VOICE') i.members.each(member => startMeasuringTime('inVoiceChannel', member.guild.id, member.user.id));
     if (i.type == 'GUILD_STAGE_VOICE') i.members.each(member => startMeasuringTime('inStageChannel', member.guild.id, member.user.id));
   })
-  console.log(startTime);
 }
 
 export function action(guildId: string | null, userId: string, type: actionType) {
