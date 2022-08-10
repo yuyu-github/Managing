@@ -5,6 +5,7 @@ const client = new Client({
     Intents.FLAGS.GUILDS,
     Intents.FLAGS.GUILD_MESSAGES,
     Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+    Intents.FLAGS.GUILD_VOICE_STATES,
   ]
 });
 
@@ -14,6 +15,7 @@ import commandProcess from './commands/process';
 import loadVotes from './vote/load_votes';
 import * as voteEvents from './vote/events';
 import quote from './quote';
+import { action } from './action';
 
 process.chdir(__dirname + '\\..\\');
 
@@ -32,6 +34,7 @@ client.once('ready', async () => {
 
 client.on('messageCreate', async message => {
   try {
+    action(message.guildId, message.author.id, 'sendMessage');
     await quote(client, message);
   } catch (e) {
     console.error(e);
@@ -40,6 +43,9 @@ client.on('messageCreate', async message => {
 
 client.on('interactionCreate', async (interaction) => {
   try {
+    if (interaction.isCommand()) action(interaction.guildId, interaction.user.id, 'useCommand')
+    if (interaction.isContextMenu()) action(interaction.guildId, interaction.user.id, 'useContextMenu')
+
     await commandProcess(client, interaction);
   } catch (e) {
     console.error(e);
@@ -48,8 +54,8 @@ client.on('interactionCreate', async (interaction) => {
 
 client.on('messageReactionAdd', async (reaction, user) => {
   try {
-    if (!('_equals' in user)) return;
-    await voteEvents.onReactionAdd(client, reaction, user);
+    action(reaction.message.guildId, user.id, 'addReaction');
+    if ('_equals' in user) await voteEvents.onReactionAdd(client, reaction, user);
   } catch (e) {
     console.error(e);
   }
@@ -60,6 +66,15 @@ client.on('messageReactionRemove', async (reaction, user) => {
     await voteEvents.onReactionRemove(client, reaction, user);
   } catch (e) {
     console.error(e);
+  }
+})
+
+client.on('voiceStateUpdate', (oldState, newState) => {
+  if (oldState.channelId != newState.channelId && oldState.channel?.type != newState.channel?.type && newState.member != null) {
+    if (newState.channel?.type == 'GUILD_VOICE') action(newState.guild.id, newState.member.user.id, 'joinVoiceChannel');
+    if (oldState.channel?.type == 'GUILD_VOICE') action(newState.guild.id, newState.member.user.id, 'leftVoiceChannel');
+    if (newState.channel?.type == 'GUILD_STAGE_VOICE') action(newState.guild.id, newState.member.user.id, 'joinStageChannel');
+    if (oldState.channel?.type == 'GUILD_STAGE_VOICE') action(newState.guild.id, newState.member.user.id, 'leftStageChannel');
   }
 })
 
