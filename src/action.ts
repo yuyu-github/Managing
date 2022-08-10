@@ -1,4 +1,4 @@
-import { User } from "discord.js";
+import { Client, User } from "discord.js";
 
 import { setData, getData, deleteData } from './data';
 type actionType = 
@@ -17,11 +17,18 @@ function startMeasuringTime(name, guildId, userId) {
   startTime[name][guildId] ??= {};
   startTime[name][guildId][userId] = Math.floor(Date.now() / 1000 / 60);
 }
-
 function endMeasuringTime(name, guildId, userId) {
   if (startTime[name]?.[guildId]?.[userId] == null) return;
   setData(guildId, ['memberData', 'time', name, userId],
     Math.floor(Date.now() / 1000 / 60) - startTime[name][guildId][userId], '+');
+}
+
+export function init(client: Client) {
+  client.channels.cache.each(i => {
+    if (i.type == 'GUILD_VOICE') i.members.each(member => startMeasuringTime('inVoiceChannel', member.guild.id, member.user.id));
+    if (i.type == 'GUILD_STAGE_VOICE') i.members.each(member => startMeasuringTime('inStageChannel', member.guild.id, member.user.id));
+  })
+  console.log(startTime);
 }
 
 export function action(guildId: string | null, userId: string, type: actionType) {

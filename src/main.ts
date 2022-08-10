@@ -15,12 +15,14 @@ import commandProcess from './commands/process';
 import loadVotes from './vote/load_votes';
 import * as voteEvents from './vote/events';
 import quote from './quote';
-import { action } from './action';
+import { action, init as actionInit } from './action';
 
 process.chdir(__dirname + '\\..\\');
 
 client.once('ready', async () => {
   try {
+    actionInit(client);
+    
     if (dev.isDev) await client.application?.commands.set(commands, dev.serverId);
     else await client.application?.commands.set(commands);
 
@@ -78,4 +80,4 @@ client.on('voiceStateUpdate', (oldState, newState) => {
   }
 })
 
-client.login(botToken);
+client.login(botToken)
