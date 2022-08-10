@@ -1,7 +1,6 @@
 import { User } from "discord.js";
 
 import { setData, getData, deleteData } from './data';
-
 type actionType = 
 | 'sendMessage'
 | 'useCommand'

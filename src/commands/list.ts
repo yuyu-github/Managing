@@ -3,6 +3,7 @@ import { Permissions } from 'discord.js';
 import translateLangs from './translate/langs';
 
 import votes from './lists/votes';
+import memberData from './lists/member_data'
 
 export default [
   ...votes,
@@ -50,4 +51,5 @@ export default [
       }
     ]
   },
+  ...memberData,
 ] as any[];

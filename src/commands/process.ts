@@ -3,6 +3,7 @@ import { Client, Interaction } from 'discord.js';
 import { setData, getData, deleteData } from '../data';
 
 import * as votes from './processes/votes';
+import * as memberData from './processes/member_data';
 
 export default async function (client: Client, interaction: Interaction) {
   if (interaction.isCommand()) {
@@ -57,6 +58,9 @@ export default async function (client: Client, interaction: Interaction) {
         }
       }
       break;
+      case 'member-data': {
+        memberData.memberData(client, interaction);
+      }
     }
   } else if (interaction.isContextMenu()) {
     switch (interaction.commandName) {
