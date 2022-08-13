@@ -24,7 +24,7 @@ export async function vote(client: Client, interaction: CommandInteraction) {
   createVote(
     'normal',
     name ?? '',
-    mentions.reduce((str, i) => str + ' ' + i?.toString(), ''),
+    '',
     choices,
     {
       multiple: multiple,
@@ -33,7 +33,10 @@ export async function vote(client: Client, interaction: CommandInteraction) {
     interaction.user,
     async data => {
       await interaction.reply({ content: '投票を作成しました', ephemeral: true })
-      return interaction.channel?.send(data);
+      return interaction.channel?.send({
+        content: mentions.reduce((str, i) => str + ' ' + i?.toString(), ''),
+        ...data,
+      });
     }
   )
 }

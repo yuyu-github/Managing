@@ -5,7 +5,7 @@ import { setData, getData, deleteData } from 'discordbot-data';
 type VoteType = 'normal' | 'rolevote' | 'kickvote' | 'banvote' | 'unbanvote'
 
 export function vote(type: VoteType, title: string, description: string, choices: string[][], data: object, author: User,
-  sendFn: (data: object | string) => Message | undefined | Promise<Message | undefined>): void {
+  sendFn: (data: object) => Message | undefined | Promise<Message | undefined>): void {
   Promise.resolve(sendFn({
     embeds: [
       {
