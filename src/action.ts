@@ -52,7 +52,7 @@ export function action(guildId: string | null, userId: string, type: actionType)
 
 export function updateData(guildId: string | null, userId: string) {
   for (let name in startTime) {
-    if (startTime[name][guildId][userId] != null) {
+    if (startTime[name]?.[guildId ?? '']?.[userId] != null) {
       endMeasuringTime(name, guildId, userId);
       startMeasuringTime(name, guildId, userId);
     }
