@@ -51,8 +51,8 @@ export async function roleVote(client: Client, interaction: CommandInteraction) 
   if (guildRoles == null) return;
   const roles = interaction.member?.roles;
   if (roles == undefined || !('highest' in roles)) return;
-  if (guildRoles.comparePositions(role, roles.highest) > 0) {
-    interaction.reply('自分より上のロールの投票をとることはできません');
+  if (guildRoles.comparePositions(role, roles.highest) >= 0 && interaction.guild?.ownerId != interaction.user.id) {
+    interaction.reply('自分より下ではないロールの投票をとることはできません');
   } else if (count < 3 && !(interaction.guildId == dev.serverId)) {
     interaction.reply('投票を終了する人数を3人未満にすることはできません');
   } else if (!role.editable) {
