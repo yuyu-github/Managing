@@ -1,6 +1,6 @@
 import { Client, Interaction } from 'discord.js';
 
-import { setData, getData, deleteData } from '../data';
+import { setData, getData, deleteData } from 'discordbot-data';
 
 import * as votes from './processes/votes';
 import * as memberData from './processes/member_data';

@@ -1,6 +1,6 @@
 import { Client, CommandInteraction, ContextMenuInteraction, Interaction } from "discord.js";
 
-import { setData, getData, deleteData } from '../../data';
+import { setData, getData, deleteData } from 'discordbot-data';
 
 import * as dev from '../../dev';
 import { vote as createVote } from '../../vote/vote';
@@ -179,7 +179,7 @@ export async function unbanVote(client: Client, interaction: CommandInteraction 
 export async function voteCount(client: Client, interaction: ContextMenuInteraction) {
   const message = interaction.options.getMessage('message', true);
   if (!('guildId' in message)) return;
-  const votes = getData(message.guildId, ['votes', message.channelId]) ?? {};
+  const votes = getData('guild', message.guildId, ['votes', message.channelId]) ?? {};
 
   if (!Object.keys(votes ?? {}).includes(message.id)) {
     interaction.reply('このメッセージは投票ではありません')
@@ -196,7 +196,7 @@ export async function voteCount(client: Client, interaction: ContextMenuInteract
 export async function endVote(client: Client, interaction: ContextMenuInteraction) {
   const message = interaction.options.getMessage('message', true);
   if (message == null || !('guildId' in message)) return;
-  const votes = getData(message.guildId, ['votes', message.channelId]) ?? {};
+  const votes = getData('guild', message.guildId, ['votes', message.channelId]) ?? {};
 
   if (!Object.keys(votes ?? {}).includes(message.id)) {
     interaction.reply('このメッセージは投票ではありません')
@@ -205,7 +205,7 @@ export async function endVote(client: Client, interaction: ContextMenuInteractio
   } else if (votes[message.id].author != interaction.user.id) {
     interaction.reply('作成者以外は終了できません');
   } else {
-    deleteData(message.guildId, ['votes', message.channelId, message.id])
+    deleteData('guild', message.guildId, ['votes', message.channelId, message.id])
 
     let counts = {}
     for (let item of message.reactions.cache) {

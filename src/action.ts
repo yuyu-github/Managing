@@ -1,6 +1,6 @@
 import { Client, User } from "discord.js";
 
-import { setData, getData, deleteData } from './data';
+import { setData, getData, deleteData } from 'discordbot-data';
 type actionType = 
 | 'sendMessage'
 | 'useCommand'
@@ -19,7 +19,7 @@ function startMeasuringTime(name, guildId, userId) {
 }
 function endMeasuringTime(name, guildId, userId) {
   if (startTime[name]?.[guildId]?.[userId] == null) return;
-  setData(guildId, ['memberData', 'time', name, userId],
+  setData('guild', guildId, ['memberData', 'time', name, userId],
     Math.floor(Date.now() / 1000 / 60) - startTime[name][guildId][userId], '+');
     startTime[name][guildId][userId] = null;
 }
@@ -41,7 +41,7 @@ export function onExit() {
 }
 
 export function action(guildId: string | null, userId: string, type: actionType) {
-  setData(guildId, ['memberData', 'action', type, userId], 1, '+');
+  setData('guild', guildId, ['memberData', 'action', type, userId], 1, '+');
   
   if (type == 'joinVoiceChannel') startMeasuringTime('inVoiceChannel', guildId, userId);
   if (type == 'joinStageChannel') startMeasuringTime('inStageChannel', guildId, userId);

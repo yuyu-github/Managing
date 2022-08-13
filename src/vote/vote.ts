@@ -1,6 +1,6 @@
 import { Message, User } from 'discord.js';
 
-import { setData, getData, deleteData } from '../data';
+import { setData, getData, deleteData } from 'discordbot-data';
 
 type VoteType = 'normal' | 'rolevote' | 'kickvote' | 'banvote' | 'unbanvote'
 
@@ -24,7 +24,7 @@ export function vote(type: VoteType, title: string, description: string, choices
       msg.react(choice[0]);
     }
 
-    setData(msg.guildId, ['votes', msg.channelId, msg.id], {
+    setData('guild', msg.guildId, ['votes', msg.channelId, msg.id], {
       ...data,
       type: type,
       choices: choices,

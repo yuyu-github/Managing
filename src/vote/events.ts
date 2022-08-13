@@ -1,13 +1,13 @@
 import { Client, MessageReaction, PartialMessageReaction, PartialUser, ReactionManager, User } from 'discord.js';
 
-import { setData, getData, deleteData } from '../data';
+import { setData, getData, deleteData } from 'discordbot-data';
 
 import onReactionAddFn from './funcs/onReactionAdd';
 import endFn from './funcs/end';
 import viewResult from './view_result';
 
 export async function onReactionAdd(client: Client, reaction: MessageReaction | PartialMessageReaction, user: User) {
-  const votes = getData(reaction.message.guildId, ['votes', reaction.message.channelId]) ?? {};
+  const votes = getData('guild', reaction.message.guildId, ['votes', reaction.message.channelId]) ?? {};
   if (Object.keys(votes ?? {})?.includes?.(reaction.message.id)) {
     const vote = votes[reaction.message.id];
 
@@ -42,7 +42,7 @@ export async function onReactionAdd(client: Client, reaction: MessageReaction | 
     }
 
     if (onReactionAddFn[vote.type]?.(client, vote, reaction, user, reactionCount, reactionMemberCount)) {
-      deleteData(reaction.message.guildId, ['votes', reaction.message.channelId, reaction.message.id])
+      deleteData('guild', reaction.message.guildId, ['votes', reaction.message.channelId, reaction.message.id])
 
       let counts = {}
       for (let item of reaction.message.reactions.cache) {
@@ -56,7 +56,7 @@ export async function onReactionAdd(client: Client, reaction: MessageReaction | 
 }
 
 export async function onReactionRemove(client: Client, reaction: MessageReaction | PartialMessageReaction, user: User | PartialUser) {
-  const votes = getData(reaction.message.guildId, ['votes', reaction.message.channelId]);
+  const votes = getData('guild', reaction.message.guildId, ['votes', reaction.message.channelId]);
   if (Object.keys(votes ?? {})?.includes?.(reaction.message.id)) {
     if (user.id == client.user?.id) reaction.message.react(reaction.emoji.name ?? '')
   }

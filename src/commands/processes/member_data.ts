@@ -1,6 +1,6 @@
 import { Client, CommandInteraction } from 'discord.js';
 
-import { setData, getData, deleteData } from '../../data';
+import { setData, getData, deleteData } from 'discordbot-data';
 
 import { updateData } from '../../action';
 
@@ -9,7 +9,7 @@ export async function memberData(client: Client, interaction: CommandInteraction
 
   updateData(interaction.guildId, user.id);
 
-  const memberData = getData(interaction.guildId, ['memberData']);
+  const memberData = getData('guild', interaction.guildId, ['memberData']);
   const getAction = (name, unit) => `${memberData?.['action']?.[name]?.[user.id] ?? 0}${unit} (#${getRank(memberData?.['action']?.[name])})`;
   const getTime = name => `${minutesToString(memberData?.['time']?.[name]?.[user.id] ?? 0)} (#${getRank(memberData?.['time']?.[name])})`;
   const minutesToString = minutes => (minutes >= 60 ? Math.floor(minutes / 60) + '時間' : '') + minutes % 60 + '分';
