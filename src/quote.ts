@@ -1,4 +1,4 @@
-import { Client, Message } from "discord.js";
+import { Client, Message, MessageEmbed } from "discord.js";
 
 export default async function(client: Client, message: Message) {
   let matches = message.content.matchAll(/https?:\/\/discord.com\/channels\/[0-9]+\/([0-9]+)(?:\/([0-9]+))?/g);
@@ -10,9 +10,14 @@ export default async function(client: Client, message: Message) {
       channel.messages.fetch(match[2]).then(urlMessage => {
         if (urlMessage == null) return;
 
+        const isImageEmbed = (embed: MessageEmbed) =>
+          embed.author == null && embed.color == null && embed.description == null && embed.fields.length == 0 && 
+            embed.footer == null && embed.image == null && embed.timestamp == null && embed.title == null && embed.video == null &&
+            embed.url != null && embed.thumbnail?.url == embed.url
+
         let images: string[] = [];
         let embeds = urlMessage.embeds.filter(i => {
-          if (i.type == 'image') {
+          if (isImageEmbed(i)) {
             images.push(i.url ?? '')
             return false;
           }
