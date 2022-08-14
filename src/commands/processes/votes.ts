@@ -51,8 +51,8 @@ export async function roleVote(client: Client, interaction: CommandInteraction) 
   if (guildRoles == null) return;
   const roles = interaction.member?.roles;
   if (roles == undefined || !('highest' in roles)) return;
-  if (guildRoles.comparePositions(role, roles.highest) >= 0 && interaction.guild?.ownerId != interaction.user.id) {
-    interaction.reply('自分より下ではないロールの投票をとることはできません');
+  if (guildRoles.comparePositions(role, roles.highest) > 0 && interaction.guild?.ownerId != interaction.user.id) {
+    interaction.reply('自分より上のロールの投票をとることはできません');
   } else if (count < 3 && !(interaction.guildId == dev.serverId)) {
     interaction.reply('投票を終了する人数を3人未満にすることはできません');
   } else if (!role.editable) {
@@ -89,7 +89,7 @@ export async function kickVote(client: Client, interaction: CommandInteraction |
   if (roles == null || Array.isArray(roles)) return;
   if (!member.kickable) {
     interaction.reply(user.toString() + 'をキックする権限がありません')
-  } else if (guildRoles.comparePositions(member.roles.highest, roles.highest) > 0) {
+  } else if ((guildRoles.comparePositions(member.roles.highest, roles.highest) > 0 && interaction.guild?.ownerId != interaction.user.id) || interaction.guild?.ownerId == member.id) {
     interaction.reply('自分より上のロールがある人の投票をとることはできません');
   } else if (count < 4 && !(interaction.guildId == dev.serverId)) {
     interaction.reply('投票を終了する人数を4人未満にすることはできません');
@@ -124,7 +124,7 @@ export async function banVote(client: Client, interaction: CommandInteraction | 
   if (roles == null || Array.isArray(roles)) return;
   if (!member.bannable) {
     interaction.reply(user.toString() + 'をBANする権限がありません')
-  } else if (guildRoles.comparePositions(member.roles.highest, roles.highest) > 0) {
+  } else if ((guildRoles.comparePositions(member.roles.highest, roles.highest) > 0 && interaction.guild?.ownerId != interaction.user.id) || interaction.guild?.ownerId == member.id) {
     interaction.reply('自分より上のロールがある人の投票をとることはできません');
   } else if (count < 5 && !(interaction.guildId == dev.serverId)) {
     interaction.reply('投票を終了する人数を5人未満にすることはできません');
