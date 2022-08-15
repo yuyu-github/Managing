@@ -1,7 +1,7 @@
 import { Client, Message } from "discord.js";
 
 export default {
-  'rolevote': async (client: Client, vote: { user: string, role: string }, msg: Message, counts: object, total: number) => {
+  'rolevote': async (client: Client, vote: { user: string, role: string, content: string }, msg: Message, counts: object, total: number) => {
     const user = await client.users.fetch(vote.user);
     if (user == null) return;
     const member = msg.guild?.members.resolve(user);
@@ -9,22 +9,22 @@ export default {
     const role = msg.guild?.roles.cache.get(vote.role);
     if (role == null) return;
 
-    if (counts['⭕'] > total * 0.6) {
+    if (counts['⭕'] > total * 0.6 && vote.content.includes('add')) {
       member.roles.add(role)
         .then(() => msg.channel.send('投票により' + user.toString() + 'に' + role.name + 'を付与しました'))
         .catch(e => {
           msg.channel.send(user.toString() + 'に' + role.name + 'を付与できませんでした');
           console.error(e);
         });
-    } else if (counts['❌'] > total * 0.6) {
+    } else if ((counts['⭕'] > total * 0.6 && vote.content.includes('remove')) || (counts['❌'] > total * 0.6 && vote.content == 'addremove')) {
       member.roles.remove(role)
-        .then(() => msg.channel.send('投票により' + user.toString() + 'から' + role.name + 'を削除しました'))
+        .then(() => msg.channel.send('投票により' + user.toString() + 'から' + role.name + 'を剥奪しました'))
         .catch(e => {
-          msg.channel.send(user.toString() + 'に' + role.name + 'を削除できませんでした')
+          msg.channel.send(user.toString() + 'に' + role.name + 'を剥奪できませんでした')
           console.error(e);
         });
     } else {
-      msg.channel.send('投票により' + user.toString() + 'に' + role.name + 'の付与や削除はされませんでした');
+      msg.channel.send(`投票により${user.toString()}に${role.name}の${{'add': '付与', 'remove': '剥奪', 'addremove': '付与/剥奪'}[vote.content]}はされませんでした`);
     }
   },
   'kickvote': async (client: Client, vote: { user: string }, msg: Message, counts: object, total: number) => {

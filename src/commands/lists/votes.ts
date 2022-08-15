@@ -46,7 +46,7 @@ export default [
   },
   {
     name: 'rolevote',
-    description: 'ロールを付与/削除するか投票をとる',
+    description: 'ロールを付与/剥奪するか投票をとる',
     defaultMemberPermission: Permissions.FLAGS.MANAGE_ROLES,
     options: [
       {
@@ -60,6 +60,16 @@ export default [
         name: 'role',
         description: '投票をとるロール',
         required: true,
+      },
+      {
+        type: 'STRING',
+        name: 'content',
+        description: '投票内容',
+        choices: [
+          { name: '付与', value: 'add' },
+          { name: '剥奪', value: 'remove' },
+          { name: '付与/剥奪', value: 'addremove' },
+        ]
       },
       {
         type: 'INTEGER',

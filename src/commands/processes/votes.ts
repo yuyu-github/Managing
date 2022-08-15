@@ -45,6 +45,8 @@ export async function roleVote(client: Client, interaction: CommandInteraction) 
   const user = interaction.options.getUser('user', true);
   const role = interaction.options.getRole('role', true);
   if (!('createdAt' in role)) return;
+  const content = interaction.options.getString('content') ?? 'add';
+  const contentText = {'add': '付与', 'remove': '剥奪', 'addremove': '付与/剥奪'}[content];
   const count = interaction.options.getInteger('count') ?? 5;
 
   const guildRoles = interaction.guild?.roles;
@@ -56,16 +58,23 @@ export async function roleVote(client: Client, interaction: CommandInteraction) 
   } else if (count < 3 && !(interaction.guildId == dev.serverId)) {
     interaction.reply('投票を終了する人数を3人未満にすることはできません');
   } else if (!role.editable) {
-    interaction.reply(role.name + 'を付与/削除する権限がありません')
+    interaction.reply(`${role.name}を${contentText}する権限がありません`)
   } else {
+    const description = {
+      'add': '付与するが6割を超えた場合ロールを付与します',
+      'remove': '剥奪するが6割を超えた場合ロールを剥奪します',
+      'addremove': '付与するが6割を超えた場合ロールを付与、付与しないが6割を超えた場合ロールを剥奪します',
+    }[content];
+
     createVote(
       'rolevote',
-      user.tag + 'に' + role.name + 'を付与/削除する',
-      '付与するが6割を超えた場合ロールを付与、付与しないが6割を超えた場合ロールを削除します\n投票終了人数 ' + count + '人',
-      [['⭕', '付与する'], ['❌', '付与しない']],
+      user.tag + 'に' + `${role.name}を${contentText}する`,
+      `${description}\n投票終了人数 ${count}人`,
+      [['⭕', `${content.includes('add') ? '付与' : '削除'}する`], ['❌', `${content.includes('add') ? '付与' : '削除'}しない`]],
       {
         user: user.id,
         role: role.id,
+        content: content,
         count: count,
       },
       interaction.user,
