@@ -6,6 +6,8 @@ import * as votes from './processes/votes';
 import * as memberData from './processes/member_data';
 
 export default async function (client: Client, interaction: Interaction) {
+  const fetch = (await new Function('return import("node-fetch")')()).default;
+
   if (interaction.isCommand()) {
     switch (interaction.commandName) {
       case 'vote': {
@@ -34,12 +36,10 @@ export default async function (client: Client, interaction: Interaction) {
         const target = interaction.options.getString('target');
         
         let url = `https://script.google.com/macros/s/AKfycbwSdQYdmkBKmh1FoJ86xuovTcz-Bfx9eAj3fyKskLqWVGp_ZLPK-ycKmnTTsoMxQLjY/exec?text=${text}${source == null ? '' : '&source=' + source}${target == null ? '' : '&target=' + target}`
-        new Function('return import("node-fetch")')().then(({default: fetch}) => {
-          fetch(url).then(res => res.text()).then(body => interaction.reply(body)).catch(e => {
-            interaction.reply('翻訳に失敗しました');
-            console.error(e);
-          });
-        }).catch(e => console.error(e));
+        fetch(url).then(res => res.text()).then(body => interaction.reply(body)).catch(e => {
+          interaction.reply('翻訳に失敗しました');
+          console.error(e);
+        });
       }
       break;
       case 'delete-message': {
@@ -60,6 +60,33 @@ export default async function (client: Client, interaction: Interaction) {
       break;
       case 'member-data': {
         memberData.memberData(client, interaction);
+      }
+      break;
+      case 'forward': {
+        switch (interaction.options.getSubcommand()) {
+          case 'add': {
+            const channel = interaction.options.getChannel('channel', true);
+            const webhook = interaction.options.getString('webhook', true);
+
+            setData('guild', interaction.guildId, ['forward', channel.id], webhook, (a, b) => ((a ?? []) as (Object | null)[]).includes(b) ? a : [...((a ?? []) as string[]), b])
+            interaction.reply('メッセージの転送を設定しました');
+          }
+          break;
+          case 'remove': {
+            const channel = interaction.options.getChannel('channel', true);
+            const webhook = interaction.options.getString('webhook');
+
+            if (webhook == null) deleteData('guild', interaction.guildId, ['forward', channel.id]);
+            else setData('guild', interaction.guildId, ['forward', channel.id], null, a => {
+              let array: string[] | null = a as string[] | null;
+              if (array != null && array.indexOf(webhook) >= 0) array.splice(array.indexOf(webhook), 1);
+              if (array?.length == 0) array = null;
+              return array;
+            });
+            interaction.reply('メッセージの転送を解除しました');
+          }
+          break;
+        }
       }
     }
   } else if (interaction.isContextMenu()) {

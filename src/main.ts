@@ -14,8 +14,9 @@ import commands from './commands/list';
 import commandProcess from './commands/process';
 import loadVotes from './vote/load_votes';
 import * as voteEvents from './vote/events';
-import quote from './quote';
 import { action, init as actionInit, onExit as actionOnExit } from './action';
+import quote from './quote';
+import forward from './forward';
 
 process.chdir(__dirname + '\\..\\');
 
@@ -45,6 +46,7 @@ client.once('ready', async () => {
 client.on('messageCreate', async message => {
   try {
     action(message.guildId, message.author.id, 'sendMessage');
+    await forward(client, message);
     await quote(client, message);
   } catch (e) {
     console.error(e);

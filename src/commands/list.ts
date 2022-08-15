@@ -52,4 +52,47 @@ export default [
     ]
   },
   ...memberData,
+  {
+    name: 'forward',
+    description: '-',
+    options: [
+      {
+        type: 'SUB_COMMAND',
+        name: 'add',
+        description: 'メッセージの転送を設定する',
+        options: [
+          {
+            type: 'CHANNEL',
+            name: 'channel',
+            description: 'メッセージの転送元チャンネル',
+            required: true,
+          },
+          {
+            type: 'STRING',
+            name: 'webhook',
+            description: 'ウェブフックURL',
+            required: true,
+          },
+        ]
+      },
+      {
+        type: 'SUB_COMMAND',
+        name: 'remove',
+        description: 'メッセージの転送を解除する',
+        options: [
+          {
+            type: 'CHANNEL',
+            name: 'channel',
+            description: 'メッセージの転送元チャンネル',
+            required: true,
+          },
+          {
+            type: 'STRING',
+            name: 'webhook',
+            description: 'ウェブフックURL',
+          },
+        ]
+      }
+    ]
+  }
 ] as any[];
