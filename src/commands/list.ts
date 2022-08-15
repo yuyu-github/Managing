@@ -55,6 +55,7 @@ export default [
   {
     name: 'forward',
     description: '-',
+    defaultMemberPermissions: Permissions.FLAGS.MANAGE_MESSAGES,
     options: [
       {
         type: 'SUB_COMMAND',
