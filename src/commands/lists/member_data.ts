@@ -1,7 +1,7 @@
 export default [
   {
-    name: 'member-data',
-    description: 'メンバーデータを表示します',
+    name: 'member-stats',
+    description: 'メンバーの統計を表示します',
     options: [
       {
         type: 'USER',
