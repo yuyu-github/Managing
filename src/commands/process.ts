@@ -3,7 +3,7 @@ import { Client, Interaction } from 'discord.js';
 import { setData, getData, deleteData } from 'discordbot-data';
 
 import * as votes from './processes/votes';
-import * as memberData from './processes/member_data';
+import * as stats from './processes/stats';
 
 export default async function (client: Client, interaction: Interaction) {
   const fetch = (await new Function('return import("node-fetch")')()).default;
@@ -58,8 +58,12 @@ export default async function (client: Client, interaction: Interaction) {
         }
       }
       break;
-      case 'member-data': {
-        memberData.memberData(client, interaction);
+      case 'stats': {
+        stats.stats(client, interaction);
+      }
+      break;
+      case 'member-stats': {
+        stats.memberStats(client, interaction);
       }
       break;
       case 'forward': {
