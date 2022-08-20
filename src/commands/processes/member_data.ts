@@ -17,13 +17,18 @@ export async function memberData(client: Client, interaction: CommandInteraction
 
   const displayData = {
     'メッセージを送った回数': getAction('sendMessage', '回'),
-    'コマンドを使った回数': getAction('useCommand', '回'),
-    'コンテキストメニューを使った回数': getAction('useContextMenu', '回'),
+    '画像を送った回数': getAction('sendImage', '回'),
+    'ファイルを送った回数': getAction('sendFile', '回'),
+    'メンションした回数': getAction('mention', '回'),
+    'メンションされた回数': getAction('mentioned', '回'),
     'リアクションをした回数': getAction('addReaction', '回'),
+    'リアクションされた回数': getAction('getReaction', '回'),
     'ボイスチャンネルに入った回数': getAction('joinVoiceChannel', '回'),
     'ステージチャンネルに入った回数': getAction('joinStageChannel', '回'),
     'ボイスチャンネルに入っていた時間': getTime('inVoiceChannel'),
     'ステージチャンネルに入っていた時間': getTime('inStageChannel'),
+    'コマンドを使った回数': getAction('useCommand', '回'),
+    'コンテキストメニューを使った回数': getAction('useContextMenu', '回'),
   }
   interaction.reply({
     embeds: [

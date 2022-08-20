@@ -1,8 +1,9 @@
-import { Client, Intents, Interaction, Message } from 'discord.js';
+import { Client, Intents, Interaction, Message, MessageEmbed } from 'discord.js';
 import botToken from './token';
 const client = new Client({
   intents: [
     Intents.FLAGS.GUILDS,
+    Intents.FLAGS.GUILD_MEMBERS,
     Intents.FLAGS.GUILD_MESSAGES,
     Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
     Intents.FLAGS.GUILD_VOICE_STATES,
@@ -46,6 +47,19 @@ client.once('ready', async () => {
 client.on('messageCreate', async message => {
   try {
     action(message.guildId, message.author.id, 'sendMessage');
+
+    let mentionedMembers: string[] = [];
+    message.mentions.members?.each(member => { if (!mentionedMembers.includes(member.id)) mentionedMembers.push(member.id) });
+    message.mentions.roles.each(role => role.members.each(member => { if (!mentionedMembers.includes(member.id)) mentionedMembers.push(member.id) }));
+    if (message.mentions.everyone) (await message.guild?.members.fetch())?.each(member => {if (!mentionedMembers.includes(member.id)) mentionedMembers.push(member.id) });
+    mentionedMembers.forEach(id => action(message.guildId, id, 'mentioned'));
+    if (mentionedMembers.length > 0) action(message.guildId, message.author.id, 'mention');
+
+    message.attachments.each(i => {
+      action(message.guildId, message.author.id, 'sendFile');
+      if (i.contentType?.startsWith('image/')) action(message.guildId, message.author.id, 'sendImage');
+    })
+
     await forward(client, message);
     await quote(client, message);
   } catch (e) {
@@ -67,6 +81,8 @@ client.on('interactionCreate', async (interaction) => {
 client.on('messageReactionAdd', async (reaction, user) => {
   try {
     action(reaction.message.guildId, user.id, 'addReaction');
+    action(reaction.message.guildId, reaction.message.author?.id ?? null, 'getReaction');
+
     if ('_equals' in user) await voteEvents.onReactionAdd(client, reaction, user);
   } catch (e) {
     console.error(e);

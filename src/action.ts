@@ -3,13 +3,18 @@ import { Client, User } from "discord.js";
 import { setData, getData, deleteData } from 'discordbot-data';
 type actionType = 
 | 'sendMessage'
-| 'useCommand'
-| 'useContextMenu'
+| 'sendImage'
+| 'sendFile'
 | 'addReaction'
+| 'getReaction'
+| 'mention'
+| 'mentioned'
 | 'joinVoiceChannel'
 | 'joinStageChannel'
 | 'leftVoiceChannel'
 | 'leftStageChannel'
+| 'useCommand'
+| 'useContextMenu'
 
 let startTime = {};
 function startMeasuringTime(name, guildId, userId) {
@@ -40,7 +45,9 @@ export function onExit() {
   }
 }
 
-export function action(guildId: string | null, userId: string, type: actionType) {
+export function action(guildId: string | null, userId: string | null, type: actionType) {
+  if (userId == null) return;
+
   setData('guild', guildId, ['memberData', 'action', type, userId], 1, '+');
   
   if (type == 'joinVoiceChannel') startMeasuringTime('inVoiceChannel', guildId, userId);
