@@ -62,3 +62,19 @@ export async function memberStats(client: Client, interaction: CommandInteractio
 
   interaction.reply(createStatsEmbed(getAction, getTime, user))
 }
+
+export async function changes(client: Client, interaction: CommandInteraction) {
+  switch (interaction.options.getSubcommand()) {
+    case 'record': {
+      const permissions = interaction.member?.permissions;
+      if (typeof permissions != 'string' && !permissions?.has('MANAGE_GUILD')) {
+        interaction.reply('設定を変更する権限がありません');
+      }
+
+      const value = interaction.options.getBoolean('value', true)
+      setData('guild', interaction.guildId, ['changes', 'record'], value);
+      interaction.reply(`推移を記録${value ? 'する' : 'しない'}ように設定しました`);
+    }
+    break;
+  }
+}

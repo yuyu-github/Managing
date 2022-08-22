@@ -14,4 +14,23 @@ export default [
       }
     ]
   },
+  {
+    name: 'changes',
+    description: '-',
+    options: [
+      {
+        type: 'SUB_COMMAND',
+        name: 'record',
+        description: '推移を記録するか設定する',
+        options: [
+          {
+            type: 'BOOLEAN',
+            name: 'value',
+            description: '推移を記録する',
+            required: true,
+          }
+        ]
+      }
+    ]
+  }
 ]

@@ -97,6 +97,9 @@ export default async function (client: Client, interaction: Interaction) {
         }
       }
       break;
+      case 'changes': {
+        stats.changes(client, interaction);
+      }
     }
   } else if (interaction.isContextMenu()) {
     switch (interaction.commandName) {
