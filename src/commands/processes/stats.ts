@@ -81,11 +81,17 @@ export async function changes(client: Client, interaction: CommandInteraction) {
       const stat = interaction.options.getString('stat', true);
       const startTime = new Date(interaction.options.getString('start', true)).getTime();
       const endTime = new Date(interaction.options.getString('end') ?? new Date()).getTime();
-      if (isNaN(startTime) || isNaN(endTime)) interaction.reply('有効な日付ではありません')
+      if (isNaN(startTime) || isNaN(endTime)) {
+        interaction.reply('有効な日付ではありません')
+        return;
+      }
       const start = Math.floor(((startTime / 1000 / 60 / 60) + 9) / 24);
       const end = Math.floor(((endTime / 1000 / 60 / 60) + 9) / 24);
 
-      if (end - start < 2 || end - start > 1000) interaction.reply('範囲は2日以上1000日以下である必要があります')
+      if (end - start < 2 || end - start > 1000) {
+        interaction.reply('範囲は2日以上1000日以下である必要があります')
+        return;
+      }
 
       let data: [string, number][] = [];
       for (let i = start; i <= end; i++) {
