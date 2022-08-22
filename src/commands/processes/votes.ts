@@ -47,16 +47,22 @@ export async function roleVote(client: Client, interaction: CommandInteraction) 
   if (!('createdAt' in role)) return;
   const content = interaction.options.getString('content') ?? 'add';
   const contentText = {'add': '付与', 'remove': '剥奪', 'addremove': '付与/剥奪'}[content];
-  const count = interaction.options.getInteger('count') ?? 5;
 
   const guildRoles = interaction.guild?.roles;
   if (guildRoles == null) return;
   const roles = interaction.member?.roles;
   if (roles == undefined || !('highest' in roles)) return;
+  const sameRole = getData('guild', interaction.guildId, ['vote-setting', 'same-role', 'role-vote']) ?? false;
+
+  const minCount = getData('guild', interaction.guildId, ['vote-setting', 'min-count', 'role-vote']) ?? 3;
+  const count = interaction.options.getInteger('count') ?? minCount;
+
   if (guildRoles.comparePositions(role, roles.highest) > 0 && interaction.guild?.ownerId != interaction.user.id) {
     interaction.reply('自分より上のロールの投票をとることはできません');
-  } else if (count < 3 && !(interaction.guildId == dev.serverId)) {
-    interaction.reply('投票を終了する人数を3人未満にすることはできません');
+  } else if (!sameRole && guildRoles.comparePositions(role, roles.highest) == 0 && interaction.guild?.ownerId != interaction.user.id) {
+    interaction.reply('自分と同じロールの投票をとることはできません');
+  } else if (count < minCount) {
+    interaction.reply(`投票を終了する人数を${minCount}人未満にすることはできません`);
   } else if (!role.editable) {
     interaction.reply(`${role.name}を${contentText}する権限がありません`)
   } else {
@@ -88,20 +94,26 @@ export async function roleVote(client: Client, interaction: CommandInteraction) 
 
 export async function kickVote(client: Client, interaction: CommandInteraction | ContextMenuInteraction) {
   const user = interaction.options.getUser('user', true);
-  const count = interaction.isCommand() ? interaction.options.getInteger('count') ?? 5 : 5;
   const member = interaction.guild?.members.resolve(user);
   if (member == null) return;
+
   const guildRoles = interaction.guild?.roles;
   if (guildRoles == null) return;
-
   const roles = interaction.member?.roles;
   if (roles == null || Array.isArray(roles)) return;
+  const sameRole = getData('guild', interaction.guildId, ['vote-setting', 'same-role', 'kick-vote']) ?? false;
+
+  const minCount = getData('guild', interaction.guildId, ['vote-setting', 'min-count', 'kick-vote']) ?? 4;
+  const count = interaction.isCommand() ? interaction.options.getInteger('count') ?? minCount : minCount;
+
   if (!member.kickable) {
     interaction.reply(user.toString() + 'をキックする権限がありません')
   } else if ((guildRoles.comparePositions(member.roles.highest, roles.highest) > 0 && interaction.guild?.ownerId != interaction.user.id) || interaction.guild?.ownerId == member.id) {
     interaction.reply('自分より上のロールがある人の投票をとることはできません');
-  } else if (count < 4 && !(interaction.guildId == dev.serverId)) {
-    interaction.reply('投票を終了する人数を4人未満にすることはできません');
+  } else if (!sameRole && guildRoles.comparePositions(member.roles.highest, roles.highest) == 0 && interaction.guild?.ownerId != interaction.user.id) {
+    interaction.reply('自分と同じロールの投票をとることはできません');
+  } else if (count < minCount) {
+    interaction.reply(`投票を終了する人数を${minCount}人未満にすることはできません`);
   } else {
     createVote(
       'kickvote',
@@ -123,20 +135,26 @@ export async function kickVote(client: Client, interaction: CommandInteraction |
 
 export async function banVote(client: Client, interaction: CommandInteraction | ContextMenuInteraction) {
   const user = interaction.options.getUser('user', true);
-  const count = interaction.isCommand() ? interaction.options.getInteger('count') ?? 5 : 5;
   const member = interaction.guild?.members.resolve(user);
   if (member == null) return;
+
   const guildRoles = interaction.guild?.roles;
   if (guildRoles == null) return;
-
   const roles = interaction.member?.roles;
   if (roles == null || Array.isArray(roles)) return;
+  const sameRole = getData('guild', interaction.guildId, ['vote-setting', 'same-role', 'ban-vote']) ?? false;
+
+  const minCount = getData('guild', interaction.guildId, ['vote-setting', 'min-count', 'ban-vote']) ?? 5;
+  const count = interaction.isCommand() ? interaction.options.getInteger('count') ?? minCount : minCount;
+
   if (!member.bannable) {
     interaction.reply(user.toString() + 'をBANする権限がありません')
   } else if ((guildRoles.comparePositions(member.roles.highest, roles.highest) > 0 && interaction.guild?.ownerId != interaction.user.id) || interaction.guild?.ownerId == member.id) {
     interaction.reply('自分より上のロールがある人の投票をとることはできません');
-  } else if (count < 5 && !(interaction.guildId == dev.serverId)) {
-    interaction.reply('投票を終了する人数を5人未満にすることはできません');
+  } else if (!sameRole && guildRoles.comparePositions(member.roles.highest, roles.highest) == 0 && interaction.guild?.ownerId != interaction.user.id) {
+    interaction.reply('自分と同じロールの投票をとることはできません');
+  } else if (count < minCount) {
+    interaction.reply(`投票を終了する人数を${minCount}人未満にすることはできません`);
   } else {
     createVote(
       'banvote',
@@ -158,7 +176,6 @@ export async function banVote(client: Client, interaction: CommandInteraction | 
 
 export async function unbanVote(client: Client, interaction: CommandInteraction | ContextMenuInteraction) {
   const userTag = interaction.isCommand() ? interaction.options.getString('user', true) : interaction.options.getUser('user', true).id;
-  const count = interaction.isCommand() ? interaction.options.getInteger('count') ?? 5 : 5;
   interaction.guild?.bans.fetch().then(banUsers => {
     const user = banUsers.find((v) => v.user.tag == userTag)?.user;
     if (user == null) {
@@ -166,8 +183,11 @@ export async function unbanVote(client: Client, interaction: CommandInteraction 
       return;
     }
 
-    if (count < 5 && !(interaction.guildId == dev.serverId)) {
-      interaction.reply('投票を終了する人数を5人未満にすることはできません');
+    const minCount = getData('guild', interaction.guildId, ['vote-setting', 'min-count', 'unban-vote']) ?? 5;
+    const count = interaction.isCommand() ? interaction.options.getInteger('count') ?? minCount : minCount;
+
+    if (count < minCount) {
+      interaction.reply(`投票を終了する人数を${minCount}人未満にすることはできません`);
     } else {
       createVote(
         'unbanvote',
@@ -186,6 +206,20 @@ export async function unbanVote(client: Client, interaction: CommandInteraction 
       )
     }
   }).catch(e => console.error(e));
+}
+
+export function voteSetting(client: Client, interaction: CommandInteraction) {
+  switch (interaction.options.getSubcommand()) {
+    case 'min-count': {
+      setData('guild', interaction.guildId, ['vote-setting', 'min-count', interaction.options.getString('type', true)], interaction.options.getInteger('value', true));
+    }
+    break;
+    case 'same-role': {
+      setData('guild', interaction.guildId, ['vote-setting', 'same-role', interaction.options.getString('type', true)], interaction.options.getBoolean('value', true));
+    }
+    break;
+  }
+  interaction.reply('投票の設定を更新しました');
 }
 
 export async function voteCount(client: Client, interaction: ContextMenuInteraction) {

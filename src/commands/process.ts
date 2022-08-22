@@ -30,6 +30,10 @@ export default async function (client: Client, interaction: Interaction) {
         await votes.unbanVote(client, interaction);
       }
       break;
+      case 'vote-setting': {
+        votes.voteSetting(client, interaction);
+      }
+      break;
       case 'translate': {
         const text = interaction.options.getString('text') ?? '';
         const source = interaction.options.getString('source');
@@ -92,6 +96,7 @@ export default async function (client: Client, interaction: Interaction) {
           break;
         }
       }
+      break;
     }
   } else if (interaction.isContextMenu()) {
     switch (interaction.commandName) {

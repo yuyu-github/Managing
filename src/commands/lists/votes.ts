@@ -1,6 +1,7 @@
 import { Permissions } from 'discord.js';
 
 import voteChoicesOptions from './vote/choices_options';
+import voteType from './vote-setting/vote_type';
 
 export default [
   {
@@ -116,6 +117,53 @@ export default [
         type: 'INTEGER',
         name: 'count',
         description: '投票終了する人数',
+      },
+    ]
+  },
+  {
+    name: 'vote-setting',
+    description: '-',
+    defaultMemberPermissions: Permissions.FLAGS.MANAGE_GUILD,
+    options: [
+      {
+        type: 'SUB_COMMAND',
+        name: 'min-count',
+        description: '最低投票終了人数を設定する',
+        options: [
+          {
+            type: 'STRING',
+            name: 'type',
+            description: '設定する投票の種類',
+            required: true,
+            choices: voteType,
+          },
+          {
+            type: 'INTEGER',
+            name: 'value',
+            description: '設定する人数',
+            required: true,
+          }
+        ]
+      },
+      {
+        type: 'SUB_COMMAND',
+        name: 'same-role',
+        description: '同じロールの投票を可能にするか設定する',
+        options: [
+          {
+            type: 'STRING',
+            name: 'type',
+            description: '設定する投票の種類',
+            required: true,
+            choices: voteType.filter(i => i.value != 'unban-vote'),
+          },
+          {
+            type: 'BOOLEAN',
+            name: 'value',
+            description: '可能にする',
+            required: true,
+          }
+        ]
       },
     ]
   },
