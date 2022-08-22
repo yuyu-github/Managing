@@ -43,6 +43,8 @@ export default [
             required: true,
             choices: [
               { name: '折れ線グラフ', value: 'line-graph' },
+              { name: '棒グラフ', value: 'bar-graph' },
+              { name: 'カレンダー', value: 'calendar' },
             ],
           }, 
           {

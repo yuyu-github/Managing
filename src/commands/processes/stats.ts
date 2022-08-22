@@ -88,8 +88,8 @@ export async function changes(client: Client, interaction: CommandInteraction) {
       const start = Math.floor(((startTime / 1000 / 60 / 60) + 9) / 24);
       const end = Math.floor(((endTime / 1000 / 60 / 60) + 9) / 24);
 
-      if (end - start < 2 || end - start > 1000) {
-        interaction.reply('範囲は2日以上1000日以下である必要があります')
+      if (end - start < 2 || end - start > 2000) {
+        interaction.reply('範囲は2日以上2000日以下である必要があります')
         return;
       }
 
@@ -119,6 +119,63 @@ export async function changes(client: Client, interaction: CommandInteraction) {
           `, {
             width: '420px',
             height: '260px'
+          })
+
+          interaction.followUp({
+            files: [
+              new MessageAttachment(image)
+            ]
+          })
+        }
+        break;
+        case 'bar-graph': {
+          interaction.deferReply()
+
+          let image: Buffer = await GoogleChartsNode.render(`
+            let table = new google.visualization.DataTable();
+            table.addColumn('string', '');
+            table.addColumn('number', '${interaction.guild?.name ?? ''}');
+            table.addRows([${data.map(i => `['${i[0]}',${i[1]}]`).join(',')}]);
+            let chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+            chart.draw(table, {
+              legend: 'bottom',
+              chartArea: {
+                width: '85%',
+                height: '80%',
+              },
+            });
+          `, {
+            width: '420px',
+            height: '260px'
+          })
+
+          interaction.followUp({
+            files: [
+              new MessageAttachment(image)
+            ]
+          })
+        }
+        break;
+        case 'calendar': {
+          interaction.deferReply()
+
+          let image: Buffer = await GoogleChartsNode.render(`
+            let table = new google.visualization.DataTable();
+            table.addColumn('date', '');
+            table.addColumn('number', '${interaction.guild?.name ?? ''}');
+            table.addRows([${data.map(i => `[new Date('${i[0]}'),${i[1]}]`).join(',')}]);
+            let chart = new google.visualization.Calendar(document.getElementById('chart_div'));
+            chart.draw(table, {
+              legend: 'bottom',
+              chartArea: {
+                width: '85%',
+                height: '80%',
+              },
+            });
+          `, {
+            width: '940px',
+            height: 35 + 145 * (new Date(data.slice(-1)[0][0]).getFullYear() - new Date(data[0][0]).getFullYear() + 1) + 'px',
+            packages: ['calendar'],
           })
 
           interaction.followUp({
