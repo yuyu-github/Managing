@@ -30,6 +30,44 @@ export default [
             required: true,
           }
         ]
+      },
+      {
+        type: 'SUB_COMMAND',
+        name: 'output',
+        description: '推移を出力する',
+        options: [
+          {
+            type: 'STRING',
+            name: 'type',
+            description: '出力タイプ',
+            required: true,
+            choices: [
+              { name: '折れ線グラフ', value: 'line-graph' },
+            ],
+          }, 
+          {
+            type: 'STRING',
+            name: 'stat',
+            description: '出力する統計',
+            required: true,
+            choices: [
+              { name: 'メッセージを送った回数', value: 'sendMessage' },
+              { name: 'リアクションをした回数', value: 'addReaction' },
+              { name: 'ボイスチャンネルに入った回数', value: 'joinVoiceChannel' },
+            ]
+          }, 
+          {
+            type: 'STRING',
+            name: 'start',
+            description: '開始日',
+            required: true,
+          },
+          {
+            type: 'STRING',
+            name: 'end',
+            description: '終了日',
+          },
+        ]
       }
     ]
   }

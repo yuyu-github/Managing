@@ -61,7 +61,7 @@ export function action(guildId: string | null, userId: string | null, type: acti
   if (type == 'leftStageChannel') endMeasuringTime('inStageChannel', guildId, userId);
 
   if (getData('guild', guildId, ['changes', 'record'])) {
-    const recordChangeTypes: actionType[] = ['addReaction', 'joinVoiceChannel', 'sendMessage'];
+    const recordChangeTypes: actionType[] = ['sendMessage', 'addReaction', 'joinVoiceChannel'];
     if (recordChangeTypes.includes(type)) setData('guild', guildId, ['changes', 'data', type, Math.floor(((new Date().getTime() / 1000 / 60 / 60) + 9) / 24).toString()], 1, '+');
   }
 }
