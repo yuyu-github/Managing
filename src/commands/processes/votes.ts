@@ -208,7 +208,7 @@ export async function unbanVote(client: Client, interaction: CommandInteraction 
   }).catch(e => console.error(e));
 }
 
-export function voteSetting(client: Client, interaction: CommandInteraction) {
+export async function voteSetting(client: Client, interaction: CommandInteraction) {
   switch (interaction.options.getSubcommand()) {
     case 'min-count': {
       setData('guild', interaction.guildId, ['vote-setting', 'min-count', interaction.options.getString('type', true)], interaction.options.getInteger('value', true));
