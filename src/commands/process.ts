@@ -38,10 +38,12 @@ export default async function (client: Client, interaction: Interaction) {
         const text = interaction.options.getString('text') ?? '';
         const source = interaction.options.getString('source');
         const target = interaction.options.getString('target');
+
+        interaction.deferReply();
         
         let url = `https://script.google.com/macros/s/AKfycbwSdQYdmkBKmh1FoJ86xuovTcz-Bfx9eAj3fyKskLqWVGp_ZLPK-ycKmnTTsoMxQLjY/exec?text=${text}${source == null ? '' : '&source=' + source}${target == null ? '' : '&target=' + target}`
-        fetch(url).then(res => res.text()).then(body => interaction.reply(body)).catch(e => {
-          interaction.reply('翻訳に失敗しました');
+        fetch(url).then(res => res.text()).then(body => interaction.followUp(body)).catch(e => {
+          interaction.followUp('翻訳に失敗しました');
           console.error(e);
         });
       }
