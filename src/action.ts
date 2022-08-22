@@ -59,6 +59,11 @@ export function action(guildId: string | null, userId: string | null, type: acti
 
   if (type == 'leftVoiceChannel') endMeasuringTime('inVoiceChannel', guildId, userId);
   if (type == 'leftStageChannel') endMeasuringTime('inStageChannel', guildId, userId);
+
+  if (getData('guild', guildId, ['changes', 'record'])) {
+    const recordChangeTypes: actionType[] = ['addReaction', 'joinVoiceChannel', 'sendMessage'];
+    if (recordChangeTypes.includes(type)) setData('guild', guildId, ['changes', 'data', type, Math.floor(((new Date().getTime() / 1000 / 60 / 60) + 9) / 24).toString()], 1, '+');
+  }
 }
 
 export function updateData(guildId: string | null, userId: string) {
