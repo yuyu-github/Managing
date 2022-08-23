@@ -81,8 +81,12 @@ export async function changes(client: Client, interaction: CommandInteraction) {
     break;
     case 'output': {
       const stat = interaction.options.getString('stat', true);
-      const startTime = new Date(interaction.options.getString('start', true)).getTime();
-      const endTime = new Date(interaction.options.getString('end') ?? new Date()).getTime();
+      let startString = interaction.options.getString('start', true);
+      let endString = interaction.options.getString('end');
+      if (startString.match(/^[0-9]{1,2}\/[0-9]{1,2}$/)) startString = new Date().getFullYear() + '/' + startString;
+      if (endString?.match(/^[0-9]{1,2}\/[0-9]{1,2}$/)) endString = new Date().getFullYear() + '/' + endString;
+      const startTime = new Date(startString).getTime();
+      const endTime = new Date(endString ?? new Date()).getTime();
       if (isNaN(startTime) || isNaN(endTime)) {
         interaction.reply('有効な日付ではありません')
         return;
