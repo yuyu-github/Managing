@@ -2,8 +2,10 @@ import { Client, CommandInteraction, MessageAttachment, User } from 'discord.js'
 
 import { setData, getData, deleteData } from 'discordbot-data';
 import * as GoogleChartsNode from 'google-charts-node';
+import * as fs from 'fs';
 
 import { updateData } from '../../action';
+import { createTempFile } from '../../temp_file'
 
 function createStatsEmbed(getAction: (name: string, unit: string) => string, getTime: (name: string) => string, user: User | null = null) {
   const displayData = {
@@ -123,7 +125,7 @@ export async function changes(client: Client, interaction: CommandInteraction) {
 
           interaction.followUp({
             files: [
-              new MessageAttachment(image)
+              new MessageAttachment(image, 'output.jpg')
             ]
           })
         }
@@ -151,7 +153,7 @@ export async function changes(client: Client, interaction: CommandInteraction) {
 
           interaction.followUp({
             files: [
-              new MessageAttachment(image)
+              new MessageAttachment(image, 'output.jpg')
             ]
           })
         }
@@ -180,9 +182,34 @@ export async function changes(client: Client, interaction: CommandInteraction) {
 
           interaction.followUp({
             files: [
-              new MessageAttachment(image)
+              new MessageAttachment(image, 'output.jpg')
             ]
           })
+        }
+        break;
+        case 'csv': {
+          let filename = createTempFile('csv', data.map(i => i.join(',')).join('\n'));
+          await interaction.reply({
+            files: [
+              new MessageAttachment(filename, 'output.csv')
+            ]
+          });
+          fs.unlink(filename, () => {});
+        }
+        break;
+        case 'json': {
+          let obj = {};
+          for (let i of data) {
+            obj[i[0]] = i[1];
+          }
+
+          let filename = createTempFile('json', JSON.stringify(obj));
+          await interaction.reply({
+            files: [
+              new MessageAttachment(filename, 'output.json')
+            ]
+          });
+          fs.unlink(filename, () => { });
         }
         break;
       }
