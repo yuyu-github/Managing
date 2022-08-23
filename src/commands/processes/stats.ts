@@ -90,7 +90,7 @@ export async function changes(client: Client, interaction: CommandInteraction) {
       const start = Math.floor(((startTime / 1000 / 60 / 60) + 9) / 24);
       const end = Math.floor(((endTime / 1000 / 60 / 60) + 9) / 24);
 
-      if (end - start < 2 || end - start > 2000) {
+      if (end - start < 1 || end - start >= 2000) {
         interaction.reply('範囲は2日以上2000日以下である必要があります')
         return;
       }
