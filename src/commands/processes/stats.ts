@@ -80,6 +80,12 @@ export async function changes(client: Client, interaction: CommandInteraction) {
     }
     break;
     case 'output': {
+      const statString = {
+        'sendMessage': 'メッセージを送った回数',
+        'addReaction': 'リアクションをした回数',
+        'joinVoiceChannel': 'ボイスチャンネルに入った回数',
+      }
+
       const stat = interaction.options.getString('stat', true);
       let startString = interaction.options.getString('start', true);
       let endString = interaction.options.getString('end');
@@ -116,6 +122,7 @@ export async function changes(client: Client, interaction: CommandInteraction) {
             table.addRows([${data.map(i => `['${i[0]}',${i[1]}]`).join(',')}]);
             let chart = new google.visualization.LineChart(document.getElementById('chart_div'));
             chart.draw(table, {
+              title: '${statString[stat] ?? stat}',
               legend: 'bottom',
               chartArea: {
                 width: '85%',
@@ -144,6 +151,7 @@ export async function changes(client: Client, interaction: CommandInteraction) {
             table.addRows([${data.map(i => `['${i[0]}',${i[1]}]`).join(',')}]);
             let chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
             chart.draw(table, {
+              title: '${statString[stat] ?? stat}',
               legend: 'bottom',
               chartArea: {
                 width: '85%',
@@ -172,6 +180,7 @@ export async function changes(client: Client, interaction: CommandInteraction) {
             table.addRows([${data.map(i => `[new Date('${i[0]}'),${i[1]}]`).join(',')}]);
             let chart = new google.visualization.Calendar(document.getElementById('chart_div'));
             chart.draw(table, {
+              title: '${statString[stat] ?? stat}',
               legend: 'bottom',
               chartArea: {
                 width: '85%',
