@@ -29,6 +29,21 @@ function endMeasuringTime(name, guildId, userId) {
   setData('guild', guildId, ['memberData', 'time', name, userId], time, '+');
   setData('guild', guildId, ['stats', 'time', name], time, '+');
 
+  if (getData('guild', guildId, ['changes', 'record'])) {
+    const recordChangeNames = ['inVoiceChannel'];
+    if (recordChangeNames.includes(name)) {
+      const today = Math.floor(((new Date().getTime() / 1000 / 60 / 60) + 9) / 24);
+      const todayTime = Math.min(time, (new Date().getTime() / 1000 / 60 + (9 * 60)) % (60 * 24));
+      setData('guild', guildId, ['changes', 'data', name, today.toString()], Math.floor(todayTime), '+');
+      if (time > todayTime) {
+        time = time - todayTime;
+        for (let d = 1; time > 0; d++, time -= 60 * 24) {
+          setData('guild', guildId, ['changes', 'data', name, (today - d).toString()], Math.floor(Math.min(time, 60 * 24)), '+');
+        }
+      }
+    }
+  }
+
   startTime[name][guildId][userId] = null;
 }
 
