@@ -84,6 +84,7 @@ export async function changes(client: Client, interaction: CommandInteraction) {
         'sendMessage': 'メッセージを送った回数',
         'addReaction': 'リアクションをした回数',
         'joinVoiceChannel': 'ボイスチャンネルに入った回数',
+        'inVoiceChannel': 'ボイスチャンネルに入っていた時間'
       }
 
       const stat = interaction.options.getString('stat', true);
