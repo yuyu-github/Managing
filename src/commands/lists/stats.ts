@@ -57,8 +57,8 @@ export default [
             choices: [
               { name: 'メッセージを送った回数', value: 'sendMessage' },
               { name: 'リアクションをした回数', value: 'addReaction' },
-              { name: 'ボイスチャンネルに入った回数', value: 'joinVoiceChannel' },
-              { name: 'ボイスチャンネルに入っていた時間', value: 'inVoiceChannel' },
+              { name: 'VCに入った回数', value: 'joinVoiceChannel' },
+              { name: 'VCに入っていた時間', value: 'inVoiceChannel' },
             ]
           }, 
           {

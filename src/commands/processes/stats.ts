@@ -16,9 +16,9 @@ function createStatsEmbed(getAction: (name: string, unit: string) => string, get
     ...(user != null ? {'メンションされた回数': getAction('mentioned', '回')} : {}),
     'リアクションをした回数': getAction('addReaction', '回'),
     ...(user != null ? {'リアクションされた回数': getAction('getReaction', '回')} : {}),
-    'ボイスチャンネルに入った回数': getAction('joinVoiceChannel', '回'),
+    'VCに入った回数': getAction('joinVoiceChannel', '回'),
     'ステージチャンネルに入った回数': getAction('joinStageChannel', '回'),
-    'ボイスチャンネルに入っていた時間': getTime('inVoiceChannel'),
+    'VCに入っていた時間': getTime('inVoiceChannel'),
     'ステージチャンネルに入っていた時間': getTime('inStageChannel'),
     'コマンドを使った回数': getAction('useCommand', '回'),
     'コンテキストメニューを使った回数': getAction('useContextMenu', '回'),
@@ -83,8 +83,8 @@ export async function changes(client: Client, interaction: CommandInteraction) {
       const statString = {
         'sendMessage': 'メッセージを送った回数',
         'addReaction': 'リアクションをした回数',
-        'joinVoiceChannel': 'ボイスチャンネルに入った回数',
-        'inVoiceChannel': 'ボイスチャンネルに入っていた時間'
+        'joinVoiceChannel': 'VCに入った回数',
+        'inVoiceChannel': 'VCに入っていた時間'
       }
 
       const stat = interaction.options.getString('stat', true);
