@@ -19,6 +19,8 @@ import { action, init as actionInit, onExit as actionOnExit } from './action';
 import quote from './quote';
 import forward from './forward';
 
+export const devServers = ['987904009987846154', '1002564997475483669'];
+
 process.chdir(__dirname + '\\..\\');
 
 process.on('exit', () => {
@@ -33,7 +35,7 @@ client.once('ready', async () => {
   try {
     actionInit(client);
 
-    if (dev.isDev) await client.application?.commands.set(commands, dev.serverId);
+    if (dev.isDev) for (let id of devServers) await client.application?.commands.set(commands, id);
     else await client.application?.commands.set(commands);
 
     await loadVotes(client);
