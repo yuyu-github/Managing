@@ -112,15 +112,45 @@ export async function changes(client: Client, interaction: CommandInteraction) {
           getData('guild', interaction.guildId, ['changes', 'data', stat, i.toString()]) as number ?? 0])
       }
 
+      let compData: {[k: string]: [string, number][]} = {};
+      for (let compId of [interaction.options.getString('comp-id-1'), interaction.options.getString('comp-id-2'), interaction.options.getString('comp-id-3')]) {
+        if (compId == null) continue;
+        
+        const compIdData = compId.split('s');
+        const guildId = BigInt('0x' + compIdData[0]).toString();
+        const userId = BigInt('0x' + compIdData[1]).toString();
+
+        const guild = client.guilds.cache.get(guildId);
+        if (guild == null) {
+          interaction.reply('無効な比較IDです')
+          return;
+        }
+        if (userId != interaction.user.id) {
+          interaction.reply('自分以外が作成した比較IDを使用できません')
+          return;
+        }
+        if (!(await guild.members.fetch()).has(interaction.user.id)) {
+          interaction.reply('自分が入っていないサーバーの比較IDを使用できません')
+          return;
+        }
+
+        for (let i = start; i <= end; i++) {
+          compData[guild.name] ??= []
+          compData[guild.name].push([new Date((i * 24 - 9) * 60 * 60 * 1000).toLocaleDateString("ja-JP"),
+            getData('guild', guild.id, ['changes', 'data', stat, i.toString()]) as number ?? 0])
+        }
+      }
+
       switch (interaction.options.getString('type', true)) {
         case 'line-graph': {
-          interaction.deferReply()
-
+          interaction.deferReply();
+          
           let image: Buffer = await GoogleChartsNode.render(`
             let table = new google.visualization.DataTable();
             table.addColumn('string', '');
             table.addColumn('number', '${interaction.guild?.name ?? ''}');
-            table.addRows([${data.map(i => `['${i[0]}',${i[1]}]`).join(',')}]);
+            ${Object.keys(compData).map(j => `table.addColumn('number', '${j}');`).join('')}
+            table.addRows([${data.map(i => `['${i[0]}',${i[1]},${Object.values(compData).map(j => `${(j.find(k => k[0] == i[0]) ?? [null, 0])[1]}`).join(',')}]`).join(',')}]);
             let chart = new google.visualization.LineChart(document.getElementById('chart_div'));
             chart.draw(table, {
               title: '${statString[stat] ?? stat}',
@@ -149,7 +179,8 @@ export async function changes(client: Client, interaction: CommandInteraction) {
             let table = new google.visualization.DataTable();
             table.addColumn('string', '');
             table.addColumn('number', '${interaction.guild?.name ?? ''}');
-            table.addRows([${data.map(i => `['${i[0]}',${i[1]}]`).join(',')}]);
+            ${Object.keys(compData).map(j => `table.addColumn('number', '${j}');`).join('')}
+            table.addRows([${data.map(i => `['${i[0]}',${i[1]},${Object.values(compData).map(j => `${(j.find(k => k[0] == i[0]) ?? [null, 0])[1]}`).join(',')}]`).join(',')}]);
             let chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
             chart.draw(table, {
               title: '${statString[stat] ?? stat}',
@@ -174,35 +205,40 @@ export async function changes(client: Client, interaction: CommandInteraction) {
         case 'calendar': {
           interaction.deferReply()
 
-          let image: Buffer = await GoogleChartsNode.render(`
-            let table = new google.visualization.DataTable();
-            table.addColumn('date', '');
-            table.addColumn('number', '${interaction.guild?.name ?? ''}');
-            table.addRows([${data.map(i => `[new Date('${i[0]}'),${i[1]}]`).join(',')}]);
-            let chart = new google.visualization.Calendar(document.getElementById('chart_div'));
-            chart.draw(table, {
-              title: '${statString[stat] ?? stat}',
-              legend: 'bottom',
-              chartArea: {
-                width: '85%',
-                height: '80%',
-              },
-            });
-          `, {
-            width: '940px',
-            height: 35 + 145 * (new Date(data.slice(-1)[0][0]).getFullYear() - new Date(data[0][0]).getFullYear() + 1) + 'px',
-            packages: ['calendar'],
-          })
+          let images: Buffer[] = [];
+          let list = {[interaction.guild?.name ?? '']: data, ...compData};
+          for (let name in list) {
+            let item = list[name];
+            images.push(await GoogleChartsNode.render(`
+              let table = new google.visualization.DataTable();
+              table.addColumn('date', '');
+              table.addColumn('number', '');
+              table.addRows([${item.map(i => `[new Date('${i[0]}'),${i[1]}]`).join(',')}]);
+              let chart = new google.visualization.Calendar(document.getElementById('chart_div'));
+              chart.draw(table, {
+                title: '${statString[stat] ?? stat}(${name})',
+                legend: 'bottom',
+                chartArea: {
+                  width: '85%',
+                  height: '80%',
+                },
+              });
+            `, {
+              width: '940px',
+              height: 35 + 145 * (new Date(data.slice(-1)[0][0]).getFullYear() - new Date(data[0][0]).getFullYear() + 1) + 'px',
+              packages: ['calendar'],
+            }));
+          }
 
           interaction.followUp({
-            files: [
-              new MessageAttachment(image, 'output.jpg')
-            ]
+            files: images.map(image => new MessageAttachment(image, 'output.jpg'))
           })
         }
         break;
         case 'csv': {
-          let filename = createTempFile('csv', data.map(i => i.join(',')).join('\n'));
+          console.log(Object.keys(compData).map(j => `,${j}`));
+          let filename = createTempFile('csv', `,${interaction.guild?.name}${Object.keys(compData).map(j => `,${j}`).join('')}\n` +
+            data.map(i => `${i[0]},${i[1]}${Object.values(compData).map(j => `,${(j.find(k => k[0] == i[0]) ?? [null, 0])[1]}`).join('')}`).join('\n'));
           await interaction.reply({
             files: [
               new MessageAttachment(filename, 'output.csv')
@@ -214,7 +250,11 @@ export async function changes(client: Client, interaction: CommandInteraction) {
         case 'json': {
           let obj = {};
           for (let i of data) {
-            obj[i[0]] = i[1];
+            obj[i[0]] ??= {};
+            obj[i[0]][interaction.guild?.name] = i[1];
+            for (let name in compData) {
+              obj[i[0]][name] = (compData[name].find(k => k[0] == i[0]) ?? [null, 0])[1]
+            }
           }
 
           let filename = createTempFile('json', JSON.stringify(obj));
@@ -227,6 +267,11 @@ export async function changes(client: Client, interaction: CommandInteraction) {
         }
         break;
       }
+    }
+    break;
+    case 'generate-comp-id': {
+      await interaction.reply({content: '比較IDを生成しました', ephemeral: true});
+      interaction.followUp({content: BigInt(interaction.guildId ?? 0).toString(16) + 's' + BigInt(interaction.user.id).toString(16), ephemeral: true});
     }
     break;
   }

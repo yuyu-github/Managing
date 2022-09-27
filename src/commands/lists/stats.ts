@@ -72,7 +72,27 @@ export default [
             name: 'end',
             description: '終了日',
           },
+          {
+            type: 'STRING',
+            name: 'comp-id-1',
+            description: '比較ID',
+          },
+          {
+            type: 'STRING',
+            name: 'comp-id-2',
+            description: '比較ID',
+          },
+          {
+            type: 'STRING',
+            name: 'comp-id-3',
+            description: '比較ID',
+          },
         ]
+      },
+      {
+        type: 'SUB_COMMAND',
+        name: 'generate-comp-id',
+        description: '比較IDを生成',
       }
     ]
   }
