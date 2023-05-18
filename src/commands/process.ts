@@ -34,6 +34,15 @@ export default async function (client: Client, interaction: Interaction) {
         votes.voteSetting(client, interaction);
       }
       break;
+      case 'stats': {
+        stats.stats(client, interaction);
+      }
+      break;
+      case 'member-stats': {
+        stats.memberStats(client, interaction);
+      }
+      break;
+
       case 'translate': {
         const text = interaction.options.getString('text') ?? '';
         const source = interaction.options.getString('source');
@@ -62,14 +71,6 @@ export default async function (client: Client, interaction: Interaction) {
           messages?.each(message => message.delete());
           interaction.reply(count + '件のメッセージを削除しました');
         }
-      }
-      break;
-      case 'stats': {
-        stats.stats(client, interaction);
-      }
-      break;
-      case 'member-stats': {
-        stats.memberStats(client, interaction);
       }
       break;
       case 'forward': {
@@ -121,10 +122,7 @@ export default async function (client: Client, interaction: Interaction) {
         await votes.banVote(client, interaction);
       }
       break;
-      case 'BAN解除投票': {
-        await votes.unbanVote(client, interaction);
-      }
-      break;
+      
       case 'ピン留め': {
         const message = interaction.options.getMessage('message');
         if (message == null || !('pin' in message)) return;

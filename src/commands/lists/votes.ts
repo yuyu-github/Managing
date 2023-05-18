@@ -189,10 +189,5 @@ export default [
         description: '投票終了する人数',
       },
     ]
-  },
-  {
-    type: 'USER',
-    name: 'BAN解除投票',
-    defaultMemberPermissions: Permissions.FLAGS.BAN_MEMBERS,
-  },
+  }
 ]
