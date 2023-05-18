@@ -191,7 +191,7 @@ export async function unbanVote(client: Client, interaction: CommandInteraction 
       createVote(
         'unbanvote',
         user.tag + 'をBAN解除する',
-        'BAN解除するが7割を超えた場合BAN解除します\n投票終了人数 ' + count + '人',
+        'BAN解除するが8割を超えた場合BAN解除します\n投票終了人数 ' + count + '人',
         [['⭕', 'BAN解除する'], ['❌', 'BAN解除しない']],
         {
           user: user.id,

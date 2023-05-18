@@ -63,8 +63,8 @@ export default {
     const user = await client.users.fetch(vote.user);
     if (user == null) return;
 
-    if (counts['⭕'] > total * 0.7) {
-      msg.guild?.members.unban(user, '投票でBAN解除するが7割を超えたため')
+    if (counts['⭕'] > total * 0.8) {
+      msg.guild?.members.unban(user, '投票でBAN解除するが8割を超えたため')
         .then(() => msg.channel.send('投票により' + user.toString() + 'をBAN解除しました'))
         .catch(e => {
           msg.channel.send(user.toString() + 'をBAN解除できませんでした')
