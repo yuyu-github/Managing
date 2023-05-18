@@ -7,6 +7,7 @@ import stats from './lists/stats'
 
 export default [
   ...votes,
+  ...stats,
   {
     name: 'translate',
     description: '文章を翻訳する',
@@ -51,7 +52,6 @@ export default [
       }
     ]
   },
-  ...stats,
   {
     name: 'forward',
     description: '-',

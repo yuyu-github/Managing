@@ -2,7 +2,6 @@ import { Client, CommandInteraction, ContextMenuInteraction, Interaction } from 
 
 import { setData, getData, deleteData } from 'discordbot-data';
 
-import * as dev from '../../dev';
 import { vote as createVote } from '../../vote/vote';
 import voteViewResult from '../../vote/view_result';
 

@@ -1,5 +1,5 @@
 import { Client, Intents, Interaction, Message, MessageEmbed } from 'discord.js';
-import botToken from './token';
+import * as token from './token';
 const client = new Client({
   intents: [
     Intents.FLAGS.GUILDS,
@@ -10,7 +10,6 @@ const client = new Client({
   ]
 });
 
-import * as dev from './dev';
 import commands from './commands/list';
 import commandProcess from './commands/process';
 import loadVotes from './vote/load_votes';
@@ -18,8 +17,6 @@ import * as voteEvents from './vote/events';
 import { action, init as actionInit, onExit as actionOnExit } from './action';
 import quote from './quote';
 import forward from './forward';
-
-export const devServers = ['987904009987846154', '1002564997475483669'];
 
 process.chdir(__dirname + '\\..\\');
 
@@ -35,7 +32,9 @@ client.once('ready', async () => {
   try {
     actionInit(client);
 
-    if (dev.isDev) for (let id of devServers) await client.application?.commands.set(commands, id);
+    if (process.env.DEBUG == 'true' && process.env.DEVSERVERS != null) {
+      for (let id of process.env.DEVSERVERS.split(',')) await client.application?.commands.set(commands, id);
+    }
     else await client.application?.commands.set(commands);
 
     await loadVotes(client);
@@ -108,4 +107,4 @@ client.on('voiceStateUpdate', (oldState, newState) => {
   }
 })
 
-client.login(botToken)
+client.login(process.env.DEBUG == 'true' ? token.debug : token.default);
