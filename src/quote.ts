@@ -39,11 +39,19 @@ export default async function(client: Client, message: Message) {
             },
             ...embeds,
           ],
+          allowedMentions: {
+            repliedUser: false
+          }
         })
 
         let files = [...urlMessage.attachments.values()].map(i => i.url).concat(images).join('\n');
         if (files.length != 0) {
-          message.reply(files)
+          message.reply({
+            content: files,
+            allowedMentions: {
+              repliedUser: false
+            }
+          })
         }
       }).catch(e => console.error(e));
     } else {
@@ -58,7 +66,10 @@ export default async function(client: Client, message: Message) {
               text: channel.guild.name,
             }
           }
-        ]
+        ],
+        allowedMentions: {
+          repliedUser: false
+        }
       })
     }
   }
