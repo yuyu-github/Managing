@@ -237,14 +237,13 @@ export async function changes(client: Client, interaction: ChatInputCommandInter
         break;
         case 'csv': {
           console.log(Object.keys(compData).map(j => `,${j}`));
-          let filename = createTempFile('csv', `,${interaction.guild?.name}${Object.keys(compData).map(j => `,${j}`).join('')}\n` +
-            data.map(i => `${i[0]},${i[1]}${Object.values(compData).map(j => `,${(j.find(k => k[0] == i[0]) ?? [null, 0])[1]}`).join('')}`).join('\n'));
+          let str = `,${interaction.guild?.name}${Object.keys(compData).map(j => `,${j}`).join('')}\n` +
+            data.map(i => `${i[0]},${i[1]}${Object.values(compData).map(j => `,${(j.find(k => k[0] == i[0]) ?? [null, 0])[1]}`).join('')}`).join('\n');
           await interaction.reply({
             files: [
-              new AttachmentBuilder(filename).setName('output.csv')
+              new AttachmentBuilder(Buffer.from(str)).setName('output.csv')
             ]
           });
-          fs.unlink(filename, () => {});
         }
         break;
         case 'json': {
@@ -257,13 +256,11 @@ export async function changes(client: Client, interaction: ChatInputCommandInter
             }
           }
 
-          let filename = createTempFile('json', JSON.stringify(obj));
           await interaction.reply({
             files: [
-              new AttachmentBuilder(filename).setName('output.json')
+              new AttachmentBuilder(Buffer.from(JSON.stringify(obj))).setName('output.json')
             ]
           });
-          fs.unlink(filename, () => { });
         }
         break;
       }
