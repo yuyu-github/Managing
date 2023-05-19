@@ -111,6 +111,48 @@ export default [
       }
     ]
   },
+  {
+    name: 'timeout',
+    description: '時間を指定してタイムアウトする',
+    options: [
+      {
+        type: ApplicationCommandOptionType.User,
+        name: 'user',
+        description: 'タイムアウトするユーザー',
+        required: true
+      },
+      {
+        type: ApplicationCommandOptionType.Integer,
+        name: 'second',
+        description: '秒数'
+      },
+      {
+        type: ApplicationCommandOptionType.Integer,
+        name: 'minute',
+        description: '分数'
+      },
+      {
+        type: ApplicationCommandOptionType.Integer,
+        name: 'hour',
+        description: '時間'
+      },
+      {
+        type: ApplicationCommandOptionType.Integer,
+        name: 'day',
+        description: '日数'
+      },
+      {
+        type: ApplicationCommandOptionType.String,
+        name: 'specified-date',
+        description: '指定日まで(yyyy/MM/dd形式 年は2桁・省略可)'
+      },
+      {
+        type: ApplicationCommandOptionType.String,
+        name: 'specified-time',
+        description: '指定時間まで(HH:mm形式)'
+      }
+    ]
+  },
 
   {
     type: ApplicationCommandType.Message,

@@ -123,6 +123,63 @@ export default async function (client: Client, interaction: Interaction) {
         interaction.reply(`再参加時に${type == 'all' ? '' : typeMap[type] + 'を'}保持${value ? 'する' : 'しない'}ように設定しました`);
       }
       break;
+      case 'timeout': {
+        const permissions = interaction.member?.permissions;
+        if (typeof permissions != 'string' && !permissions?.has(PermissionFlagsBits.ModerateMembers)) {
+          interaction.reply('タイムアウトする権限がありません');
+        }
+
+        const user = interaction.options.getUser('user', true);
+        const member = interaction.guild?.members.resolve(user);
+        if (member == null) return;
+
+        const second = interaction.options.getInteger('second') ?? 0;
+        const minute = interaction.options.getInteger('minute') ?? 0;
+        const hour = interaction.options.getInteger('hour') ?? 0;
+        const day = interaction.options.getInteger('day') ?? 0;
+        const specifiedDate = interaction.options.getString('specified-date') ?? '';
+        const specifiedTime = interaction.options.getString('specified-time') ?? '';
+
+        let timeout: number = 0;
+        if (specifiedDate != '' || specifiedTime != '') {
+          let date = new Date();
+          date.setHours(0, 0, 0, 0)
+          if (specifiedDate != '') {
+            let match = specifiedDate.match(/^((?<year>([0-9]{2})?[0-9]{2})\/)?(?<month>[01]?[0-9])\/(?<day>[0-3]?[0-9])$/);
+            if (match == null || parseInt(match.groups!.month) > 12 || parseInt(match.groups!.day) > 31) {
+              interaction.reply('無効な日付指定です'); return;
+            }
+            let year = match.groups!.year == null ? new Date().getFullYear() :
+              match.groups!.year.length == 2 ? Math.floor(new Date().getFullYear() / 100) + parseInt(match.groups!.year) : parseInt(match.groups!.year);
+            date.setFullYear(year, parseInt(match.groups!.month) - 1, parseInt(match.groups!.day));
+            if (isNaN(date.getTime())) {
+              interaction.reply('無効な日付指定です'); return;
+            }
+          }
+          if (specifiedTime != '') {
+            let match = specifiedTime.match(/^(?<hour>[0-2]?[0-9]):(?<minute>[0-5]?[0-9])$/);
+            if (match == null || parseInt(match.groups!.hour) >= 24 || parseInt(match.groups!.minute) >= 60) {
+              interaction.reply('無効な時刻指定です'); return;
+            }
+            date.setHours(parseInt(match.groups!.hour), parseInt(match.groups!.minute));
+          }
+          timeout = date.getTime() - new Date().getTime();
+        } else {
+          timeout += second * 1 * 1000;
+          timeout += minute * 60 * 1000;
+          timeout += hour * 60 * 60 * 1000;
+          timeout += day * 24 * 60 * 60 * 1000;
+        }
+
+        if (timeout < 0) {
+          interaction.reply('日時が現在よりも昔です'); 
+        } else if (timeout > 28 * 24 * 60 * 60 * 1000) {
+          interaction.reply('タイムアウト期間は28日以内にしてください')
+        } else {
+          member.timeout(timeout);
+          interaction.reply(`<t:${Math.floor((new Date().getTime() + timeout) / 1000)}>まで${member.toString()}をタイムアウトしました`)
+        }
+      }
     }
   } else if (interaction.isContextMenuCommand()) {
     switch (interaction.commandName) {
