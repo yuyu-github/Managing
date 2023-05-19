@@ -1,4 +1,4 @@
-import { Permissions } from 'discord.js';
+import { ApplicationCommandOptionType, ApplicationCommandType, PermissionFlagsBits } from 'discord.js';
 
 import translateLangs from './lists/translate/langs';
 
@@ -13,19 +13,19 @@ export default [
     description: '文章を翻訳する',
     options: [
       {
-        type: 'STRING',
+        type: ApplicationCommandOptionType.String,
         name: 'text',
         description: '翻訳する文章',
         required: true,
       },
       {
-        type: 'STRING',
+        type: ApplicationCommandOptionType.String,
         name: 'source',
         description: '翻訳元の言語',
         choices: translateLangs,
       },
       {
-        type: 'STRING',
+        type: ApplicationCommandOptionType.String,
         name: 'target',
         description: '翻訳先の言語',
         choices: translateLangs,
@@ -33,20 +33,20 @@ export default [
     ]
   },
   {
-    type: 'MESSAGE',
+    type: ApplicationCommandType.Message,
     name: 'ピン留め',
   },
   {
-    type: 'MESSAGE',
+    type: ApplicationCommandType.Message,
     name: 'ピン留め解除',
   },
   {
     name: 'delete-message',
     description: 'メッセージを削除する',
-    defaultMemberPermissions: Permissions.FLAGS.MANAGE_MESSAGES,
+    defaultMemberPermissions: PermissionFlagsBits.ManageMessages,
     options: [
       {
-        type: 'INTEGER',
+        type: ApplicationCommandOptionType.Integer,
         name: 'count',
         description: '削除するメッセージ数'
       }
@@ -55,21 +55,21 @@ export default [
   {
     name: 'forward',
     description: '-',
-    defaultMemberPermissions: Permissions.FLAGS.MANAGE_MESSAGES,
+    defaultMemberPermissions: PermissionFlagsBits.ManageMessages,
     options: [
       {
-        type: 'SUB_COMMAND',
+        type: ApplicationCommandOptionType.Subcommand,
         name: 'add',
         description: 'メッセージの転送を設定する',
         options: [
           {
-            type: 'CHANNEL',
+            type: ApplicationCommandOptionType.Channel,
             name: 'channel',
             description: 'メッセージの転送元チャンネル',
             required: true,
           },
           {
-            type: 'STRING',
+            type: ApplicationCommandOptionType.String,
             name: 'webhook',
             description: 'ウェブフックURL',
             required: true,
@@ -77,18 +77,18 @@ export default [
         ]
       },
       {
-        type: 'SUB_COMMAND',
+        type: ApplicationCommandOptionType.Subcommand,
         name: 'remove',
         description: 'メッセージの転送を解除する',
         options: [
           {
-            type: 'CHANNEL',
+            type: ApplicationCommandOptionType.Channel,
             name: 'channel',
             description: 'メッセージの転送元チャンネル',
             required: true,
           },
           {
-            type: 'STRING',
+            type: ApplicationCommandOptionType.String,
             name: 'webhook',
             description: 'ウェブフックURL',
           },

@@ -1,11 +1,11 @@
-import { Client, CommandInteraction, ContextMenuInteraction, Interaction } from "discord.js";
+import { ChatInputCommandInteraction, Client, CommandInteraction, ContextMenuCommandInteraction } from "discord.js";
 
 import { setData, getData, deleteData } from 'discordbot-data';
 
 import { vote as createVote } from '../../vote/vote';
 import voteViewResult from '../../vote/view_result';
 
-export async function vote(client: Client, interaction: CommandInteraction) {
+export async function vote(client: Client, interaction: ChatInputCommandInteraction) {
   const name = interaction.options.getString('name');
   const multiple = interaction.options.getBoolean('multiple')
   const count = interaction.options.getInteger('count') ?? 0;
@@ -33,14 +33,14 @@ export async function vote(client: Client, interaction: CommandInteraction) {
     async data => {
       await interaction.reply({ content: '投票を作成しました', ephemeral: true })
       return interaction.channel?.send({
-        content: mentions.length > 0 ? mentions.reduce((str, i) => str + ' ' + i?.toString(), '') : null,
+        content: mentions.length > 0 ? mentions.reduce((str, i) => str + ' ' + i?.toString(), '') : undefined,
         ...data,
       });
     }
   )
 }
 
-export async function roleVote(client: Client, interaction: CommandInteraction) {
+export async function roleVote(client: Client, interaction: ChatInputCommandInteraction) {
   const user = interaction.options.getUser('user', true);
   const role = interaction.options.getRole('role', true);
   if (!('createdAt' in role)) return;
@@ -91,7 +91,7 @@ export async function roleVote(client: Client, interaction: CommandInteraction) 
   }
 }
 
-export async function kickVote(client: Client, interaction: CommandInteraction | ContextMenuInteraction) {
+export async function kickVote(client: Client, interaction: CommandInteraction) {
   const user = interaction.options.getUser('user', true);
   const member = interaction.guild?.members.resolve(user);
   if (member == null) return;
@@ -103,7 +103,7 @@ export async function kickVote(client: Client, interaction: CommandInteraction |
   const sameRole = getData('guild', interaction.guildId, ['vote-setting', 'same-role', 'kick-vote']) ?? false;
 
   const minCount = getData('guild', interaction.guildId, ['vote-setting', 'min-count', 'kick-vote']) ?? 4;
-  const count = interaction.isCommand() ? interaction.options.getInteger('count') ?? minCount : minCount;
+  const count = interaction.isChatInputCommand() ? interaction.options.getInteger('count') ?? minCount : minCount;
 
   if (!member.kickable) {
     interaction.reply(user.toString() + 'をキックする権限がありません')
@@ -132,7 +132,7 @@ export async function kickVote(client: Client, interaction: CommandInteraction |
   }
 }
 
-export async function banVote(client: Client, interaction: CommandInteraction | ContextMenuInteraction) {
+export async function banVote(client: Client, interaction: CommandInteraction) {
   const user = interaction.options.getUser('user', true);
   const member = interaction.guild?.members.resolve(user);
   if (member == null) return;
@@ -144,7 +144,7 @@ export async function banVote(client: Client, interaction: CommandInteraction | 
   const sameRole = getData('guild', interaction.guildId, ['vote-setting', 'same-role', 'ban-vote']) ?? false;
 
   const minCount = getData('guild', interaction.guildId, ['vote-setting', 'min-count', 'ban-vote']) ?? 5;
-  const count = interaction.isCommand() ? interaction.options.getInteger('count') ?? minCount : minCount;
+  const count = interaction.isChatInputCommand() ? interaction.options.getInteger('count') ?? minCount : minCount;
 
   if (!member.bannable) {
     interaction.reply(user.toString() + 'をBANする権限がありません')
@@ -173,8 +173,8 @@ export async function banVote(client: Client, interaction: CommandInteraction | 
   }
 }
 
-export async function unbanVote(client: Client, interaction: CommandInteraction | ContextMenuInteraction) {
-  const userTag = interaction.isCommand() ? interaction.options.getString('user', true) : interaction.options.getUser('user', true).id;
+export async function unbanVote(client: Client, interaction: CommandInteraction) {
+  const userTag = interaction.isChatInputCommand() ? interaction.options.getString('user', true) : interaction.options.getUser('user', true).id;
   interaction.guild?.bans.fetch().then(banUsers => {
     const user = banUsers.find((v) => v.user.tag == userTag)?.user;
     if (user == null) {
@@ -183,7 +183,7 @@ export async function unbanVote(client: Client, interaction: CommandInteraction 
     }
 
     const minCount = getData('guild', interaction.guildId, ['vote-setting', 'min-count', 'unban-vote']) ?? 5;
-    const count = interaction.isCommand() ? interaction.options.getInteger('count') ?? minCount : minCount;
+    const count = interaction.isChatInputCommand() ? interaction.options.getInteger('count') ?? minCount : minCount;
 
     if (count < minCount) {
       interaction.reply(`投票を終了する人数を${minCount}人未満にすることはできません`);
@@ -207,7 +207,7 @@ export async function unbanVote(client: Client, interaction: CommandInteraction 
   }).catch(e => console.error(e));
 }
 
-export async function voteSetting(client: Client, interaction: CommandInteraction) {
+export async function voteSetting(client: Client, interaction: ChatInputCommandInteraction) {
   switch (interaction.options.getSubcommand()) {
     case 'min-count': {
       setData('guild', interaction.guildId, ['vote-setting', 'min-count', interaction.options.getString('type', true)], interaction.options.getInteger('value', true));
@@ -221,7 +221,7 @@ export async function voteSetting(client: Client, interaction: CommandInteractio
   interaction.reply('投票の設定を更新しました');
 }
 
-export async function voteCount(client: Client, interaction: ContextMenuInteraction) {
+export async function voteCount(client: Client, interaction: ContextMenuCommandInteraction) {
   const message = interaction.options.getMessage('message', true);
   if (!('guildId' in message)) return;
   const votes = getData('guild', message.guildId, ['votes', message.channelId]) ?? {};
@@ -238,7 +238,7 @@ export async function voteCount(client: Client, interaction: ContextMenuInteract
   }
 }
 
-export async function endVote(client: Client, interaction: ContextMenuInteraction) {
+export async function endVote(client: Client, interaction: ContextMenuCommandInteraction) {
   const message = interaction.options.getMessage('message', true);
   if (message == null || !('guildId' in message)) return;
   const votes = getData('guild', message.guildId, ['votes', message.channelId]) ?? {};

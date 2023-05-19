@@ -1,4 +1,4 @@
-import { Client, Interaction } from 'discord.js';
+import { BaseInteraction, Client, CommandInteraction, Interaction, PermissionFlagsBits } from 'discord.js';
 
 import { setData, getData, deleteData } from 'discordbot-data';
 
@@ -8,7 +8,7 @@ import * as stats from './processes/stats';
 export default async function (client: Client, interaction: Interaction) {
   const fetch = (await new Function('return import("node-fetch")')()).default;
 
-  if (interaction.isCommand()) {
+  if (interaction.isChatInputCommand()) {
     switch (interaction.commandName) {
       case 'vote': {
         await votes.vote(client, interaction);
@@ -64,11 +64,11 @@ export default async function (client: Client, interaction: Interaction) {
         if (permissions == null || typeof permissions == 'string') return;
         if (count > 100) {
           interaction.reply('メッセージは100件までしか削除できません');
-        } else if (!permissions.has('ADMINISTRATOR') && count > 15) {
+        } else if (!permissions.has(PermissionFlagsBits.Administrator) && count > 15) {
           interaction.reply('管理者権限がない場合メッセージは15件までしか削除できません');
         } else {
           const messages = await interaction.channel?.messages.fetch({limit: count})
-          messages?.each(message => message.delete());
+          messages?.forEach(message => message.delete());
           interaction.reply(count + '件のメッセージを削除しました');
         }
       }
@@ -104,7 +104,7 @@ export default async function (client: Client, interaction: Interaction) {
         stats.changes(client, interaction);
       }
     }
-  } else if (interaction.isContextMenu()) {
+  } else if (interaction.isContextMenuCommand()) {
     switch (interaction.commandName) {
       case '投票集計': {
         await votes.voteCount(client, interaction);

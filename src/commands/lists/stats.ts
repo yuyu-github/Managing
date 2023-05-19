@@ -1,3 +1,5 @@
+import { ApplicationCommandOptionType } from "discord.js";
+
 export default [
   {
     name: 'stats',
@@ -8,7 +10,7 @@ export default [
     description: 'メンバーの統計を表示します',
     options: [
       {
-        type: 'USER',
+        type: ApplicationCommandOptionType.User,
         name: 'user',
         description: '表示するユーザー',
       }
@@ -19,12 +21,12 @@ export default [
     description: '-',
     options: [
       {
-        type: 'SUB_COMMAND',
+        type: ApplicationCommandOptionType.Subcommand,
         name: 'record',
         description: '推移を記録するか設定する',
         options: [
           {
-            type: 'BOOLEAN',
+            type: ApplicationCommandOptionType.Boolean,
             name: 'value',
             description: '推移を記録する',
             required: true,
@@ -32,12 +34,12 @@ export default [
         ]
       },
       {
-        type: 'SUB_COMMAND',
+        type: ApplicationCommandOptionType.Subcommand,
         name: 'output',
         description: '推移を出力する',
         options: [
           {
-            type: 'STRING',
+            type: ApplicationCommandOptionType.String,
             name: 'type',
             description: '出力タイプ',
             required: true,
@@ -50,7 +52,7 @@ export default [
             ],
           }, 
           {
-            type: 'STRING',
+            type: ApplicationCommandOptionType.String,
             name: 'stat',
             description: '出力する統計',
             required: true,
@@ -62,35 +64,35 @@ export default [
             ]
           }, 
           {
-            type: 'STRING',
+            type: ApplicationCommandOptionType.String,
             name: 'start',
             description: '開始日',
             required: true,
           },
           {
-            type: 'STRING',
+            type: ApplicationCommandOptionType.String,
             name: 'end',
             description: '終了日',
           },
           {
-            type: 'STRING',
+            type: ApplicationCommandOptionType.String,
             name: 'comp-id-1',
             description: '比較ID',
           },
           {
-            type: 'STRING',
+            type: ApplicationCommandOptionType.String,
             name: 'comp-id-2',
             description: '比較ID',
           },
           {
-            type: 'STRING',
+            type: ApplicationCommandOptionType.String,
             name: 'comp-id-3',
             description: '比較ID',
           },
         ]
       },
       {
-        type: 'SUB_COMMAND',
+        type: ApplicationCommandOptionType.Subcommand,
         name: 'generate-comp-id',
         description: '比較IDを生成',
       }

@@ -1,4 +1,4 @@
-import { Client, Message, MessageEmbed } from "discord.js";
+import { Client, Message, Embed, ChannelType } from "discord.js";
 
 export default async function(client: Client, message: Message) {
   let matches = message.content.matchAll(/https?:\/\/discord.com\/channels\/[0-9]+\/([0-9]+)(?:\/([0-9]+))?/g);
@@ -10,7 +10,7 @@ export default async function(client: Client, message: Message) {
       channel.messages.fetch(match[2]).then(urlMessage => {
         if (urlMessage == null) return;
 
-        const isImageEmbed = (embed: MessageEmbed) =>
+        const isImageEmbed = (embed: Embed) =>
           embed.author == null && embed.color == null && embed.description == null && embed.fields.length == 0 && 
             embed.footer == null && embed.image == null && embed.timestamp == null && embed.title == null && embed.video == null &&
             embed.url != null && embed.thumbnail?.url == embed.url
@@ -48,13 +48,13 @@ export default async function(client: Client, message: Message) {
       }).catch(e => console.error(e));
     } else {
       if (!('name' in channel)) return;
-      if (channel.type == 'GUILD_VOICE') return;
+      if (channel.type == ChannelType.GuildVoice) return;
       message.reply({
         embeds: [
           {
             title: '#' + channel.name,
             footer: {
-              iconURL: channel.guild.iconURL() ?? undefined,
+              icon_url: channel.guild.iconURL() ?? undefined,
               text: channel.guild.name,
             }
           }

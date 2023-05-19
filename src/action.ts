@@ -1,4 +1,4 @@
-import { Client, User } from "discord.js";
+import { ChannelType, Client, User } from "discord.js";
 
 import { setData, getData, deleteData } from 'discordbot-data';
 type actionType = 
@@ -49,8 +49,8 @@ function endMeasuringTime(name, guildId, userId) {
 
 export function init(client: Client) {
   client.channels.cache.each(i => {
-    if (i.type == 'GUILD_VOICE') i.members.each(member => startMeasuringTime('inVoiceChannel', member.guild.id, member.user.id));
-    if (i.type == 'GUILD_STAGE_VOICE') i.members.each(member => startMeasuringTime('inStageChannel', member.guild.id, member.user.id));
+    if (i.type == ChannelType.GuildVoice) i.members.each(member => startMeasuringTime('inVoiceChannel', member.guild.id, member.user.id));
+    if (i.type == ChannelType.GuildStageVoice) i.members.each(member => startMeasuringTime('inStageChannel', member.guild.id, member.user.id));
   })
 }
 export function onExit() {

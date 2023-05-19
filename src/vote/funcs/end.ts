@@ -11,14 +11,14 @@ export default {
 
     if (counts['⭕'] > total * 0.6 && vote.content.includes('add')) {
       member.roles.add(role)
-        .then(() => msg.channel.send('投票により' + user.toString() + 'に' + role.name + 'を付与しました'))
+        .then(async () => await msg.channel.send('投票により' + user.toString() + 'に' + role.name + 'を付与しました'))
         .catch(e => {
           msg.channel.send(user.toString() + 'に' + role.name + 'を付与できませんでした');
           console.error(e);
         });
     } else if ((counts['⭕'] > total * 0.6 && vote.content.includes('remove')) || (counts['❌'] > total * 0.6 && vote.content == 'addremove')) {
       member.roles.remove(role)
-        .then(() => msg.channel.send('投票により' + user.toString() + 'から' + role.name + 'を剥奪しました'))
+        .then(async () => await msg.channel.send('投票により' + user.toString() + 'から' + role.name + 'を剥奪しました'))
         .catch(e => {
           msg.channel.send(user.toString() + 'に' + role.name + 'を剥奪できませんでした')
           console.error(e);
@@ -35,7 +35,7 @@ export default {
 
     if (counts['⭕'] > total * 0.7) {
       member.kick('投票でキックするが7割を超えたため')
-        .then(() => msg.channel.send('投票により' + user.toString() + 'をキックしました'))
+        .then(async () => await msg.channel.send('投票により' + user.toString() + 'をキックしました'))
         .catch(e => {
           msg.channel.send(user.toString() + 'をキックできませんでした')
           console.error(e);
@@ -50,7 +50,7 @@ export default {
 
     if (counts['⭕'] > total * 0.8) {
       msg.guild?.members.ban(user, { reason: '投票でBANするが8割を超えたため' })
-        .then(() => msg.channel.send('投票により' + user.toString() + 'をBANしました'))
+        .then(async () => await msg.channel.send('投票により' + user.toString() + 'をBANしました'))
         .catch(e => {
           msg.channel.send(user.toString() + 'をBANできませんでした')
           console.error(e);
@@ -65,7 +65,7 @@ export default {
 
     if (counts['⭕'] > total * 0.8) {
       msg.guild?.members.unban(user, '投票でBAN解除するが8割を超えたため')
-        .then(() => msg.channel.send('投票により' + user.toString() + 'をBAN解除しました'))
+        .then(async () => await msg.channel.send('投票により' + user.toString() + 'をBAN解除しました'))
         .catch(e => {
           msg.channel.send(user.toString() + 'をBAN解除できませんでした')
         });

@@ -1,4 +1,4 @@
-import { Client, CommandInteraction, MessageAttachment, User } from 'discord.js';
+import { ChatInputCommandInteraction, Client, CommandInteraction, AttachmentBuilder, PermissionFlagsBits, User } from 'discord.js';
 
 import { setData, getData, deleteData } from 'discordbot-data';
 import * as GoogleChartsNode from 'google-charts-node';
@@ -36,7 +36,7 @@ function createStatsEmbed(getAction: (name: string, unit: string) => string, get
         })),
       }
     ]
-  }
+  } as any
 }
 
 export async function stats(client: Client, interaction: CommandInteraction) {
@@ -66,11 +66,11 @@ export async function memberStats(client: Client, interaction: CommandInteractio
   interaction.reply(createStatsEmbed(getAction, getTime, user))
 }
 
-export async function changes(client: Client, interaction: CommandInteraction) {
+export async function changes(client: Client, interaction: ChatInputCommandInteraction) {
   switch (interaction.options.getSubcommand()) {
     case 'record': {
       const permissions = interaction.member?.permissions;
-      if (typeof permissions != 'string' && !permissions?.has('MANAGE_GUILD')) {
+      if (typeof permissions != 'string' && !permissions?.has(PermissionFlagsBits.ManageGuild)) {
         interaction.reply('設定を変更する権限がありません');
       }
 
@@ -167,7 +167,7 @@ export async function changes(client: Client, interaction: CommandInteraction) {
 
           interaction.followUp({
             files: [
-              new MessageAttachment(image, 'output.jpg')
+              new AttachmentBuilder(image).setName('output.jpg')
             ]
           })
         }
@@ -197,7 +197,7 @@ export async function changes(client: Client, interaction: CommandInteraction) {
 
           interaction.followUp({
             files: [
-              new MessageAttachment(image, 'output.jpg')
+              new AttachmentBuilder(image).setName('output.jpg')
             ]
           })
         }
@@ -231,7 +231,7 @@ export async function changes(client: Client, interaction: CommandInteraction) {
           }
 
           interaction.followUp({
-            files: images.map(image => new MessageAttachment(image, 'output.jpg'))
+            files: images.map(image => new AttachmentBuilder(image).setName('output.jpg'))
           })
         }
         break;
@@ -241,7 +241,7 @@ export async function changes(client: Client, interaction: CommandInteraction) {
             data.map(i => `${i[0]},${i[1]}${Object.values(compData).map(j => `,${(j.find(k => k[0] == i[0]) ?? [null, 0])[1]}`).join('')}`).join('\n'));
           await interaction.reply({
             files: [
-              new MessageAttachment(filename, 'output.csv')
+              new AttachmentBuilder(filename).setName('output.csv')
             ]
           });
           fs.unlink(filename, () => {});
@@ -260,7 +260,7 @@ export async function changes(client: Client, interaction: CommandInteraction) {
           let filename = createTempFile('json', JSON.stringify(obj));
           await interaction.reply({
             files: [
-              new MessageAttachment(filename, 'output.json')
+              new AttachmentBuilder(filename).setName('output.json')
             ]
           });
           fs.unlink(filename, () => { });

@@ -1,4 +1,4 @@
-import { Permissions } from 'discord.js';
+import { ApplicationCommandOptionType, ApplicationCommandType, PermissionFlagsBits } from 'discord.js';
 
 import voteChoicesOptions from './vote/choices_options';
 import voteType from './vote-setting/vote_type';
@@ -9,28 +9,28 @@ export default [
     description: '投票を作成',
     options: [
       {
-        type: 'STRING',
+        type: ApplicationCommandOptionType.Boolean,
         name: 'name',
         description: '投票の名前',
         required: true,
       },
       {
-        type: 'BOOLEAN',
+        type: ApplicationCommandOptionType.Boolean,
         name: 'multiple',
         description: '複数投票可能にする'
       },
       {
-        type: 'INTEGER',
+        type: ApplicationCommandOptionType.Integer,
         name: 'count',
         description: '投票終了する人数'
       },
       {
-        type: 'MENTIONABLE',
+        type: ApplicationCommandOptionType.Mentionable,
         name: 'mention1',
         description: 'メンション'
       },
       {
-        type: 'MENTIONABLE',
+        type: ApplicationCommandOptionType.Mentionable,
         name: 'mention2',
         description: 'メンション'
       },
@@ -38,32 +38,32 @@ export default [
     ]
   },
   {
-    type: 'MESSAGE',
+    type: ApplicationCommandType.Message,
     name: '投票集計',
   },
   {
-    type: 'MESSAGE',
+    type: ApplicationCommandType.Message,
     name: '投票終了',
   },
   {
     name: 'rolevote',
     description: 'ロールを付与/剥奪するか投票をとる',
-    defaultMemberPermission: Permissions.FLAGS.MANAGE_ROLES,
+    defaultMemberPermission: PermissionFlagsBits.ManageRoles,
     options: [
       {
-        type: 'USER',
+        type: ApplicationCommandOptionType.User,
         name: 'user',
         description: '投票をとるユーザー',
         required: true,
       },
       {
-        type: 'ROLE',
+        type: ApplicationCommandOptionType.Role,
         name: 'role',
         description: '投票をとるロール',
         required: true,
       },
       {
-        type: 'STRING',
+        type: ApplicationCommandOptionType.String,
         name: 'content',
         description: '投票内容',
         choices: [
@@ -73,7 +73,7 @@ export default [
         ]
       },
       {
-        type: 'INTEGER',
+        type: ApplicationCommandOptionType.Integer,
         name: 'count',
         description: '投票終了する人数',
       },
@@ -82,39 +82,39 @@ export default [
   {
     name: 'kickvote',
     description: 'キックするか投票をとる',
-    defaultMemberPermissions: Permissions.FLAGS.KICK_MEMBERS,
+    defaultMemberPermissions: PermissionFlagsBits.KickMembers,
     options: [
       {
-        type: 'USER',
+        type: ApplicationCommandOptionType.User,
         name: 'user',
         description: '投票をとるユーザー',
         required: true,
       },
       {
-        type: 'INTEGER',
+        type: ApplicationCommandOptionType.Integer,
         name: 'count',
         description: '投票終了する人数',
       },
     ]
   },
   {
-    type: 'USER',
+    type: ApplicationCommandType.User,
     name: 'キック投票',
-    defaultMemberPermissions: Permissions.FLAGS.KICK_MEMBERS,
+    defaultMemberPermissions: PermissionFlagsBits.KickMembers,
   },
   {
     name: 'banvote',
     description: 'BANするか投票をとる',
-    defaultMemberPermissions: Permissions.FLAGS.BAN_MEMBERS,
+    defaultMemberPermissions: PermissionFlagsBits.BanMembers,
     options: [
       {
-        type: 'USER',
+        type: ApplicationCommandOptionType.User,
         name: 'user',
         description: '投票をとるユーザー',
         required: true,
       },
       {
-        type: 'INTEGER',
+        type: ApplicationCommandOptionType.Integer,
         name: 'count',
         description: '投票終了する人数',
       },
@@ -123,22 +123,22 @@ export default [
   {
     name: 'vote-setting',
     description: '-',
-    defaultMemberPermissions: Permissions.FLAGS.MANAGE_GUILD,
+    defaultMemberPermissions: PermissionFlagsBits.ManageGuild,
     options: [
       {
-        type: 'SUB_COMMAND',
+        type: ApplicationCommandOptionType.Subcommand,
         name: 'min-count',
         description: '最低投票終了人数を設定する',
         options: [
           {
-            type: 'STRING',
+            type: ApplicationCommandOptionType.String,
             name: 'type',
             description: '設定する投票の種類',
             required: true,
             choices: voteType,
           },
           {
-            type: 'INTEGER',
+            type: ApplicationCommandOptionType.Integer,
             name: 'value',
             description: '設定する人数',
             required: true,
@@ -146,19 +146,19 @@ export default [
         ]
       },
       {
-        type: 'SUB_COMMAND',
+        type: ApplicationCommandOptionType.Subcommand,
         name: 'same-role',
         description: '同じロールの投票を可能にするか設定する',
         options: [
           {
-            type: 'STRING',
+            type: ApplicationCommandOptionType.String,
             name: 'type',
             description: '設定する投票の種類',
             required: true,
             choices: voteType.filter(i => i.value != 'unban-vote'),
           },
           {
-            type: 'BOOLEAN',
+            type: ApplicationCommandOptionType.Boolean,
             name: 'value',
             description: '可能にする',
             required: true,
@@ -168,23 +168,23 @@ export default [
     ]
   },
   {
-    type: 'USER',
+    type: ApplicationCommandType.User,
     name: 'BAN投票',
-    defaultMemberPermissions: Permissions.FLAGS.BAN_MEMBERS,
+    defaultMemberPermissions: PermissionFlagsBits.BanMembers,
   },
   {
     name: 'unbanvote',
     description: 'BAN解除するか投票をとる',
-    defaultMemberPermissions: Permissions.FLAGS.BAN_MEMBERS,
+    defaultMemberPermissions: PermissionFlagsBits.BanMembers,
     options: [
       {
-        type: 'STRING',
+        type: ApplicationCommandOptionType.String,
         name: 'user',
         description: '投票をとるユーザーのタグ',
         required: true,
       },
       {
-        type: 'INTEGER',
+        type: ApplicationCommandOptionType.Integer,
         name: 'count',
         description: '投票終了する人数',
       },

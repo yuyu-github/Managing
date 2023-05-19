@@ -1,12 +1,12 @@
-import { Client, Intents, Interaction, Message, MessageEmbed } from 'discord.js';
+import { ChannelType, Client, IntentsBitField } from 'discord.js';
 import * as token from './token';
 const client = new Client({
   intents: [
-    Intents.FLAGS.GUILDS,
-    Intents.FLAGS.GUILD_MEMBERS,
-    Intents.FLAGS.GUILD_MESSAGES,
-    Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-    Intents.FLAGS.GUILD_VOICE_STATES,
+    IntentsBitField.Flags.Guilds,
+    IntentsBitField.Flags.GuildMembers,
+    IntentsBitField.Flags.GuildMessages,
+    IntentsBitField.Flags.GuildMessageReactions,
+    IntentsBitField.Flags.GuildVoiceStates
   ]
 });
 
@@ -34,8 +34,7 @@ client.once('ready', async () => {
 
     if (process.env.DEBUG == 'true' && process.env.DEVSERVERS != null) {
       for (let id of process.env.DEVSERVERS.split(',')) await client.application?.commands.set(commands, id);
-    }
-    else await client.application?.commands.set(commands);
+    } else await client.application?.commands.set(commands);
 
     await loadVotes(client);
 
@@ -71,7 +70,7 @@ client.on('messageCreate', async message => {
 client.on('interactionCreate', async (interaction) => {
   try {
     if (interaction.isCommand()) action(interaction.guildId, interaction.user.id, 'useCommand')
-    if (interaction.isContextMenu()) action(interaction.guildId, interaction.user.id, 'useContextMenu')
+    if (interaction.isContextMenuCommand()) action(interaction.guildId, interaction.user.id, 'useContextMenu')
 
     await commandProcess(client, interaction);
   } catch (e) {
@@ -100,10 +99,10 @@ client.on('messageReactionRemove', async (reaction, user) => {
 
 client.on('voiceStateUpdate', (oldState, newState) => {
   if (oldState.channelId != newState.channelId && oldState.channel?.type != newState.channel?.type && newState.member != null) {
-    if (newState.channel?.type == 'GUILD_VOICE') action(newState.guild.id, newState.member.user.id, 'joinVoiceChannel');
-    if (oldState.channel?.type == 'GUILD_VOICE') action(newState.guild.id, newState.member.user.id, 'leftVoiceChannel');
-    if (newState.channel?.type == 'GUILD_STAGE_VOICE') action(newState.guild.id, newState.member.user.id, 'joinStageChannel');
-    if (oldState.channel?.type == 'GUILD_STAGE_VOICE') action(newState.guild.id, newState.member.user.id, 'leftStageChannel');
+    if (newState.channel?.type == ChannelType.GuildVoice) action(newState.guild.id, newState.member.user.id, 'joinVoiceChannel');
+    if (oldState.channel?.type == ChannelType.GuildVoice) action(newState.guild.id, newState.member.user.id, 'leftVoiceChannel');
+    if (newState.channel?.type == ChannelType.GuildStageVoice) action(newState.guild.id, newState.member.user.id, 'joinStageChannel');
+    if (oldState.channel?.type == ChannelType.GuildStageVoice) action(newState.guild.id, newState.member.user.id, 'leftStageChannel');
   }
 })
 
