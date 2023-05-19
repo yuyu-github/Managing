@@ -11,8 +11,8 @@ export default [
     options: [
       {
         type: ApplicationCommandOptionType.User,
-        name: 'user',
-        description: '表示するユーザー',
+        name: 'member',
+        description: '表示するメンバー',
       }
     ]
   },
