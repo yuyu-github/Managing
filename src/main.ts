@@ -14,10 +14,11 @@ const client = new Client({
 import commands from './commands/list';
 import commandProcess from './commands/process';
 import loadVotes from './vote/load_votes';
-import * as voteEvents from './vote/events';
 import { action, init as actionInit, onExit as actionOnExit } from './action';
+import * as voteEvents from './vote/events';
 import quote from './quote';
 import forward from './forward';
+import * as keep from './keep';
 
 process.chdir(__dirname + '\\..\\');
 
@@ -105,6 +106,14 @@ client.on('voiceStateUpdate', (oldState, newState) => {
     if (newState.channel?.type == ChannelType.GuildStageVoice) action(newState.guild.id, newState.member.user.id, 'joinStageChannel');
     if (oldState.channel?.type == ChannelType.GuildStageVoice) action(newState.guild.id, newState.member.user.id, 'leftStageChannel');
   }
+})
+
+client.on('guildMemberAdd', member => {
+  keep.onMemberAdd(member);
+})
+
+client.on('guildMemberRemove', member => {
+  keep.onMemberRemove(member);
 })
 
 client.login(process.env.DEBUG == 'true' ? token.debug : token.default);
