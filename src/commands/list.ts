@@ -33,14 +33,6 @@ export default [
     ]
   },
   {
-    type: ApplicationCommandType.Message,
-    name: 'ピン留め',
-  },
-  {
-    type: ApplicationCommandType.Message,
-    name: 'ピン留め解除',
-  },
-  {
     name: 'delete-message',
     description: 'メッセージを削除する',
     defaultMemberPermissions: PermissionFlagsBits.ManageMessages,
@@ -95,5 +87,37 @@ export default [
         ]
       }
     ]
-  }
+  },
+  {
+    name: 'keep',
+    description: 'サーバーに再参加したときユーザーの情報を保持する',
+    options: [
+      {
+        type: ApplicationCommandOptionType.String,
+        name: 'type',
+        description: '保持する種類',
+        choices: [
+          { name: 'すべて', value: 'all' },
+          { name: 'ロール', value: 'role' },
+          { name: 'ニックネーム', value: 'nick' },
+        ],
+        required: true,
+      },
+      {
+        type: ApplicationCommandOptionType.Boolean,
+        name: 'value',
+        description: '保持する',
+        required: true,
+      }
+    ]
+  },
+
+  {
+    type: ApplicationCommandType.Message,
+    name: 'ピン留め',
+  },
+  {
+    type: ApplicationCommandType.Message,
+    name: 'ピン留め解除',
+  },
 ] as any[];

@@ -42,6 +42,10 @@ export default async function (client: Client, interaction: Interaction) {
         stats.memberStats(client, interaction);
       }
       break;
+      case 'changes': {
+        stats.changes(client, interaction);
+      }
+      break;
 
       case 'translate': {
         const text = interaction.options.getString('text') ?? '';
@@ -100,9 +104,25 @@ export default async function (client: Client, interaction: Interaction) {
         }
       }
       break;
-      case 'changes': {
-        stats.changes(client, interaction);
+      case 'keep': {
+        const permissions = interaction.member?.permissions;
+        if (typeof permissions != 'string' && !permissions?.has(PermissionFlagsBits.ManageGuild)) {
+          interaction.reply('設定を変更する権限がありません');
+        }
+
+        const typeMap = {
+          role: 'ロール',
+          nick: 'ニックネーム'
+        }
+
+        const type = interaction.options.getString('type', true);
+        const value = interaction.options.getBoolean('value', true);
+        if (type == 'all') {
+          Object.keys(typeMap).forEach(v => setData('guild', interaction.guildId, ['keep', 'enabled', v], value))
+        } else setData('guild', interaction.guildId, ['keep', 'enabled', type], value);
+        interaction.reply(`再参加時に${type == 'all' ? '' : typeMap[type] + 'を'}保持${value ? 'する' : 'しない'}ように設定しました`);
       }
+      break;
     }
   } else if (interaction.isContextMenuCommand()) {
     switch (interaction.commandName) {
