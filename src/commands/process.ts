@@ -1,4 +1,4 @@
-import { BaseInteraction, Client, CommandInteraction, Interaction, PermissionFlagsBits } from 'discord.js';
+import { AttachmentBuilder, BaseInteraction, Client, CommandInteraction, Interaction, PermissionFlagsBits } from 'discord.js';
 
 import { setData, getData, deleteData } from 'discordbot-data';
 
@@ -180,6 +180,16 @@ export default async function (client: Client, interaction: Interaction) {
           interaction.reply(`<t:${Math.floor((new Date().getTime() + timeout) / 1000)}>まで${member.toString()}をタイムアウトしました`)
         }
       }
+      break;
+      case 'avatar': {
+        const user = interaction.options.getUser('user', true);
+        interaction.reply({
+          files: [
+            user.displayAvatarURL()
+          ]
+        });
+      }
+      break;
     }
   } else if (interaction.isContextMenuCommand()) {
     switch (interaction.commandName) {

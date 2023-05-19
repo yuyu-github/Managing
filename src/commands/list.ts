@@ -153,6 +153,18 @@ export default [
       }
     ]
   },
+  {
+    name: 'avatar',
+    description: 'アイコン画像を取得する',
+    options: [
+      {
+        type: ApplicationCommandOptionType.User,
+        name: 'user',
+        description: 'ユーザー',
+        required: true
+      }
+    ]
+  },
 
   {
     type: ApplicationCommandType.Message,
