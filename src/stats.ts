@@ -26,8 +26,8 @@ function endMeasuringTime(name, guildId, userId) {
   if (startTime[name]?.[guildId]?.[userId] == null) return;
 
   let time = Math.floor(Date.now() / 1000 / 60) - startTime[name][guildId][userId]
-  setData('guild', guildId, ['memberData', 'time', name, userId], time, '+');
-  setData('guild', guildId, ['stats', 'time', name], time, '+');
+  setData('guild', guildId, ['stats', 'data', 'member', 'time', name, userId], time, '+');
+  setData('guild', guildId, ['stats', 'data', 'guild', 'time', name], time, '+');
 
   if (getData('guild', guildId, ['changes', 'record'])) {
     const recordChangeNames = ['inVoiceChannel'];
@@ -66,8 +66,8 @@ export function onExit() {
 export function action(guildId: string | null, userId: string | null, type: actionType) {
   if (userId == null) return;
 
-  setData('guild', guildId, ['memberData', 'action', type, userId], 1, '+');
-  setData('guild', guildId, ['stats', 'action', type], 1, '+');
+  setData('guild', guildId, ['stats', 'data', 'member', 'action', type, userId], 1, '+');
+  setData('guild', guildId, ['stats', 'data', 'guild', 'action', type], 1, '+');
   
   if (type == 'joinVoiceChannel') startMeasuringTime('inVoiceChannel', guildId, userId);
   if (type == 'joinStageChannel') startMeasuringTime('inStageChannel', guildId, userId);

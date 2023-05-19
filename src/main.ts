@@ -14,7 +14,7 @@ const client = new Client({
 import commands from './commands/list';
 import commandProcess from './commands/process';
 import loadVotes from './vote/load_votes';
-import { action, init as actionInit, onExit as actionOnExit } from './action';
+import { action, init as actionInit, onExit as actionOnExit } from './stats';
 import * as voteEvents from './vote/events';
 import quote from './quote';
 import forward from './forward';

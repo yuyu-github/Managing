@@ -4,7 +4,7 @@ import { setData, getData, deleteData } from 'discordbot-data';
 import * as GoogleChartsNode from 'google-charts-node';
 import * as fs from 'fs';
 
-import { updateData } from '../../action';
+import { updateData } from '../../stats';
 import { createTempFile } from '../../temp_file'
 
 function createStatsEmbed(getAction: (name: string, unit: string) => string, getTime: (name: string) => string, user: User | null = null) {
@@ -44,7 +44,7 @@ export async function stats(client: Client, interaction: CommandInteraction) {
 
   updateData(interaction.guildId, user.id);
 
-  const stats = getData('guild', interaction.guildId, ['stats']);
+  const stats = getData('guild', interaction.guildId, ['stats', 'data', 'guild']);
   const getAction = (name: string, unit: string): string => `${stats?.['action']?.[name] ?? 0}${unit}`;
   const getTime = (name: string): string => `${minutesToString(stats?.['time']?.[name] ?? 0)}`;
   const minutesToString = (minutes: number): string => (minutes >= 60 ? Math.floor(minutes / 60) + '時間' : '') + minutes % 60 + '分';
@@ -57,7 +57,7 @@ export async function memberStats(client: Client, interaction: CommandInteractio
 
   updateData(interaction.guildId, user.id);
 
-  const memberStats = getData('guild', interaction.guildId, ['memberData']);
+  const memberStats = getData('guild', interaction.guildId, ['stats', 'data', 'member']);
   const getAction = (name: string, unit: string): string => `${memberStats?.['action']?.[name]?.[user.id] ?? 0}${unit} (#${getRank(memberStats?.['action']?.[name])})`;
   const getTime = (name: string): string => `${minutesToString(memberStats?.['time']?.[name]?.[user.id] ?? 0)} (#${getRank(memberStats?.['time']?.[name])})`;
   const minutesToString = (minutes: number): string => (minutes >= 60 ? Math.floor(minutes / 60) + '時間' : '') + minutes % 60 + '分';
