@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType, ApplicationCommandType, PermissionFlagsBits } from 'discord.js';
+import { ApplicationCommandOptionType, ApplicationCommandType, ChannelType, PermissionFlagsBits, SlashCommandChannelOption } from 'discord.js';
 
 import translateLangs from './lists/translate/langs';
 
@@ -56,12 +56,16 @@ export default [
         name: 'add',
         description: 'メッセージの転送を設定する',
         options: [
-          {
-            type: ApplicationCommandOptionType.Channel,
-            name: 'channel',
-            description: 'メッセージの転送元チャンネル',
-            required: true,
-          },
+          new SlashCommandChannelOption()
+          .setName('channel')
+          .setDescription('メッセージの転送元チャンネル')
+          .setRequired(true)
+          .addChannelTypes(
+            ChannelType.GuildText,
+            ChannelType.GuildVoice,
+            ChannelType.GuildAnnouncement,
+            ChannelType.GuildStageVoice,
+            ChannelType.PublicThread),
           {
             type: ApplicationCommandOptionType.String,
             name: 'webhook',
@@ -75,12 +79,16 @@ export default [
         name: 'remove',
         description: 'メッセージの転送を解除する',
         options: [
-          {
-            type: ApplicationCommandOptionType.Channel,
-            name: 'channel',
-            description: 'メッセージの転送元チャンネル',
-            required: true,
-          },
+          new SlashCommandChannelOption()
+          .setName('channel')
+          .setDescription('メッセージの転送元チャンネル')
+          .setRequired(true)
+          .addChannelTypes(
+            ChannelType.GuildText,
+            ChannelType.GuildVoice,
+            ChannelType.GuildAnnouncement,
+            ChannelType.GuildStageVoice,
+            ChannelType.PublicThread),
           {
             type: ApplicationCommandOptionType.String,
             name: 'webhook',
