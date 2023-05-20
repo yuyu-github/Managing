@@ -195,9 +195,9 @@ export async function banVote(client: Client, interaction: CommandInteraction) {
 }
 
 export async function unbanVote(client: Client, interaction: CommandInteraction) {
-  const userTag = interaction.isChatInputCommand() ? interaction.options.getString('user', true) : interaction.options.getUser('user', true).id;
+  const userTagOrId = interaction.isChatInputCommand() ? interaction.options.getString('user', true) : interaction.options.getUser('user', true).id;
   interaction.guild?.bans.fetch().then(banUsers => {
-    const user = banUsers.find((v) => v.user.tag == userTag)?.user;
+    const user = banUsers.find((v) => v.user.tag == userTagOrId || v.user.id == userTagOrId)?.user;
     if (user == null) {
       interaction.reply('無効なユーザーです');
       return;

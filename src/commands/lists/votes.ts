@@ -123,6 +123,29 @@ export default [
     ]
   },
   {
+    type: ApplicationCommandType.User,
+    name: 'BAN投票',
+    defaultMemberPermissions: PermissionFlagsBits.BanMembers,
+  },
+  {
+    name: 'unbanvote',
+    description: 'BAN解除するか投票をとる',
+    defaultMemberPermissions: PermissionFlagsBits.BanMembers,
+    options: [
+      {
+        type: ApplicationCommandOptionType.String,
+        name: 'user',
+        description: '投票をとるユーザーのタグまたはID',
+        required: true,
+      },
+      {
+        type: ApplicationCommandOptionType.Integer,
+        name: 'count',
+        description: '投票終了する人数',
+      },
+    ]
+  },
+  {
     name: 'vote-setting',
     description: '-',
     defaultMemberPermissions: PermissionFlagsBits.ManageGuild,
@@ -169,27 +192,4 @@ export default [
       },
     ]
   },
-  {
-    type: ApplicationCommandType.User,
-    name: 'BAN投票',
-    defaultMemberPermissions: PermissionFlagsBits.BanMembers,
-  },
-  {
-    name: 'unbanvote',
-    description: 'BAN解除するか投票をとる',
-    defaultMemberPermissions: PermissionFlagsBits.BanMembers,
-    options: [
-      {
-        type: ApplicationCommandOptionType.String,
-        name: 'user',
-        description: '投票をとるユーザーのタグ',
-        required: true,
-      },
-      {
-        type: ApplicationCommandOptionType.Integer,
-        name: 'count',
-        description: '投票終了する人数',
-      },
-    ]
-  }
 ]
