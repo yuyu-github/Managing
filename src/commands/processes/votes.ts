@@ -18,13 +18,13 @@ export function vote(client: Client, interaction: ChatInputCommandInteraction) {
       .setCustomId('name')
       .setLabel('名前')
       .setStyle(TextInputStyle.Short)
-      .setRequired(true)
   ));
   modal.addComponents(new ActionRowBuilder<TextInputBuilder>().setComponents(
     new TextInputBuilder()
       .setCustomId('choices')
       .setLabel('選択肢(改行で区切る)')
       .setStyle(TextInputStyle.Paragraph)
+      .setRequired(false)
   ));
   interaction.showModal(modal)
 
