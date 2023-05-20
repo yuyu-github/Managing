@@ -244,7 +244,6 @@ export async function voteSetting(client: Client, interaction: ChatInputCommandI
 
 export async function voteCount(client: Client, interaction: ContextMenuCommandInteraction) {
   const message = interaction.options.getMessage('message', true);
-  if (!('guildId' in message)) return;
   const votes = getData('guild', message.guildId, ['votes', message.channelId]) ?? {};
 
   if (!Object.keys(votes ?? {}).includes(message.id)) {
@@ -263,7 +262,6 @@ export async function endVote(client: Client, interaction: ContextMenuCommandInt
   const message = interaction.options.getMessage('message', true);
   if (message == null || !('guildId' in message)) return;
   const votes = getData('guild', message.guildId, ['votes', message.channelId]) ?? {};
-
   if (!Object.keys(votes ?? {}).includes(message.id)) {
     interaction.reply('このメッセージは投票ではありません')
   } else if (votes[message.id].type != 'normal') {
@@ -271,8 +269,6 @@ export async function endVote(client: Client, interaction: ContextMenuCommandInt
   } else if (votes[message.id].author != interaction.user.id) {
     interaction.reply('作成者以外は終了できません');
   } else {
-    deleteData('guild', message.guildId, ['votes', message.channelId, message.id])
-
     let counts = {}
     for (let item of message.reactions.cache) {
       counts[item[0]] = item[1].count - ((await item[1].users.fetch()).has(client.user?.id ?? '') ? 1 : 0);
@@ -280,5 +276,6 @@ export async function endVote(client: Client, interaction: ContextMenuCommandInt
 
     interaction.reply('投票を終了しました');
     voteViewResult(votes[message.id], message, counts);
+    deleteData('guild', message.guildId, ['votes', message.channelId, message.id])
   }
 }
