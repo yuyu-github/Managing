@@ -1,4 +1,4 @@
-import { AttachmentBuilder, BaseInteraction, Client, CommandInteraction, Interaction, PermissionFlagsBits } from 'discord.js';
+import { APIEmbedField, AttachmentBuilder, BaseInteraction, Client, CommandInteraction, EmbedBuilder, Interaction, PermissionFlagsBits } from 'discord.js';
 
 import { setData, getData, deleteData } from 'discordbot-data';
 
@@ -190,6 +190,48 @@ export default async function (client: Client, interaction: Interaction) {
         });
       }
       break;
+      case 'user-info': {
+        const user = interaction.options.getUser('user', true);
+        const member = interaction.guild?.members.resolve(user);
+
+        let fields: (APIEmbedField & {cond?: boolean})[] = [
+          {
+            name: 'アカウント作成日時',
+            value: `<t:${Math.floor(user.createdTimestamp / 1000)}>\n<t:${Math.floor(user.createdTimestamp / 1000)}:R>`,
+            inline: true,
+          },
+          {
+            name: 'サーバー参加日時',
+            value: `<t:${Math.floor((member?.joinedTimestamp ?? 0) / 1000)}>\n<t:${Math.floor((member?.joinedTimestamp ?? 0) / 1000)}:R>`,
+            inline: true,
+            cond: member != null
+          },
+          {
+            name: 'Bot',
+            value: user.bot ? 'はい' : 'いいえ',
+            cond: user.bot
+          }
+        ];
+        fields = fields.filter(f => f.cond == null || f.cond);
+
+        interaction.reply({
+          embeds: [
+            new EmbedBuilder()
+            .setAuthor({
+              name: member?.nickname == null ? user.username: `${member.nickname} (${user.username})`,
+              iconURL: user.displayAvatarURL(),
+            })
+            .setTitle(user.tag)
+            .setThumbnail(user.displayAvatarURL())
+            .setFooter({
+              text: user.id
+            })
+            .setTimestamp()
+            .setColor(user.accentColor ?? null)
+            .setFields(fields)
+          ]
+        })
+      }
     }
   } else if (interaction.isContextMenuCommand()) {
     switch (interaction.commandName) {

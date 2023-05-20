@@ -165,6 +165,18 @@ export default [
       }
     ]
   },
+  {
+    name: 'user-info',
+    description: 'ユーザー情報を表示する',
+    options: [
+      {
+        type: ApplicationCommandOptionType.User,
+        name: 'user',
+        description: 'ユーザー',
+        required: true
+      }
+    ]
+  },
 
   {
     type: ApplicationCommandType.Message,
