@@ -9,7 +9,7 @@ export default [
     description: '投票を作成',
     options: [
       {
-        type: ApplicationCommandOptionType.Boolean,
+        type: ApplicationCommandOptionType.String,
         name: 'name',
         description: '投票の名前',
         required: true,

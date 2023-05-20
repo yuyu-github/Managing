@@ -1,4 +1,4 @@
-import { Message, PartialMessage } from "discord.js";
+import { Colors, Message, PartialMessage } from "discord.js";
 
 export default function(vote: {choices: string[][]}, message: Message | PartialMessage, counts: object) {
   const total = Object.values(counts ?? {}).reduce((sum, i) => sum + i, 0);
@@ -11,6 +11,7 @@ export default function(vote: {choices: string[][]}, message: Message | PartialM
           name: i[0] + ' ' + i[1],
           value: counts[i[0]] + '票 (' + (Math.round(counts[i[0]] / total * 1000) / 10) + '%)',
         })),
+        color: Colors.Gold
       }
     ]
   })

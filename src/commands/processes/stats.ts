@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, Client, CommandInteraction, AttachmentBuilder, PermissionFlagsBits, User } from 'discord.js';
+import { ChatInputCommandInteraction, Client, CommandInteraction, AttachmentBuilder, PermissionFlagsBits, User, Colors } from 'discord.js';
 
 import { setData, getData, deleteData } from 'discordbot-data';
 import * as GoogleChartsNode from 'google-charts-node';
@@ -33,6 +33,7 @@ function createStatsEmbed(getAction: (name: string, unit: string) => string, get
           name: i,
           value: displayData[i],
         })),
+        color: Colors.Green
       }
     ]
   } as any

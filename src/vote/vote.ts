@@ -1,4 +1,4 @@
-import { Message, User } from 'discord.js';
+import { Colors, Message, User } from 'discord.js';
 
 import { setData, getData, deleteData } from 'discordbot-data';
 
@@ -14,7 +14,8 @@ export function vote(type: VoteType, title: string, description: string, choices
         footer: {
           iconURL: author.displayAvatarURL(),
           text: author.tag,
-        }
+        },
+        color: Colors.Orange
       }
     ]
   })).then(msg => {

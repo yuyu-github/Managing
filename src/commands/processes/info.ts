@@ -46,7 +46,7 @@ export function userInfo(client: Client, interaction: ChatInputCommandInteractio
         text: user.id
       })
       .setTimestamp()
-      .setColor(user.accentColor ?? Colors.Aqua)
+      .setColor(user.accentColor ?? Colors.Blue)
       .setFields(fields)
     ]
   })
@@ -160,7 +160,7 @@ export async function serverInfo(client: Client, interaction: ChatInputCommandIn
         text: guild.id
       })
       .setTimestamp()
-      .setColor(Colors.Aqua)
+      .setColor(Colors.Blue)
       .setFields(fields)
     ]
   })
@@ -309,7 +309,7 @@ export async function channelInfo(client: Client, interaction: ChatInputCommandI
         text: channel.id
       })
       .setTimestamp()
-      .setColor(Colors.Aqua)
+      .setColor(Colors.Blue)
       .setFields(fields)
     ]
   })
