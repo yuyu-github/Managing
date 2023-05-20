@@ -24,5 +24,9 @@ export default [
         required: true
       }
     ]
+  },
+  {
+    name: 'server-info',
+    description: 'サーバー情報を表示する'
   }
 ]

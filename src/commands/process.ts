@@ -55,6 +55,10 @@ export default async function (client: Client, interaction: Interaction) {
         info.userInfo(client, interaction);
       }
       break;
+      case 'server-info': {
+        info.serverInfo(client, interaction);
+      }
+      break;
 
       case 'translate': {
         const text = interaction.options.getString('text') ?? '';
