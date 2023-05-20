@@ -4,10 +4,12 @@ import translateLangs from './lists/translate/langs';
 
 import votes from './lists/votes';
 import stats from './lists/stats'
+import info from './lists/info'
 
 export default [
   ...votes,
   ...stats,
+  ...info,
   {
     name: 'translate',
     description: '文章を翻訳する',
@@ -150,30 +152,6 @@ export default [
         type: ApplicationCommandOptionType.String,
         name: 'specified-time',
         description: '指定時間まで(HH:mm形式)'
-      }
-    ]
-  },
-  {
-    name: 'avatar',
-    description: 'アイコン画像を取得する',
-    options: [
-      {
-        type: ApplicationCommandOptionType.User,
-        name: 'user',
-        description: 'ユーザー',
-        required: true
-      }
-    ]
-  },
-  {
-    name: 'user-info',
-    description: 'ユーザー情報を表示する',
-    options: [
-      {
-        type: ApplicationCommandOptionType.User,
-        name: 'user',
-        description: 'ユーザー',
-        required: true
       }
     ]
   },
