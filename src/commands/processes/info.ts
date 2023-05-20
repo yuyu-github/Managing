@@ -52,7 +52,7 @@ export function userInfo(client: Client, interaction: ChatInputCommandInteractio
   })
 }
 
-export function serverInfo(client: Client, interaction: ChatInputCommandInteraction) {
+export async function serverInfo(client: Client, interaction: ChatInputCommandInteraction) {
   const guild = interaction.guild;
   if (guild == null) return;
 
@@ -84,6 +84,11 @@ export function serverInfo(client: Client, interaction: ChatInputCommandInteract
     {
       name: 'メンバー数',
       value: guild.memberCount + '人',
+      inline: true
+    },
+    {
+      name: '所有者',
+      value: (await guild.fetchOwner()).toString(),
       inline: true
     },
     {
