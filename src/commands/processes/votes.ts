@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ChatInputCommandInteraction, Client, CommandInteraction, ContextMenuCommandInteraction, ModalBuilder, ModalSubmitInteraction, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, TextInputBuilder, TextInputComponent, TextInputStyle } from "discord.js";
+import { ActionRowBuilder, ButtonInteraction, ChatInputCommandInteraction, Client, CommandInteraction, ContextMenuCommandInteraction, ModalBuilder, ModalSubmitInteraction, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, TextInputBuilder, TextInputComponent, TextInputStyle } from "discord.js";
 
 import { setData, getData, deleteData } from 'discordbot-data';
 
@@ -242,8 +242,8 @@ export async function voteSetting(client: Client, interaction: ChatInputCommandI
   interaction.reply('投票の設定を更新しました');
 }
 
-export async function voteCount(client: Client, interaction: ContextMenuCommandInteraction) {
-  const message = interaction.options.getMessage('message', true);
+export async function countVote(client: Client, interaction: ButtonInteraction) {
+  const message = interaction.message;
   const votes = getData('guild', message.guildId, ['votes', message.channelId]) ?? {};
 
   if (!Object.keys(votes ?? {}).includes(message.id)) {
@@ -258,14 +258,11 @@ export async function voteCount(client: Client, interaction: ContextMenuCommandI
   }
 }
 
-export async function endVote(client: Client, interaction: ContextMenuCommandInteraction) {
-  const message = interaction.options.getMessage('message', true);
-  if (message == null || !('guildId' in message)) return;
+export async function endVote(client: Client, interaction: ButtonInteraction) {
+  const message = interaction.message;
   const votes = getData('guild', message.guildId, ['votes', message.channelId]) ?? {};
   if (!Object.keys(votes ?? {}).includes(message.id)) {
     interaction.reply('このメッセージは投票ではありません')
-  } else if (votes[message.id].type != 'normal') {
-    interaction.reply('この投票は終了できません')
   } else if (votes[message.id].author != interaction.user.id) {
     interaction.reply('作成者以外は終了できません');
   } else {
@@ -273,9 +270,10 @@ export async function endVote(client: Client, interaction: ContextMenuCommandInt
     for (let item of message.reactions.cache) {
       counts[item[0]] = item[1].count - ((await item[1].users.fetch()).has(client.user?.id ?? '') ? 1 : 0);
     }
-
     interaction.reply('投票を終了しました');
     voteViewResult(votes[message.id], message, counts);
+
+    message.edit({components: []})
     deleteData('guild', message.guildId, ['votes', message.channelId, message.id])
   }
 }

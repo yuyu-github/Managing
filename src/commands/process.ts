@@ -201,14 +201,6 @@ export default async function (client: Client, interaction: Interaction) {
     }
   } else if (interaction.isContextMenuCommand()) {
     switch (interaction.commandName) {
-      case '投票集計': {
-        await votes.voteCount(client, interaction);
-      }
-      break;
-      case '投票終了': {
-        await votes.endVote(client, interaction);
-      }
-      break;
       case 'キック投票': {
         await votes.kickVote(client, interaction);
       }
@@ -233,7 +225,16 @@ export default async function (client: Client, interaction: Interaction) {
       }
       break;
     }
-  } else if (interaction.isModalSubmit()) {
-
+  } else if (interaction.isButton()) {
+    switch (interaction.customId) {
+      case 'count-vote': {
+        await votes.countVote(client, interaction);
+      }
+      break;
+      case 'end-vote': {
+        await votes.endVote(client, interaction);
+      }
+      break;
+    }
   }
 }

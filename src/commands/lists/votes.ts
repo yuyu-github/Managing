@@ -40,14 +40,6 @@ export default [
     ]
   },
   {
-    type: ApplicationCommandType.Message,
-    name: '投票集計',
-  },
-  {
-    type: ApplicationCommandType.Message,
-    name: '投票終了',
-  },
-  {
     name: 'rolevote',
     description: 'ロールを付与/剥奪するか投票をとる',
     defaultMemberPermission: PermissionFlagsBits.ManageRoles,
