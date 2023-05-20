@@ -1,43 +1,64 @@
-import { ChatInputCommandInteraction, Client, CommandInteraction, ContextMenuCommandInteraction } from "discord.js";
+import { ActionRowBuilder, ChatInputCommandInteraction, Client, CommandInteraction, ContextMenuCommandInteraction, ModalBuilder, ModalSubmitInteraction, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, TextInputBuilder, TextInputComponent, TextInputStyle } from "discord.js";
 
 import { setData, getData, deleteData } from 'discordbot-data';
 
 import { vote as createVote } from '../../vote/vote';
 import voteViewResult from '../../vote/view_result';
 
-export async function vote(client: Client, interaction: ChatInputCommandInteraction) {
-  const name = interaction.options.getString('name');
+export function vote(client: Client, interaction: ChatInputCommandInteraction) {
   const multiple = interaction.options.getBoolean('multiple')
   const count = interaction.options.getInteger('count') ?? 0;
-  const mentions = [...Array(2).keys()].map(i => interaction.options.getMentionable('mention' + (i + 1))).filter(i => i != null);
-  let choicesName = [...Array(20).keys()].map(i => interaction.options.getString('choice' + (i + 1))).filter(i => i != null);
+  const mentions = [...Array(4).keys()].map(i => interaction.options.getMentionable('mention' + (i + 1))).filter(i => i != null);
 
-  let choices: string[][];
-  if (choicesName.length == 0) {
-    choices = [['⭕', ''], ['❌', '']];
-  } else {
-    let list = ['🇦', '🇧', '🇨', '🇩', '🇪', '🇫', '🇬', '🇭', '🇮', '🇯', '🇰', '🇱', '🇲', '🇳', '🇴', '🇵', '🇶', '🇷', '🇸', '🇹', '🇺', '🇻', '🇼', '🇽', '🇾', '🇿']
-    choices = choicesName.map((item, i) => [list[i], item ?? '']);
-  }
+  const modal = new ModalBuilder()
+    .setCustomId('vote_' + interaction.id)
+    .setTitle('投票')
+  modal.addComponents(new ActionRowBuilder<TextInputBuilder>().setComponents(
+    new TextInputBuilder()
+      .setCustomId('name')
+      .setLabel('名前')
+      .setStyle(TextInputStyle.Short)
+      .setRequired(true)
+  ));
+  modal.addComponents(new ActionRowBuilder<TextInputBuilder>().setComponents(
+    new TextInputBuilder()
+      .setCustomId('choices')
+      .setLabel('選択肢(改行で区切る)')
+      .setStyle(TextInputStyle.Paragraph)
+  ));
+  interaction.showModal(modal)
 
-  createVote(
-    'normal',
-    name ?? '',
-    '',
-    choices,
-    {
-      multiple: multiple,
-      count: count,
-    },
-    interaction.user,
-    async data => {
-      await interaction.reply({ content: '投票を作成しました', ephemeral: true })
-      return interaction.channel?.send({
-        content: mentions.length > 0 ? mentions.reduce((str, i) => str + ' ' + i?.toString(), '') : undefined,
-        ...data,
-      });
+  interaction.awaitModalSubmit({ filter: i => i.customId == 'vote_' + interaction.id, time: 300000 }).then(interaction => {
+    const name = interaction.fields.getTextInputValue('name');
+    let choicesName = interaction.fields.getTextInputValue('choices').split('\n').map(i => i.trim()).filter(i => i != '');
+
+    let choices: string[][];
+    if (choicesName.length == 0) {
+      choices = [['⭕', ''], ['❌', '']];
+    } else {
+      let list = ['🇦', '🇧', '🇨', '🇩', '🇪', '🇫', '🇬', '🇭', '🇮', '🇯', '🇰', '🇱', '🇲', '🇳', '🇴', '🇵', '🇶', '🇷', '🇸', '🇹', '🇺', '🇻', '🇼', '🇽', '🇾', '🇿']
+      choices = choicesName.map((item, i) => [list[i], item ?? '']);
     }
-  )
+
+    createVote(
+      'normal',
+      name ?? '',
+      '',
+      choices,
+      {
+        multiple: multiple,
+        count: count,
+      },
+      interaction.user,
+      async data => {
+        await interaction.reply({ content: '投票を作成しました', ephemeral: true })
+        return interaction.channel?.send({
+          content: mentions.length > 0 ? mentions.reduce((str, i) => str + ' ' + i?.toString(), '') : undefined,
+          ...data,
+        });
+      }
+    )
+  })
 }
 
 export async function roleVote(client: Client, interaction: ChatInputCommandInteraction) {

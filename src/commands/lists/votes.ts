@@ -1,6 +1,5 @@
 import { ApplicationCommandOptionType, ApplicationCommandType, PermissionFlagsBits } from 'discord.js';
 
-import voteChoicesOptions from './vote/choices_options';
 import voteType from './vote-setting/vote_type';
 
 export default [
@@ -8,12 +7,6 @@ export default [
     name: 'vote',
     description: '投票を作成',
     options: [
-      {
-        type: ApplicationCommandOptionType.String,
-        name: 'name',
-        description: '投票の名前',
-        required: true,
-      },
       {
         type: ApplicationCommandOptionType.Boolean,
         name: 'multiple',
@@ -34,7 +27,16 @@ export default [
         name: 'mention2',
         description: 'メンション'
       },
-      ...voteChoicesOptions,
+      {
+        type: ApplicationCommandOptionType.Mentionable,
+        name: 'mention3',
+        description: 'メンション'
+      },
+      {
+        type: ApplicationCommandOptionType.Mentionable,
+        name: 'mention4',
+        description: 'メンション'
+      }
     ]
   },
   {

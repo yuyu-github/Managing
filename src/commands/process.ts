@@ -233,5 +233,7 @@ export default async function (client: Client, interaction: Interaction) {
       }
       break;
     }
+  } else if (interaction.isModalSubmit()) {
+
   }
 }
