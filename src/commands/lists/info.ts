@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType } from "discord.js";
+import { ApplicationCommandOptionType, ChannelType, SlashCommandChannelOption } from "discord.js";
 
 export default [
   {
@@ -28,5 +28,23 @@ export default [
   {
     name: 'server-info',
     description: 'サーバー情報を表示する'
+  },
+  {
+    name: 'channel-info',
+    description: 'チャンネル情報を表示する',
+    options: [
+      new SlashCommandChannelOption()
+      .setName('channel')
+      .setDescription('チャンネル')
+      .setRequired(true)
+      .addChannelTypes(
+        ChannelType.GuildText,
+        ChannelType.GuildVoice,
+        ChannelType.GuildForum,
+        ChannelType.GuildAnnouncement,
+        ChannelType.GuildStageVoice,
+        ChannelType.GuildCategory,
+        ChannelType.PublicThread)
+    ]
   }
 ]

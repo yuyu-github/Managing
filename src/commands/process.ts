@@ -59,6 +59,10 @@ export default async function (client: Client, interaction: Interaction) {
         info.serverInfo(client, interaction);
       }
       break;
+      case 'channel-info': {
+        info.channelInfo(client, interaction);
+      }
+      break;
 
       case 'translate': {
         const text = interaction.options.getString('text') ?? '';

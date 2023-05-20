@@ -5,7 +5,6 @@ import * as GoogleChartsNode from 'google-charts-node';
 import * as fs from 'fs';
 
 import { updateData } from '../../stats';
-import { createTempFile } from '../../temp_file'
 
 function createStatsEmbed(getAction: (name: string, unit: string) => string, getTime: (name: string) => string, user: User | null = null) {
   const displayData = {
