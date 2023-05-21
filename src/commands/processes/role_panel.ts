@@ -5,7 +5,10 @@ export async function rolePanel(client: Client, interaction: StringSelectMenuInt
   interaction.message.edit({components: interaction.message.components})
   
   if (interaction.values[0] == '_') {
-    createAddOrRemoveRolePanel(interaction, 'add');
+    const permissions = interaction.member?.permissions;
+    if (permissions == null || typeof permissions == 'string') return;
+    if (permissions.has(PermissionFlagsBits.ManageRoles)) createAddOrRemoveRolePanel(interaction, 'add');
+    else interaction.reply({content: 'パネルを操作する権限がありません', ephemeral: true});
     return;
   }
 
