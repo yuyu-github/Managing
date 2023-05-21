@@ -61,7 +61,8 @@ export function send(client: Client, interaction: ButtonInteraction) {
     let webhook = await getWebhook(channel);
     webhook.send({
       username: name,
-      content: content
+      content: content,
+      allowedMentions: {parse: []}
     })
 
     modalInteraction.deferUpdate()
