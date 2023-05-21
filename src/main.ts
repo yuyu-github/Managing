@@ -99,21 +99,33 @@ client.on('messageReactionRemove', async (reaction, user) => {
   }
 })
 
-client.on('voiceStateUpdate', (oldState, newState) => {
-  if (oldState.channelId != newState.channelId && oldState.channel?.type != newState.channel?.type && newState.member != null) {
-    if (newState.channel?.type == ChannelType.GuildVoice) action(newState.guild.id, newState.member.user.id, 'joinVoiceChannel');
-    if (oldState.channel?.type == ChannelType.GuildVoice) action(newState.guild.id, newState.member.user.id, 'leftVoiceChannel');
-    if (newState.channel?.type == ChannelType.GuildStageVoice) action(newState.guild.id, newState.member.user.id, 'joinStageChannel');
-    if (oldState.channel?.type == ChannelType.GuildStageVoice) action(newState.guild.id, newState.member.user.id, 'leftStageChannel');
+client.on('voiceStateUpdate', async (oldState, newState) => {
+  try {
+    if (oldState.channelId != newState.channelId && oldState.channel?.type != newState.channel?.type && newState.member != null) {
+      if (newState.channel?.type == ChannelType.GuildVoice) action(newState.guild.id, newState.member.user.id, 'joinVoiceChannel');
+      if (oldState.channel?.type == ChannelType.GuildVoice) action(newState.guild.id, newState.member.user.id, 'leftVoiceChannel');
+      if (newState.channel?.type == ChannelType.GuildStageVoice) action(newState.guild.id, newState.member.user.id, 'joinStageChannel');
+      if (oldState.channel?.type == ChannelType.GuildStageVoice) action(newState.guild.id, newState.member.user.id, 'leftStageChannel');
+    }
+  } catch (e) {
+    console.error(e);
   }
 })
 
 client.on('guildMemberAdd', member => {
-  keep.onMemberAdd(member);
+  try {
+    keep.onMemberAdd(member);
+  } catch (e) {
+    console.error(e);
+  }
 })
 
 client.on('guildMemberRemove', member => {
-  keep.onMemberRemove(member);
+  try {
+    keep.onMemberRemove(member);
+  } catch (e) {
+    console.error(e);
+  }
 })
 
 client.login(process.env.DEBUG == 'true' ? token.debug : token.default);
