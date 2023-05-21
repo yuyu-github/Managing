@@ -138,10 +138,10 @@ export async function removeRolePanel(client: Client, interaction: RoleSelectMen
     return;
   }
 
-  let roleIds = interaction.roles.map(i => i[0]);
+  let roleIds = interaction.roles.map(i => i.id);
   let options = (message.components[0].components[0] as StringSelectMenuComponent).options;
   options = options.filter(i => !roleIds.includes(i.value));
-  if (options.length == 0) options = [];
+  if (options.length == 0) options = [{label: 'ロールを追加してください', value: '_'}];
   
   message.edit({
     components: [
