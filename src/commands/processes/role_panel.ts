@@ -7,7 +7,7 @@ export async function rolePanel(client: Client, interaction: StringSelectMenuInt
   if (interaction.values[0] == '_') {
     const permissions = interaction.member?.permissions;
     if (permissions == null || typeof permissions == 'string') return;
-    if (permissions.has(PermissionFlagsBits.ManageRoles)) createAddOrRemoveRolePanel(interaction, 'add');
+    if (permissions.has(PermissionFlagsBits.ManageRoles)) createAddOrRemoveRolePanel(client, interaction, 'add');
     else interaction.reply({content: 'パネルを操作する権限がありません', ephemeral: true});
     return;
   }
@@ -60,13 +60,13 @@ export function rolePanelCommand(client: Client, interaction: ChatInputCommandIn
     break;
     case 'add': 
     case 'remove': {
-      createAddOrRemoveRolePanel(interaction, interaction.options.getSubcommand(true));
+      createAddOrRemoveRolePanel(client, interaction, interaction.options.getSubcommand(true));
     }
     break;
   }
 }
-function createAddOrRemoveRolePanel(interaction: ChatInputCommandInteraction | StringSelectMenuInteraction, type: string) {
-  if (getData('guild', interaction.guildId, ['role-panel', 'selected-panel']) == null) {
+async function createAddOrRemoveRolePanel(client: Client, interaction: ChatInputCommandInteraction | StringSelectMenuInteraction, type: string) {
+  if (await getSelectedRolePanel(client, interaction.guildId ?? '') == null) {
     interaction.reply({content: 'パネルが選択されていません', ephemeral: true});
     return;
   }
@@ -94,17 +94,19 @@ export function selectRolePanel(client: Client, interaction: ButtonInteraction) 
 async function getSelectedRolePanel(client: Client, guildId: string) {
   let rolePanelId = getData('guild', guildId, ['role-panel', 'selected-panel']) as [string, string] | null;
   let channel: Channel | undefined, message: Message | undefined;
-  if (rolePanelId != null) {
-    channel = client.channels.cache.get(rolePanelId[0]);
-    if (channel != null && 'messages' in channel) message = await channel.messages.fetch(rolePanelId[1]);
-  }
+  try {
+    if (rolePanelId != null) {
+      channel = client.channels.cache.get(rolePanelId[0]);
+      if (channel != null && 'messages' in channel) message = await channel.messages.fetch(rolePanelId[1]);
+    }
+  } catch {}
   return message;
 }
 
 export async function addRolePanel(client: Client, interaction: RoleSelectMenuInteraction) {
   let message = await getSelectedRolePanel(client, interaction.guildId ?? '')
   if (message == null) {
-    interaction.reply({content: 'パネルが選択されていません', ephemeral: true});
+    interaction.update({content: 'パネルが選択されていません', components: []});
     return;
   }
 
@@ -126,13 +128,13 @@ export async function addRolePanel(client: Client, interaction: RoleSelectMenuIn
         message.components[1]
     ]
   })
-  await interaction.reply({content: 'ロールをパネルに追加しました', ephemeral: true});
+  interaction.update({content: 'ロールをパネルに追加しました', components: []});
 }
 
 export async function removeRolePanel(client: Client, interaction: RoleSelectMenuInteraction) {
   let message = await getSelectedRolePanel(client, interaction.guildId ?? '')
   if (message == null) {
-    interaction.reply({content: 'パネルが選択されていません', ephemeral: true});
+    interaction.update({content: 'パネルが選択されていません', components: []});
     return;
   }
 
@@ -152,5 +154,5 @@ export async function removeRolePanel(client: Client, interaction: RoleSelectMen
         message.components[1]
     ]
   })
-  await interaction.reply({content: 'ロールをパネルから削除しました', ephemeral: true});
+  interaction.update({content: 'ロールをパネルから削除しました', components: []});
 }
