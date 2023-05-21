@@ -26,7 +26,8 @@ export default async function (client: Client, interaction: Interaction) {
       case 'user-info': info.userInfo(client, interaction); break;
       case 'server-info': info.serverInfo(client, interaction); break;
       case 'channel-info': info.channelInfo(client, interaction); break;
-      case 'role-panel': rolePanel.rolePanelCommand(client, interaction); break;
+      case 'role-info': await info.roleInfo(client, interaction); break;
+      case 'role-panel': rolePanel.rolePanelCommand(client, interaction); break;0
       case 'anonymous-panel': await anonymous.panel(client, interaction); break;
 
       case 'translate': {

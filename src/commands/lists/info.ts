@@ -1,4 +1,4 @@
-import { ApplicationCommandDataResolvable, ApplicationCommandOptionType, ChannelType, SlashCommandChannelOption } from "discord.js";
+import { ApplicationCommandDataResolvable, ApplicationCommandOptionType, ChannelType, SlashCommandChannelOption, SlashCommandRoleOption } from "discord.js";
 
 export default [
   {
@@ -47,6 +47,19 @@ export default [
           ChannelType.GuildCategory,
           ChannelType.PublicThread
         ]
+      }
+    ]
+  },
+  {
+    name: 'role-info',
+    description: 'ロール情報を表示する',
+    options: [
+      {
+        type: ApplicationCommandOptionType.Role,
+        name: 'role',
+        description: 'ロール',
+        required: true,
+        
       }
     ]
   }

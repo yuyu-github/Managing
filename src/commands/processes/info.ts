@@ -1,4 +1,4 @@
-import { APIEmbedField, CategoryChannel, ChannelType, ChatInputCommandInteraction, Client, Colors, EmbedBuilder, ForumChannel, NewsChannel, PublicThreadChannel, StageChannel, TextChannel, VoiceChannel } from "discord.js";
+import { APIEmbedField, CategoryChannel, ChannelType, ChatInputCommandInteraction, Client, Colors, EmbedBuilder, ForumChannel, NewsChannel, PublicThreadChannel, Role, StageChannel, TextChannel, VoiceChannel } from "discord.js";
 
 export function avatar(client: Client, interaction: ChatInputCommandInteraction) {
   const user = interaction.options.getUser('user', true);
@@ -310,6 +310,64 @@ export async function channelInfo(client: Client, interaction: ChatInputCommandI
       })
       .setTimestamp()
       .setColor(Colors.Blue)
+      .setFields(fields)
+    ]
+  })
+}
+
+export async  function roleInfo(client: Client, interaction: ChatInputCommandInteraction) {
+  const role = interaction.options.getRole('role', true);
+  if (!(role instanceof Role)) return;
+
+  await role.guild.members.fetch();
+  let memberText = `**${role.members .size}人**\n`
+  memberText += role.members.map(m => m.toString()).slice(0, 5).join('\n');
+  if (role.members.size > 5) memberText += '...';
+
+  let fields: (APIEmbedField & {cond?: boolean})[] = [
+    {
+      name: 'ロール作成日時',
+      value: `<t:${Math.floor(role.createdTimestamp / 1000)}>\n<t:${Math.floor(role.createdTimestamp / 1000)}:R>`,
+      inline: true,
+    },
+    {
+      name: 'メンション',
+      value: role.mentionable ? '可' : '不可',
+      inline: true,
+    },
+    {
+      name: '別表示',
+      value: role.hoist ? 'はい' : 'いいえ',
+      inline: true,
+    },
+    {
+      name: 'Bot',
+      value: '<@' + role.tags?.botId + '>',
+      inline: true,
+      cond: role.tags?.botId != null
+    },
+    {
+      name: '接続',
+      value: role.tags?.guildConnections ? 'あり' : 'なし',
+      inline: true,
+      cond: role.tags?.guildConnections != null
+    },
+    {
+      name: 'メンバー',
+      value: memberText
+    }
+  ];
+  fields = fields.filter(f => f.cond == null || f.cond);
+
+  interaction.reply({
+    embeds: [
+      new EmbedBuilder()
+      .setTitle('@' + role.name)
+      .setFooter({
+        text: role.id
+      })
+      .setTimestamp()
+      .setColor(role.color)
       .setFields(fields)
     ]
   })
