@@ -101,6 +101,7 @@ export default [
   {
     name: 'keep',
     description: 'サーバーに再参加したときユーザーの情報を保持する',
+    defaultMemberPermissions: PermissionFlagsBits.ManageGuild,
     options: [
       {
         type: ApplicationCommandOptionType.String,
