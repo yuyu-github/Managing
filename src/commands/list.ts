@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType, ApplicationCommandType, ChannelType, PermissionFlagsBits, SlashCommandChannelOption } from 'discord.js';
+import { ApplicationCommandDataResolvable, ApplicationCommandOptionType, ApplicationCommandType, ChannelType, PermissionFlagsBits, SlashCommandChannelOption } from 'discord.js';
 
 import translateLangs from './lists/translate/langs';
 
@@ -186,6 +186,30 @@ export default [
       },
     ]
   },
+  {
+    name: 'anonymous-panel',
+    description: '匿名でメッセージを送信するパネルを作成する',
+    defaultMemberPermissions: PermissionFlagsBits.ManageGuild,
+    options: [
+      {
+        name: 'channel',
+        description: 'メッセージを送信するチャンネル',
+        type: ApplicationCommandOptionType.Channel,
+        channelTypes: [
+          ChannelType.GuildText,
+          ChannelType.GuildVoice,
+          ChannelType.GuildAnnouncement,
+          ChannelType.GuildStageVoice
+        ],
+        required: true,
+      },
+      {
+        name: 'default-name',
+        description: '匿名で送ったときのデフォルトの名前',
+        type: ApplicationCommandOptionType.String
+      }
+    ]
+  },
 
   {
     type: ApplicationCommandType.Message,
@@ -195,4 +219,4 @@ export default [
     type: ApplicationCommandType.Message,
     name: 'ピン留め解除',
   },
-] as any[];
+] as ApplicationCommandDataResolvable[];

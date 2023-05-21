@@ -6,6 +6,7 @@ import * as votes from './processes/votes';
 import * as stats from './processes/stats';
 import * as info from './processes/info';
 import * as rolePanel from './processes/role_panel';
+import * as anonymous from './processes/anonymous';
 
 export default async function (client: Client, interaction: Interaction) {
   const fetch = (await new Function('return import("node-fetch")')()).default;
@@ -64,6 +65,7 @@ export default async function (client: Client, interaction: Interaction) {
         info.channelInfo(client, interaction);
       }
       break;
+      case 'anonymous-panel': await anonymous.panel(client, interaction); break;
 
       case 'translate': {
         const text = interaction.options.getString('text') ?? '';
@@ -238,6 +240,7 @@ export default async function (client: Client, interaction: Interaction) {
       }
       break;
       case 'select-role-panel': rolePanel.selectRolePanel(client, interaction); break;
+      case 'anonymous-send': anonymous.send(client, interaction); break;
     }
   } else if (interaction.isStringSelectMenu()) {
     switch (interaction.customId) {
