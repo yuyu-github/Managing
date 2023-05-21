@@ -11,7 +11,7 @@ export function vote(client: Client, interaction: ChatInputCommandInteraction) {
   const mentions = [...Array(4).keys()].map(i => interaction.options.getMentionable('mention' + (i + 1))).filter(i => i != null);
 
   const modal = new ModalBuilder()
-    .setCustomId('vote_' + interaction.id)
+    .setCustomId('vote')
     .setTitle('投票')
   modal.addComponents(new ActionRowBuilder<TextInputBuilder>().setComponents(
     new TextInputBuilder()
@@ -28,7 +28,7 @@ export function vote(client: Client, interaction: ChatInputCommandInteraction) {
   ));
   interaction.showModal(modal)
 
-  interaction.awaitModalSubmit({ filter: i => i.customId == 'vote_' + interaction.id, time: 300000 }).then(interaction => {
+  interaction.awaitModalSubmit({ filter: i => i.customId == 'vote' && i.user.id == interaction.user.id, time: 300000 }).then(interaction => {
     const name = interaction.fields.getTextInputValue('name');
     let choicesName = interaction.fields.getTextInputValue('choices').split('\n').map(i => i.trim()).filter(i => i != '');
 
