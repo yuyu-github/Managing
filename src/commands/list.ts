@@ -163,6 +163,28 @@ export default [
       }
     ]
   },
+  {
+    name: 'role-panel',
+    description: 'ロールパネルを作成する',
+    defaultMemberPermissions: PermissionFlagsBits.ManageRoles,
+    options: [
+      {
+        type: ApplicationCommandOptionType.Subcommand,
+        name: 'create',
+        description: 'パネルを作成する'
+      },
+      {
+        type: ApplicationCommandOptionType.Subcommand,
+        name: 'add',
+        description: 'ロールを追加する'
+      },
+      {
+        type: ApplicationCommandOptionType.Subcommand,
+        name: 'remove',
+        description: 'ロールを削除する'
+      },
+    ]
+  },
 
   {
     type: ApplicationCommandType.Message,

@@ -5,6 +5,7 @@ import { setData, getData, deleteData } from 'discordbot-data';
 import * as votes from './processes/votes';
 import * as stats from './processes/stats';
 import * as info from './processes/info';
+import * as rolePanel from './processes/role_panel';
 
 export default async function (client: Client, interaction: Interaction) {
   const fetch = (await new Function('return import("node-fetch")')()).default;
@@ -198,6 +199,7 @@ export default async function (client: Client, interaction: Interaction) {
         }
       }
       break;
+      case 'role-panel': rolePanel.rolePanelCommand(client, interaction); break;
     }
   } else if (interaction.isContextMenuCommand()) {
     switch (interaction.commandName) {
@@ -235,6 +237,16 @@ export default async function (client: Client, interaction: Interaction) {
         await votes.endVote(client, interaction);
       }
       break;
+      case 'select-role-panel': rolePanel.selectRolePanel(client, interaction); break;
+    }
+  } else if (interaction.isStringSelectMenu()) {
+    switch (interaction.customId) {
+      case 'role-panel': rolePanel.rolePanel(client, interaction); break;
+    }
+  } else if (interaction.isRoleSelectMenu()) {
+    switch (interaction.customId) {
+      case 'add-role-panel': rolePanel.addRolePanel(client, interaction); break;
+      case 'remove-role-panel': rolePanel.removeRolePanel(client, interaction); break;
     }
   }
 }
