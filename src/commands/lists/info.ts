@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType, ChannelType, SlashCommandChannelOption } from "discord.js";
+import { ApplicationCommandDataResolvable, ApplicationCommandOptionType, ChannelType, SlashCommandChannelOption } from "discord.js";
 
 export default [
   {
@@ -33,18 +33,21 @@ export default [
     name: 'channel-info',
     description: 'チャンネル情報を表示する',
     options: [
-      new SlashCommandChannelOption()
-      .setName('channel')
-      .setDescription('チャンネル')
-      .setRequired(true)
-      .addChannelTypes(
-        ChannelType.GuildText,
-        ChannelType.GuildVoice,
-        ChannelType.GuildForum,
-        ChannelType.GuildAnnouncement,
-        ChannelType.GuildStageVoice,
-        ChannelType.GuildCategory,
-        ChannelType.PublicThread)
+      {
+        type: ApplicationCommandOptionType.Channel,
+        name: 'channel',
+        description: 'チャンネル',
+        required: true,
+        channelTypes: [
+          ChannelType.GuildText,
+          ChannelType.GuildVoice,
+          ChannelType.GuildForum,
+          ChannelType.GuildAnnouncement,
+          ChannelType.GuildStageVoice,
+          ChannelType.GuildCategory,
+          ChannelType.PublicThread
+        ]
+      }
     ]
   }
-]
+] as ApplicationCommandDataResolvable[];

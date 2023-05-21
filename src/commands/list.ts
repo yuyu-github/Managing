@@ -79,16 +79,19 @@ export default [
         name: 'remove',
         description: 'メッセージの転送を解除する',
         options: [
-          new SlashCommandChannelOption()
-          .setName('channel')
-          .setDescription('メッセージの転送元チャンネル')
-          .setRequired(true)
-          .addChannelTypes(
-            ChannelType.GuildText,
-            ChannelType.GuildVoice,
-            ChannelType.GuildAnnouncement,
-            ChannelType.GuildStageVoice,
-            ChannelType.PublicThread),
+          {
+            type: ApplicationCommandOptionType.Channel,
+            name: 'channel',
+            description: 'メッセージの転送元チャンネル',
+            require: true,
+            channelTypes: [
+              ChannelType.GuildText,
+              ChannelType.GuildVoice,
+              ChannelType.GuildAnnouncement,
+              ChannelType.GuildStageVoice,
+              ChannelType.PublicThread
+            ]
+          },
           {
             type: ApplicationCommandOptionType.String,
             name: 'webhook',

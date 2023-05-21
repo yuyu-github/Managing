@@ -13,58 +13,20 @@ export default async function (client: Client, interaction: Interaction) {
 
   if (interaction.isChatInputCommand()) {
     switch (interaction.commandName) {
-      case 'vote': {
-        await votes.vote(client, interaction);
-      }
-      break;
-      case 'rolevote': {
-        await votes.roleVote(client, interaction);
-      }
-      break;
-      case 'kickvote': {
-        await votes.kickVote(client, interaction);
-      }
-      break;
-      case 'banvote': {
-        await votes.banVote(client, interaction);
-      }
-      break;
-      case 'unbanvote': {
-        await votes.unbanVote(client, interaction);
-      }
-      break;
-      case 'vote-setting': {
-        votes.voteSetting(client, interaction);
-      }
-      break;
-      case 'stats': {
-        stats.stats(client, interaction);
-      }
-      break;
-      case 'member-stats': {
-        stats.memberStats(client, interaction);
-      }
-      break;
-      case 'changes': {
-        stats.changes(client, interaction);
-      }
-      break;
-      case 'avatar': {
-        info.avatar(client, interaction);
-      }
-      break;
-      case 'user-info': {
-        info.userInfo(client, interaction);
-      }
-      break;
-      case 'server-info': {
-        info.serverInfo(client, interaction);
-      }
-      break;
-      case 'channel-info': {
-        info.channelInfo(client, interaction);
-      }
-      break;
+      case 'vote': votes.vote(client, interaction); break;
+      case 'rolevote': await votes.roleVote(client, interaction); break;
+      case 'kickvote': await votes.kickVote(client, interaction); break;
+      case 'banvote': await votes.banVote(client, interaction); break;
+      case 'unbanvote': await votes.unbanVote(client, interaction); break;
+      case 'vote-setting': votes.voteSetting(client, interaction); break;
+      case 'stats': stats.stats(client, interaction); break;
+      case 'member-stats': stats.memberStats(client, interaction); break;
+      case 'changes': stats.changes(client, interaction); break;
+      case 'avatar': info.avatar(client, interaction); break;
+      case 'user-info': info.userInfo(client, interaction); break;
+      case 'server-info': info.serverInfo(client, interaction); break;
+      case 'channel-info': info.channelInfo(client, interaction); break;
+      case 'role-panel': rolePanel.rolePanelCommand(client, interaction); break;
       case 'anonymous-panel': await anonymous.panel(client, interaction); break;
 
       case 'translate': {
@@ -201,18 +163,11 @@ export default async function (client: Client, interaction: Interaction) {
         }
       }
       break;
-      case 'role-panel': rolePanel.rolePanelCommand(client, interaction); break;
     }
   } else if (interaction.isContextMenuCommand()) {
     switch (interaction.commandName) {
-      case 'キック投票': {
-        await votes.kickVote(client, interaction);
-      }
-      break;
-      case 'BAN投票': {
-        await votes.banVote(client, interaction);
-      }
-      break;
+      case 'キック投票': await votes.kickVote(client, interaction); break;
+      case 'BAN投票': await votes.banVote(client, interaction); break;
       
       case 'ピン留め': {
         const message = interaction.options.getMessage('message');
@@ -231,14 +186,8 @@ export default async function (client: Client, interaction: Interaction) {
     }
   } else if (interaction.isButton()) {
     switch (interaction.customId) {
-      case 'count-vote': {
-        await votes.countVote(client, interaction);
-      }
-      break;
-      case 'end-vote': {
-        await votes.endVote(client, interaction);
-      }
-      break;
+      case 'count-vote': await votes.countVote(client, interaction); break;
+      case 'end-vote': await votes.endVote(client, interaction); break;
       case 'select-role-panel': rolePanel.selectRolePanel(client, interaction); break;
       case 'anonymous-send': anonymous.send(client, interaction); break;
     }

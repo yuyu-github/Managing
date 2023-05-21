@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType, ApplicationCommandType, PermissionFlagsBits } from 'discord.js';
+import { ApplicationCommandDataResolvable, ApplicationCommandOptionType, ApplicationCommandType, PermissionFlagsBits } from 'discord.js';
 
 import voteType from './vote-setting/vote_type';
 
@@ -184,4 +184,4 @@ export default [
       },
     ]
   },
-]
+] as ApplicationCommandDataResolvable[];

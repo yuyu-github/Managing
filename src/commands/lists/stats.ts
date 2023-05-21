@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType } from "discord.js";
+import { ApplicationCommandDataResolvable, ApplicationCommandOptionType } from "discord.js";
 
 export default [
   {
@@ -98,4 +98,4 @@ export default [
       }
     ]
   }
-]
+] as ApplicationCommandDataResolvable[];
