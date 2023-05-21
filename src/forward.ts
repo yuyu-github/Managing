@@ -1,4 +1,4 @@
-import { ChannelType, Client, Message, Embed } from "discord.js";
+import { ChannelType, Client, Message, Embed, WebhookClient } from "discord.js";
 
 import { setData, getData, deleteData } from 'discordbot-data';
 
@@ -6,8 +6,6 @@ export default async (client: Client, message: Message) => {
   if (message.channel.type == ChannelType.DM) return;
   const webhooks: string[] | null = getData('guild', message.guildId, ['forward', message.channelId]) as string[] | null;
   if (webhooks == null) return;
-
-  const fetch = (await new Function('return import("node-fetch")')()).default;
 
   const name = `${message.guild?.members.cache.get(message.author.id)?.nickname ?? message.author.username} (${message.guild?.name} #${message.channel.name})`
 
@@ -27,27 +25,20 @@ export default async (client: Client, message: Message) => {
   let files = [...message.attachments.values()].map(i => i.url).concat(images).join('\n');
 
   for (let webhook of webhooks) {
-    fetch(webhook, {
-      method: 'POST',
-      body: JSON.stringify({
-        username: name,
-        avatar_url: message.author.displayAvatarURL(),
-        content: message.content,
-        embeds: embeds,
-      }),
-      headers: { 'Content-Type': 'application/json' },
-    }).catch(e => {});
+    let wc = new WebhookClient({url: webhook});
+    wc.send({
+      username: name,
+      avatarURL: message.author.displayAvatarURL(),
+      content: message.content,
+      embeds: embeds,
+    }).catch();
 
     if (files.length != 0) {
-      fetch(webhook, {
-        method: 'POST',
-        body: JSON.stringify({
-          username: name,
-          avatar_url: message.author.displayAvatarURL(),
-          content: files,
-        }),
-        headers: { 'Content-Type': 'application/json' },
-      }).catch(e => {});
+      wc.send({
+        username: name,
+        avatarURL: message.author.displayAvatarURL(),
+        content: files,
+      }).catch();
     }
   }
 }

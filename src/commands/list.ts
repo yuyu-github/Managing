@@ -83,7 +83,7 @@ export default [
             type: ApplicationCommandOptionType.Channel,
             name: 'channel',
             description: 'メッセージの転送元チャンネル',
-            require: true,
+            required: true,
             channelTypes: [
               ChannelType.GuildText,
               ChannelType.GuildVoice,
