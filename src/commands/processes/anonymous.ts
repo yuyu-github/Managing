@@ -34,19 +34,21 @@ export function send(client: Client, interaction: ButtonInteraction) {
   const modal = new ModalBuilder()
     .setCustomId('anonymous-send')
     .setTitle('送信内容')
-  modal.addComponents(new ActionRowBuilder<TextInputBuilder>().setComponents(
-    new TextInputBuilder()
-      .setCustomId('name')
-      .setLabel('名前(空白で匿名)')
-      .setStyle(TextInputStyle.Short)
-      .setRequired(false)
-  ));
-  modal.addComponents(new ActionRowBuilder<TextInputBuilder>().setComponents(
-    new TextInputBuilder()
-      .setCustomId('content')
-      .setLabel('内容')
-      .setStyle(TextInputStyle.Paragraph)
-  ));
+  modal.setComponents(
+    new ActionRowBuilder<TextInputBuilder>().setComponents(
+      new TextInputBuilder()
+        .setCustomId('content')
+        .setLabel('内容')
+        .setStyle(TextInputStyle.Paragraph)
+    ),
+    new ActionRowBuilder<TextInputBuilder>().setComponents(
+      new TextInputBuilder()
+        .setCustomId('name')
+        .setLabel('名前(空白で匿名)')
+        .setStyle(TextInputStyle.Short)
+        .setRequired(false)
+    )
+  );
   interaction.showModal(modal)
 
   interaction.awaitModalSubmit({ filter: i => i.customId == 'anonymous-send' && i.user.id == interaction.user.id, time: 150000 }).then(async modalInteraction => {
