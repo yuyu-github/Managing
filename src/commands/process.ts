@@ -10,8 +10,6 @@ import * as anonymous from './processes/anonymous';
 import * as lottery from './processes/lottery';
 
 export default async function (client: Client, interaction: Interaction) {
-  const fetch = (await new Function('return import("node-fetch")')()).default;
-
   if (interaction.channel == null || interaction.channel?.isDMBased()) {
     if ('reply' in interaction) interaction.reply({content: 'DMでは実行できません', ephemeral: true});
     return;
