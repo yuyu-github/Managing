@@ -7,6 +7,7 @@ import * as stats from './processes/stats';
 import * as info from './processes/info';
 import * as rolePanel from './processes/role_panel';
 import * as anonymous from './processes/anonymous';
+import * as lottery from './processes/lottery';
 
 export default async function (client: Client, interaction: Interaction) {
   const fetch = (await new Function('return import("node-fetch")')()).default;
@@ -27,8 +28,9 @@ export default async function (client: Client, interaction: Interaction) {
       case 'server-info': info.serverInfo(client, interaction); break;
       case 'channel-info': info.channelInfo(client, interaction); break;
       case 'role-info': await info.roleInfo(client, interaction); break;
-      case 'role-panel': rolePanel.rolePanelCommand(client, interaction); break;0
+      case 'role-panel': rolePanel.rolePanelCommand(client, interaction); break;
       case 'anonymous-panel': await anonymous.panel(client, interaction); break;
+      case 'lottery': await lottery.lottery(client, interaction); break;
 
       case 'translate': {
         const text = interaction.options.getString('text') ?? '';
@@ -191,6 +193,9 @@ export default async function (client: Client, interaction: Interaction) {
       case 'end-vote': await votes.endVote(client, interaction); break;
       case 'select-role-panel': rolePanel.selectRolePanel(client, interaction); break;
       case 'anonymous-send': anonymous.send(client, interaction); break;
+      case 'entry-lottery': lottery.entry(client, interaction); break;
+      case 'leave-lottery': lottery.leave(client, interaction); break;
+      case 'start-lottery': lottery.start(client, interaction); break;
     }
   } else if (interaction.isStringSelectMenu()) {
     switch (interaction.customId) {

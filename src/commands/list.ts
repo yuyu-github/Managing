@@ -213,6 +213,35 @@ export default [
       }
     ]
   },
+  {
+    name: 'lottery',
+    description: '抽選を行う',
+    options: [
+      {
+        name: 'name',
+        description: '抽選の名前',
+        type: ApplicationCommandOptionType.String,
+        required: true
+      },
+      {
+        name: 'winners',
+        description: '当選人数',
+        type: ApplicationCommandOptionType.Integer,
+        minValue: 1
+      },
+      {
+        name: 'qualification',
+        description: '抽選に参加する資格',
+        type: ApplicationCommandOptionType.Role
+      },
+      {
+        name: 'maximum',
+        description: '最大参加人数',
+        type: ApplicationCommandOptionType.Integer,
+        minValue: 1
+      }
+    ]
+  },
 
   {
     type: ApplicationCommandType.Message,
