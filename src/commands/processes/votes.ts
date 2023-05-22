@@ -72,9 +72,9 @@ export async function roleVote(client: Client, interaction: ChatInputCommandInte
   if (guildRoles == null) return;
   const roles = interaction.member?.roles;
   if (roles == undefined || !('highest' in roles)) return;
-  const sameRole = getData('guild', interaction.guildId, ['vote-setting', 'same-role', 'role-vote']) ?? false;
+  const sameRole = getData('guild', interaction.guildId, ['vote', 'setting', 'same-role', 'role-vote']) ?? false;
 
-  const minCount = getData('guild', interaction.guildId, ['vote-setting', 'min-count', 'role-vote']) ?? 3;
+  const minCount = getData('guild', interaction.guildId, ['vote', 'setting', 'min-count', 'role-vote']) ?? 3;
   const count = interaction.options.getInteger('count') ?? minCount;
 
   if (guildRoles.comparePositions(role, roles.highest) > 0 && interaction.guild?.ownerId != interaction.user.id) {
@@ -121,9 +121,9 @@ export async function kickVote(client: Client, interaction: CommandInteraction) 
   if (guildRoles == null) return;
   const roles = interaction.member?.roles;
   if (roles == null || Array.isArray(roles)) return;
-  const sameRole = getData('guild', interaction.guildId, ['vote-setting', 'same-role', 'kick-vote']) ?? false;
+  const sameRole = getData('guild', interaction.guildId, ['vote', 'setting', 'same-role', 'kick-vote']) ?? false;
 
-  const minCount = getData('guild', interaction.guildId, ['vote-setting', 'min-count', 'kick-vote']) ?? 4;
+  const minCount = getData('guild', interaction.guildId, ['vote', 'setting', 'min-count', 'kick-vote']) ?? 4;
   const count = interaction.isChatInputCommand() ? interaction.options.getInteger('count') ?? minCount : minCount;
 
   if (!member.kickable) {
@@ -162,9 +162,9 @@ export async function banVote(client: Client, interaction: CommandInteraction) {
   if (guildRoles == null) return;
   const roles = interaction.member?.roles;
   if (roles == null || Array.isArray(roles)) return;
-  const sameRole = getData('guild', interaction.guildId, ['vote-setting', 'same-role', 'ban-vote']) ?? false;
+  const sameRole = getData('guild', interaction.guildId, ['vote', 'setting', 'same-role', 'ban-vote']) ?? false;
 
-  const minCount = getData('guild', interaction.guildId, ['vote-setting', 'min-count', 'ban-vote']) ?? 5;
+  const minCount = getData('guild', interaction.guildId, ['vote', 'setting', 'min-count', 'ban-vote']) ?? 5;
   const count = interaction.isChatInputCommand() ? interaction.options.getInteger('count') ?? minCount : minCount;
 
   if (!member.bannable) {
@@ -203,7 +203,7 @@ export async function unbanVote(client: Client, interaction: CommandInteraction)
       return;
     }
 
-    const minCount = getData('guild', interaction.guildId, ['vote-setting', 'min-count', 'unban-vote']) ?? 5;
+    const minCount = getData('guild', interaction.guildId, ['vote', 'setting', 'min-count', 'unban-vote']) ?? 5;
     const count = interaction.isChatInputCommand() ? interaction.options.getInteger('count') ?? minCount : minCount;
 
     if (count < minCount) {
@@ -231,11 +231,11 @@ export async function unbanVote(client: Client, interaction: CommandInteraction)
 export async function voteSetting(client: Client, interaction: ChatInputCommandInteraction) {
   switch (interaction.options.getSubcommand()) {
     case 'min-count': {
-      setData('guild', interaction.guildId, ['vote-setting', 'min-count', interaction.options.getString('type', true)], interaction.options.getInteger('value', true));
+      setData('guild', interaction.guildId, ['vote', 'setting', 'min-count', interaction.options.getString('type', true)], interaction.options.getInteger('value', true));
     }
     break;
     case 'same-role': {
-      setData('guild', interaction.guildId, ['vote-setting', 'same-role', interaction.options.getString('type', true)], interaction.options.getBoolean('value', true));
+      setData('guild', interaction.guildId, ['vote', 'setting', 'same-role', interaction.options.getString('type', true)], interaction.options.getBoolean('value', true));
     }
     break;
   }
@@ -244,7 +244,7 @@ export async function voteSetting(client: Client, interaction: ChatInputCommandI
 
 export async function countVote(client: Client, interaction: ButtonInteraction) {
   const message = interaction.message;
-  const votes = getData('guild', message.guildId, ['votes', message.channelId]) ?? {};
+  const votes = getData('guild', message.guildId, ['vote', 'list', message.channelId]) ?? {};
 
   if (!Object.keys(votes ?? {}).includes(message.id)) {
     interaction.reply('このメッセージは投票ではありません')
@@ -260,7 +260,7 @@ export async function countVote(client: Client, interaction: ButtonInteraction) 
 
 export async function endVote(client: Client, interaction: ButtonInteraction) {
   const message = interaction.message;
-  const votes = getData('guild', message.guildId, ['votes', message.channelId]) ?? {};
+  const votes = getData('guild', message.guildId, ['vote', 'list', message.channelId]) ?? {};
   if (!Object.keys(votes ?? {}).includes(message.id)) {
     interaction.reply('このメッセージは投票ではありません')
   } else if (votes[message.id].author != interaction.user.id) {
@@ -274,6 +274,6 @@ export async function endVote(client: Client, interaction: ButtonInteraction) {
     voteViewResult(votes[message.id], message, counts);
 
     message.edit({components: []})
-    deleteData('guild', message.guildId, ['votes', message.channelId, message.id])
+    deleteData('guild', message.guildId, ['vote', 'list', message.channelId, message.id])
   }
 }

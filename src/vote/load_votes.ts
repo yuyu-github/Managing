@@ -5,7 +5,7 @@ import { setData, getData, deleteData } from 'discordbot-data';
 export default async function (client: Client) {
   for (let guild of client.guilds.cache) {
     let channels = client.channels.cache;
-    let votes = getData('guild',guild[1].id, ['votes']);
+    let votes = getData('guild',guild[1].id, ['vote', 'list']);
     for (let id of Object.keys(votes ?? {})) {
       let channel = channels.get(id);
       if (channel == null || !('messages' in channel)) continue;

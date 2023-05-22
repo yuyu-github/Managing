@@ -40,7 +40,7 @@ export function vote(type: VoteType, title: string, description: string, choices
       msg.react(choice[0]);
     }
 
-    setData('guild', msg.guildId, ['votes', msg.channelId, msg.id], {
+    setData('guild', msg.guildId, ['vote', 'list', msg.channelId, msg.id], {
       ...data,
       type: type,
       choices: choices,
