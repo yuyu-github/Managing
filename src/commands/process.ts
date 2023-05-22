@@ -1,4 +1,4 @@
-import { APIEmbedField, AttachmentBuilder, BaseInteraction, Client, CommandInteraction, EmbedBuilder, Interaction, PermissionFlagsBits } from 'discord.js';
+import { APIEmbedField, AttachmentBuilder, BaseInteraction, ChannelType, Client, CommandInteraction, EmbedBuilder, Interaction, PermissionFlagsBits } from 'discord.js';
 
 import { setData, getData, deleteData } from 'discordbot-data';
 
@@ -11,6 +11,11 @@ import * as lottery from './processes/lottery';
 
 export default async function (client: Client, interaction: Interaction) {
   const fetch = (await new Function('return import("node-fetch")')()).default;
+
+  if (interaction.channel == null || interaction.channel?.isDMBased()) {
+    if ('reply' in interaction) interaction.reply({content: 'DMでは実行できません', ephemeral: true});
+    return;
+  }
 
   if (interaction.isChatInputCommand()) {
     switch (interaction.commandName) {
