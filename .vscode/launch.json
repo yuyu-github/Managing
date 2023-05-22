@@ -14,8 +14,7 @@
         "${workspaceFolder}/build/*.js"
       ],
       "env": {
-        "DEBUG": "true",
-        "DEVSERVERS": "1108892994247065641"
+        "DEBUG": "true"
       }
     }
   ]

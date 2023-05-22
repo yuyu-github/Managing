@@ -34,8 +34,8 @@ client.once('ready', async () => {
   try {
     actionInit(client);
 
-    if (process.env.DEBUG == 'true' && process.env.DEVSERVERS != null) {
-      for (let id of process.env.DEVSERVERS.split(',')) await client.application?.commands.set(commands, id);
+    if (process.env.DEBUG == 'true' && token.debugServers != null) {
+      for (let id of token.debugServers) await client.application?.commands.set(commands, id);
     } else await client.application?.commands.set(commands);
 
     await loadVotes(client);
