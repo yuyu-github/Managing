@@ -1,11 +1,11 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors, Component, ComponentBuilder, Message, User } from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors, Component, ComponentBuilder, Message, MessageMentionOptions, User } from 'discord.js';
 
 import { setData, getData, deleteData } from 'discordbot-data';
 
 type VoteType = 'normal' | 'rolevote' | 'kickvote' | 'banvote' | 'unbanvote'
 
 export function vote(type: VoteType, title: string, description: string, choices: string[][], data: object, author: User,
-  sendFn: (data: object) => Message | undefined | Promise<Message | undefined>): void {
+  sendFn: (data: object) => Message | undefined | Promise<Message | undefined>, allowedMentions: MessageMentionOptions = {}): void {
   let components: ComponentBuilder[] = [];
   if (type == 'normal') {
     components = [new ActionRowBuilder().addComponents(
@@ -32,7 +32,8 @@ export function vote(type: VoteType, title: string, description: string, choices
         color: Colors.Orange
       }
     ],
-    components: components
+    components: components,
+    allowedMentions: allowedMentions,
   })).then(msg => {
     if (msg == null) return;
 

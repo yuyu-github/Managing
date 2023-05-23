@@ -5,6 +5,7 @@ import { setData, getData, deleteData } from 'discordbot-data';
 import { vote as createVote } from '../../processes/vote/vote';
 import voteViewResult from '../../processes/vote/view_result';
 import { client } from "../../main";
+import { getAllowedMentions } from "../../functions";
 
 export function vote(interaction: ChatInputCommandInteraction) {
   const multiple = interaction.options.getBoolean('multiple')
@@ -57,7 +58,8 @@ export function vote(interaction: ChatInputCommandInteraction) {
           content: mentions.length > 0 ? mentions.reduce((str, i) => str + ' ' + i?.toString(), '') : undefined,
           ...data,
         });
-      }
+      },
+      getAllowedMentions(interaction.member)
     )
   })
 }
