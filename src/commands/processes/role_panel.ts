@@ -55,7 +55,7 @@ export function rolePanelCommand(client: Client, interaction: ChatInputCommandIn
               .setStyle(ButtonStyle.Secondary)
           ),
         ]
-      }).then((msg: Message) => setData('guild', interaction.guildId, ['role-panel', 'selected-panel'], [msg.channelId, msg.id]))
+      }).then((msg: Message) => setData('guild', interaction.guildId! ?? '', ['role-panel', 'selected-panel'], [msg.channelId, msg.id]))
     }
     break;
     case 'add': 
@@ -85,7 +85,7 @@ export function selectRolePanel(client: Client, interaction: ButtonInteraction) 
   const permissions = interaction.member?.permissions;
   if (permissions == null || typeof permissions == 'string') return;
   if (permissions.has(PermissionFlagsBits.ManageRoles)) {
-    setData('guild', interaction.guildId, ['role-panel', 'selected-panel'], [interaction.message.channelId, interaction.message.id])
+    setData('guild', interaction.guildId!, ['role-panel', 'selected-panel'], [interaction.message.channelId, interaction.message.id])
     interaction.reply({content: 'パネルを選択しました', ephemeral: true});
   } else {
     interaction.reply({content: 'パネルを操作する権限がありません', ephemeral: true})

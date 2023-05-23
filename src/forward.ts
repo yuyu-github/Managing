@@ -4,7 +4,7 @@ import { setData, getData, deleteData } from 'discordbot-data';
 
 export default async (client: Client, message: Message) => {
   if (message.channel.type == ChannelType.DM) return;
-  const webhooks: string[] | null = getData('guild', message.guildId, ['forward', message.channelId]) as string[] | null;
+  const webhooks: string[] | null = getData('guild', message.guildId!, ['forward', message.channelId]) as string[] | null;
   if (webhooks == null) return;
 
   const name = `${message.guild?.members.cache.get(message.author.id)?.nickname ?? message.author.username} (${message.guild?.name} #${message.channel.name})`

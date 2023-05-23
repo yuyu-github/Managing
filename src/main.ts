@@ -51,18 +51,18 @@ client.once('ready', async () => {
 
 client.on('messageCreate', async message => {
   try {
-    action(message.guildId, message.author.id, 'sendMessage');
+    action(message.guildId!, message.author.id, 'sendMessage');
 
     let mentionedMembers: string[] = [];
     message.mentions.members?.each(member => { if (!mentionedMembers.includes(member.id)) mentionedMembers.push(member.id) });
     message.mentions.roles.each(role => role.members.each(member => { if (!mentionedMembers.includes(member.id)) mentionedMembers.push(member.id) }));
     if (message.mentions.everyone) (await message.guild?.members.fetch())?.each(member => {if (!mentionedMembers.includes(member.id)) mentionedMembers.push(member.id) });
-    mentionedMembers.forEach(id => action(message.guildId, id, 'mentioned'));
-    if (mentionedMembers.length > 0) action(message.guildId, message.author.id, 'mention');
+    mentionedMembers.forEach(id => action(message.guildId!, id, 'mentioned'));
+    if (mentionedMembers.length > 0) action(message.guildId!, message.author.id, 'mention');
 
     message.attachments.each(i => {
-      action(message.guildId, message.author.id, 'sendFile');
-      if (i.contentType?.startsWith('image/')) action(message.guildId, message.author.id, 'sendImage');
+      action(message.guildId!, message.author.id, 'sendFile');
+      if (i.contentType?.startsWith('image/')) action(message.guildId!, message.author.id, 'sendImage');
     })
 
     await forward(client, message);
@@ -74,8 +74,8 @@ client.on('messageCreate', async message => {
 
 client.on('interactionCreate', async (interaction) => {
   try {
-    if (interaction.isCommand()) action(interaction.guildId, interaction.user.id, 'useCommand')
-    if (interaction.isContextMenuCommand()) action(interaction.guildId, interaction.user.id, 'useContextMenu')
+    if (interaction.isCommand()) action(interaction.guildId!, interaction.user.id, 'useCommand')
+    if (interaction.isContextMenuCommand()) action(interaction.guildId!, interaction.user.id, 'useContextMenu')
 
     await commandProcess(client, interaction);
   } catch (e) {
@@ -85,8 +85,8 @@ client.on('interactionCreate', async (interaction) => {
 
 client.on('messageReactionAdd', async (reaction, user) => {
   try {
-    action(reaction.message.guildId, user.id, 'addReaction');
-    action(reaction.message.guildId, reaction.message.author?.id ?? null, 'getReaction');
+    action(reaction.message.guildId!, user.id, 'addReaction');
+    action(reaction.message.guildId!, reaction.message.author?.id ?? null, 'getReaction');
 
     if ('_equals' in user) await voteEvents.onReactionAdd(client, reaction, user);
   } catch (e) {

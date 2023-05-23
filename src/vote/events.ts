@@ -7,6 +7,7 @@ import endFn from './funcs/end';
 import viewResult from './view_result';
 
 export async function onReactionAdd(client: Client, reaction: MessageReaction | PartialMessageReaction, user: User) {
+  if (reaction.message.guildId == null) return;
   const votes = getData('guild', reaction.message.guildId, ['vote', 'list', reaction.message.channelId]) ?? {};
   if (Object.keys(votes ?? {})?.includes?.(reaction.message.id)) {
     const vote = votes[reaction.message.id];
@@ -42,7 +43,7 @@ export async function onReactionAdd(client: Client, reaction: MessageReaction | 
     }
 
     if (onReactionAddFn[vote.type]?.(client, vote, reaction, user, reactionCount, reactionMemberCount)) {
-      deleteData('guild', reaction.message.guildId, ['vote', 'list', reaction.message.channelId, reaction.message.id])
+      deleteData('guild', reaction.message.guildId!, ['vote', 'list', reaction.message.channelId, reaction.message.id])
 
       let counts = {}
       for (let item of reaction.message.reactions.cache) {
@@ -56,6 +57,7 @@ export async function onReactionAdd(client: Client, reaction: MessageReaction | 
 }
 
 export async function onReactionRemove(client: Client, reaction: MessageReaction | PartialMessageReaction, user: User | PartialUser) {
+  if (reaction.message.guildId == null) return;
   const votes = getData('guild', reaction.message.guildId, ['vote', 'list', reaction.message.channelId]);
   if (Object.keys(votes ?? {})?.includes?.(reaction.message.id)) {
     if (user.id == client.user?.id) reaction.message.react(reaction.emoji.name ?? '')

@@ -63,7 +63,7 @@ export function onExit() {
   }
 }
 
-export function action(guildId: string | null, userId: string | null, type: actionType) {
+export function action(guildId: string, userId: string | null, type: actionType) {
   if (userId == null) return;
 
   setData('guild', guildId, ['stats', 'data', 'member', 'action', type, userId], 1, '+');

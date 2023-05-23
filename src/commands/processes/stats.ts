@@ -44,7 +44,7 @@ export async function stats(client: Client, interaction: CommandInteraction) {
 
   updateData(interaction.guildId, user.id);
 
-  const stats = getData('guild', interaction.guildId, ['stats', 'data', 'guild']);
+  const stats = getData('guild', interaction.guildId!, ['stats', 'data', 'guild']);
   const getAction = (name: string, unit: string): string => `${stats?.['action']?.[name] ?? 0}${unit}`;
   const getTime = (name: string): string => `${minutesToString(stats?.['time']?.[name] ?? 0)}`;
   const minutesToString = (minutes: number): string => (minutes >= 60 ? Math.floor(minutes / 60) + '時間' : '') + minutes % 60 + '分';
@@ -57,7 +57,7 @@ export async function memberStats(client: Client, interaction: CommandInteractio
 
   updateData(interaction.guildId, user.id);
 
-  const memberStats = getData('guild', interaction.guildId, ['stats', 'data', 'member']);
+  const memberStats = getData('guild', interaction.guildId!, ['stats', 'data', 'member']);
   const getAction = (name: string, unit: string): string => `${memberStats?.['action']?.[name]?.[user.id] ?? 0}${unit} (#${getRank(memberStats?.['action']?.[name])})`;
   const getTime = (name: string): string => `${minutesToString(memberStats?.['time']?.[name]?.[user.id] ?? 0)} (#${getRank(memberStats?.['time']?.[name])})`;
   const minutesToString = (minutes: number): string => (minutes >= 60 ? Math.floor(minutes / 60) + '時間' : '') + minutes % 60 + '分';
@@ -75,7 +75,7 @@ export async function changes(client: Client, interaction: ChatInputCommandInter
       }
 
       const value = interaction.options.getBoolean('value', true)
-      setData('guild', interaction.guildId, ['changes', 'record'], value);
+      setData('guild', interaction.guildId!, ['changes', 'record'], value);
       interaction.reply(`推移を記録${value ? 'する' : 'しない'}ように設定しました`);
     }
     break;
@@ -109,7 +109,7 @@ export async function changes(client: Client, interaction: ChatInputCommandInter
       let data: [string, number][] = [];
       for (let i = start; i <= end; i++) {
         data.push([new Date((i * 24 - 9) * 60 * 60 * 1000).toLocaleDateString("ja-JP"),
-          getData('guild', interaction.guildId, ['changes', 'data', stat, i.toString()]) as number ?? 0])
+          getData('guild', interaction.guildId!, ['changes', 'data', stat, i.toString()]) as number ?? 0])
       }
 
       let compData: {[k: string]: [string, number][]} = {};

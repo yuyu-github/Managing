@@ -73,7 +73,7 @@ export default async function (client: Client, interaction: Interaction) {
             const channel = interaction.options.getChannel('channel', true);
             const webhook = interaction.options.getString('webhook', true);
 
-            setData('guild', interaction.guildId, ['forward', channel.id], webhook, (a, b) => ((a ?? []) as (Object | null)[]).includes(b) ? a : [...((a ?? []) as string[]), b])
+            setData('guild', interaction.guildId!, ['forward', channel.id], webhook, (a, b) => a != null && (a as string[]).includes(b as string) ? a : [...((a ?? []) as string[]), b])
             interaction.reply('メッセージの転送を設定しました');
           }
           break;
@@ -81,8 +81,8 @@ export default async function (client: Client, interaction: Interaction) {
             const channel = interaction.options.getChannel('channel', true);
             const webhook = interaction.options.getString('webhook');
 
-            if (webhook == null) deleteData('guild', interaction.guildId, ['forward', channel.id]);
-            else setData('guild', interaction.guildId, ['forward', channel.id], null, a => {
+            if (webhook == null) deleteData('guild', interaction.guildId!, ['forward', channel.id]);
+            else setData('guild', interaction.guildId!, ['forward', channel.id], null, a => {
               let array: string[] | null = a as string[] | null;
               if (array != null && array.indexOf(webhook) >= 0) array.splice(array.indexOf(webhook), 1);
               if (array?.length == 0) array = null;
@@ -108,8 +108,8 @@ export default async function (client: Client, interaction: Interaction) {
         const type = interaction.options.getString('type', true);
         const value = interaction.options.getBoolean('value', true);
         if (type == 'all') {
-          Object.keys(typeMap).forEach(v => setData('guild', interaction.guildId, ['keep', 'enabled', v], value))
-        } else setData('guild', interaction.guildId, ['keep', 'enabled', type], value);
+          Object.keys(typeMap).forEach(v => setData('guild', interaction.guildId!, ['keep', 'enabled', v], value))
+        } else setData('guild', interaction.guildId!, ['keep', 'enabled', type], value);
         interaction.reply(`再参加時に${type == 'all' ? '' : typeMap[type] + 'を'}保持${value ? 'する' : 'しない'}ように設定しました`);
       }
       break;
