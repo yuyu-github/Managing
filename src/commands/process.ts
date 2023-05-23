@@ -8,6 +8,8 @@ import * as info from './processes/info';
 import * as rolePanel from './processes/role_panel';
 import * as anonymous from './processes/anonymous';
 import * as lottery from './processes/lottery';
+import { parseTimeString } from '../scheduler/parse_time';
+import { schedule } from '../scheduler/scheduler';
 
 export default async function (client: Client, interaction: Interaction) {
   if (interaction.channel == null || interaction.channel?.isDMBased()) {
@@ -169,6 +171,17 @@ export default async function (client: Client, interaction: Interaction) {
         }
       }
       break;
+      case 'timer': {
+        const message = interaction.options.getString('message') ?? '';
+        const timeStr = interaction.options.getString('time', true);
+        const time = parseTimeString(timeStr);
+        if (time == null) {
+          interaction.reply('無効な日付指定です'); return;
+        }
+
+        schedule('end-timer', {message, channel: interaction.channel.id}, time);
+        interaction.reply(`<t:${Math.floor(time / 1000)}:R>にタイマーを設定しました`);
+      }
     }
   } else if (interaction.isContextMenuCommand()) {
     switch (interaction.commandName) {

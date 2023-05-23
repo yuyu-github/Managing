@@ -242,6 +242,23 @@ export default [
       }
     ]
   },
+  {
+    name: 'timer',
+    description: 'タイマーを設定する',
+    options: [
+      {
+        type: ApplicationCommandOptionType.String,
+        name: 'time',
+        description: '時間',
+        required: true
+      },
+      {
+        type: ApplicationCommandOptionType.String,
+        name: 'message',
+        description: 'メッセージ'
+      },
+    ]
+  },
 
   {
     type: ApplicationCommandType.Message,

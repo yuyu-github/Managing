@@ -1,6 +1,6 @@
 import { ChannelType, Client, IntentsBitField } from 'discord.js';
 import * as token from './token';
-const client = new Client({
+export const client = new Client({
   intents: [
     IntentsBitField.Flags.Guilds,
     IntentsBitField.Flags.GuildMembers,
@@ -13,6 +13,7 @@ const client = new Client({
 
 import commands from './commands/list';
 import commandProcess from './commands/process';
+import { execute, execute as scheduleExecute } from './scheduler/scheduler';
 import loadVotes from './vote/load_votes';
 import { action, init as actionInit, onExit as actionOnExit } from './stats';
 import * as voteEvents from './vote/events';
@@ -32,13 +33,15 @@ process.on('SIGTERM', () => process.exit(0));
 
 client.once('ready', async () => {
   try {
-    actionInit(client);
-
-    if (process.env.DEBUG == 'true' && token.debugServers != null) {
+    if (process.env.DEBUG == 'true') {
       for (let id of token.debugServers) await client.application?.commands.set(commands, id);
     } else await client.application?.commands.set(commands);
-
+    
+    actionInit(client);
     await loadVotes(client);
+
+    execute();
+    setInterval(execute, 1000);
 
     console.log('Managing Ready');
   } catch(e) {
