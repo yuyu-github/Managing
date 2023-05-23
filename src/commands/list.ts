@@ -262,6 +262,72 @@ export default [
       }
     ]
   },
+  {
+    name: 'join-message',
+    description: '参加メッセージを設定する',
+    options: [
+      {
+        type: ApplicationCommandOptionType.Subcommand,
+        name: 'set',
+        description: '参加メッセージを設定する',
+        options: [
+          {
+            type: ApplicationCommandOptionType.String,
+            name: 'message',
+            description: '送信するメッセージ',
+            required: true
+          },
+          {
+            type: ApplicationCommandOptionType.Channel,
+            name: 'channel',
+            description: 'メッセージを送信するチャンネル',
+            channelTypes: [
+              ChannelType.GuildText,
+              ChannelType.GuildAnnouncement
+            ]
+          }
+        ]
+      },
+      {
+        type: ApplicationCommandOptionType.Subcommand,
+        name: 'unset',
+        description: '参加メッセージの設定を解除する'
+      }
+    ]
+  },
+  {
+    name: 'leave-message',
+    description: '退出メッセージを設定する',
+    options: [
+      {
+        type: ApplicationCommandOptionType.Subcommand,
+        name: 'set',
+        description: '退出メッセージを設定する',
+        options: [
+          {
+            type: ApplicationCommandOptionType.String,
+            name: 'message',
+            description: '送信するメッセージ',
+            required: true
+          },
+          {
+            type: ApplicationCommandOptionType.Channel,
+            name: 'channel',
+            description: 'メッセージを送信するチャンネル',
+            channelTypes: [
+              ChannelType.GuildText,
+              ChannelType.GuildAnnouncement
+            ]
+          }
+        ]
+      },
+      {
+        type: ApplicationCommandOptionType.Subcommand,
+        name: 'unset',
+        description: '脱退メッセージの設定を解除する'
+      }
+    ]
+  },
 
   {
     type: ApplicationCommandType.Message,

@@ -142,6 +142,50 @@ export default async function (interaction: Interaction) {
         interaction.reply(`<t:${Math.floor(time / 1000)}:R>にタイマーを設定しました`);
       }
       break;
+      case 'join-message': {
+        switch (interaction.options.getSubcommand(true)) {
+          case 'set': {
+            const message = interaction.options.getString('message', true);
+            const channel = interaction.options.getChannel('channel') ?? interaction.guild!.systemChannel;
+            if (channel == null) {
+              interaction.reply({content: 'チャンネルを指定してください', ephemeral: true});
+              return;
+            }
+
+            setData('guild', interaction.guildId!, ['join-message'], {message, channel: channel.id});
+            interaction.reply('参加メッセージを設定しました');
+          }
+          break;
+          case 'unset': {
+            deleteData('guild', interaction.guildId!, ['join-message']);
+            interaction.reply('参加メッセージの設定を解除しました');
+          }
+          break;
+        }
+      }
+      break;
+      case 'leave-message': {
+        switch (interaction.options.getSubcommand(true)) {
+          case 'set': {
+            const message = interaction.options.getString('message', true);
+            const channel = interaction.options.getChannel('channel') ?? interaction.guild!.systemChannel;
+            if (channel == null) {
+              interaction.reply({content: 'チャンネルを指定してください', ephemeral: true});
+              return;
+            }
+
+            setData('guild', interaction.guildId!, ['leave-message'], {message, channel: channel.id});
+            interaction.reply('脱退メッセージを設定しました');
+          }
+          break;
+          case 'unset': {
+            deleteData('guild', interaction.guildId!, ['leave-message']);
+            interaction.reply('脱退メッセージの設定を解除しました');
+          }
+          break;
+        }
+      }
+      break;
     }
   } else if (interaction.isContextMenuCommand()) {
     switch (interaction.commandName) {

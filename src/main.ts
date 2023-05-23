@@ -24,6 +24,7 @@ import * as voteEvents from './processes/vote/events.js';
 import quote from './processes/quote.js';
 import forward from './processes/forward.js';
 import * as keep from './processes/keep.js';
+import * as joinLeaveMessage from './processes/join_leave_message.js';
 
 process.chdir(path.dirname(path.dirname(fileURLToPath(import.meta.url))));
 
@@ -121,17 +122,19 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
   }
 })
 
-client.on('guildMemberAdd', member => {
+client.on('guildMemberAdd', async member => {
   try {
     keep.onMemberAdd(member);
+    await joinLeaveMessage.join(member);
   } catch (e) {
     console.error(e);
   }
 })
 
-client.on('guildMemberRemove', member => {
+client.on('guildMemberRemove', async member => {
   try {
     keep.onMemberRemove(member);
+    await joinLeaveMessage.leave(member);
   } catch (e) {
     console.error(e);
   }
