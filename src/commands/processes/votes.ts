@@ -2,8 +2,8 @@ import { ActionRowBuilder, ButtonInteraction, ChatInputCommandInteraction, Clien
 
 import { setData, getData, deleteData } from 'discordbot-data';
 
-import { vote as createVote } from '../../vote/vote';
-import voteViewResult from '../../vote/view_result';
+import { vote as createVote } from '../../processes/vote/vote';
+import voteViewResult from '../../processes/vote/view_result';
 
 export function vote(client: Client, interaction: ChatInputCommandInteraction) {
   const multiple = interaction.options.getBoolean('multiple')

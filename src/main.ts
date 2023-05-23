@@ -14,12 +14,12 @@ export const client = new Client({
 import commands from './commands/list';
 import commandProcess from './commands/process';
 import { execute, execute as scheduleExecute } from './scheduler/scheduler';
-import loadVotes from './vote/load_votes';
-import { action, init as actionInit, onExit as actionOnExit } from './stats';
-import * as voteEvents from './vote/events';
-import quote from './quote';
-import forward from './forward';
-import * as keep from './keep';
+import loadVotes from './processes/vote/load_votes';
+import { action, init as actionInit, onExit as actionOnExit } from './processes/stats';
+import * as voteEvents from './processes/vote/events';
+import quote from './processes/quote';
+import forward from './processes/forward';
+import * as keep from './processes/keep';
 
 process.chdir(__dirname + '\\..\\');
 
