@@ -11,6 +11,7 @@ export const client = new Client({
   ]
 });
 
+import { setDebug } from 'discordbot-data';
 import commands from './commands/list';
 import commandProcess from './commands/process';
 import { execute, execute as scheduleExecute } from './scheduler/scheduler';
@@ -30,6 +31,8 @@ process.on('SIGHUP', () => process.exit(0));
 process.on('SIGINT', () => process.exit(0));
 process.on('SIGBREAK', () => process.exit(0));
 process.on('SIGTERM', () => process.exit(0));
+
+if (process.env.DEBUG == 'true') setDebug(true);
 
 client.once('ready', async () => {
   try {
