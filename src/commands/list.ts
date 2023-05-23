@@ -128,6 +128,7 @@ export default [
   {
     name: 'timeout',
     description: '時間を指定してタイムアウトする',
+    defaultMemberPermissions: PermissionFlagsBits.ModerateMembers,
     options: [
       {
         type: ApplicationCommandOptionType.User,
@@ -136,35 +137,11 @@ export default [
         required: true
       },
       {
-        type: ApplicationCommandOptionType.Integer,
-        name: 'second',
-        description: '秒数'
-      },
-      {
-        type: ApplicationCommandOptionType.Integer,
-        name: 'minute',
-        description: '分数'
-      },
-      {
-        type: ApplicationCommandOptionType.Integer,
-        name: 'hour',
-        description: '時間'
-      },
-      {
-        type: ApplicationCommandOptionType.Integer,
-        name: 'day',
-        description: '日数'
-      },
-      {
         type: ApplicationCommandOptionType.String,
-        name: 'specified-date',
-        description: '指定日まで(yyyy/MM/dd形式 年は2桁・省略可)'
+        name: 'time',
+        description: '時間',
+        required: true
       },
-      {
-        type: ApplicationCommandOptionType.String,
-        name: 'specified-time',
-        description: '指定時間まで(HH:mm形式)'
-      }
     ]
   },
   {
