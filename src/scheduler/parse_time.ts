@@ -11,7 +11,7 @@ export function parseTimeString(str: string, getSpan: boolean = false): number |
     let timeStr = match[2] != null ? match[2] : match[1].match(/:/) ? match[1] : '';
 
     if (dateStr != '') {
-      let matchGroups = dateStr.match(/^(?:(?<year>[0-9]{2,4})\/)?(?<month>[01][0-9])\/(?<day>[0-3][1-9])$/)?.groups;
+      let matchGroups = dateStr.match(/^(?:(?<year>[0-9]{2,4})\/)?(?<month>[01]?[0-9])\/(?<day>[0-3]?[1-9])$/)?.groups;
       if (matchGroups == null) matchGroups = dateStr.match(/^(?<year>[0-9]{2,4})\-(?<month>[01][0-9])\-(?<day>[0-3][0-9])$/)?.groups;
       if (matchGroups == null) return null;
       if (matchGroups.year != null) date.setFullYear(matchGroups.year.length == 2 ? parseInt(matchGroups.year) + 2000 : parseInt(matchGroups.year));
@@ -20,7 +20,7 @@ export function parseTimeString(str: string, getSpan: boolean = false): number |
     }
 
     if (timeStr != '') {
-      let matchGroups = timeStr.match(/^(?<hours>[0-2][0-9]):(?<minutes>[0-5][0-9])(?::(?<seconds>[0-5][0-9]))?$/)?.groups;
+      let matchGroups = timeStr.match(/^(?<hours>[0-2]?[0-9]):(?<minutes>[0-5]?[0-9])(?::(?<seconds>[0-5]?[0-9]))?$/)?.groups;
       if (matchGroups == null) return null;
       date.setHours(parseInt(matchGroups.hours));
       date.setMinutes(parseInt(matchGroups.minutes));
