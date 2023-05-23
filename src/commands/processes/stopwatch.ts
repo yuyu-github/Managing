@@ -41,7 +41,7 @@ export function stopwatch(interaction: ChatInputCommandInteraction) {
         interaction.reply({
           embeds: [
             {
-              title: '00:00.000',
+              title: '00:00.00',
               description: ':arrow_forward: ストップウォッチを開始しました',
               color: Colors.Green
             }
