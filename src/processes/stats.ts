@@ -1,6 +1,7 @@
 import { ChannelType, Client, User } from "discord.js";
 
 import { setData, getData, deleteData } from 'discordbot-data';
+import { client } from "../main";
 type actionType = 
 | 'sendMessage'
 | 'sendImage'
@@ -47,7 +48,7 @@ function endMeasuringTime(name, guildId, userId) {
   startTime[name][guildId][userId] = null;
 }
 
-export function init(client: Client) {
+export function init() {
   client.channels.cache.each(i => {
     if (i.type == ChannelType.GuildVoice) i.members.each(member => startMeasuringTime('inVoiceChannel', member.guild.id, member.user.id));
     if (i.type == ChannelType.GuildStageVoice) i.members.each(member => startMeasuringTime('inStageChannel', member.guild.id, member.user.id));

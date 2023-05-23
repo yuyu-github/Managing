@@ -1,7 +1,7 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, Client, Colors, GuildMemberManager } from "discord.js";
 import { deleteData, getData, setData } from "discordbot-data";
 
-export async function lottery(client: Client, interaction: ChatInputCommandInteraction) {
+export async function lottery(interaction: ChatInputCommandInteraction) {
   const name = interaction.options.getString('name', true);
   const winners = interaction.options.getInteger('winners') ?? 1;
   const qualification = interaction.options.getRole('qualification');
@@ -45,7 +45,7 @@ export async function lottery(client: Client, interaction: ChatInputCommandInter
   setData('guild', interaction.guild.id, ['lottery', 'list', message.id], {name, winners, qualification: qualification?.id, maximum, entries: [], owner: interaction.user.id})
 }
 
-export function entry(client: Client, interaction: ButtonInteraction) {
+export function entry(interaction: ButtonInteraction) {
   if (interaction.guild == null) return;
 
   let lotteryData = getData('guild', interaction.guild.id, ['lottery', 'list', interaction.message.id]) as {qualification: string | null, maximum: number | null, entries: string[]};
@@ -95,7 +95,7 @@ export function entry(client: Client, interaction: ButtonInteraction) {
   setData('guild', interaction.guild.id, ['lottery', 'list', interaction.message.id, 'entries'], entries);
 }
 
-export function leave(client: Client, interaction: ButtonInteraction) {
+export function leave(interaction: ButtonInteraction) {
   if (interaction.channel == null || interaction.guild == null || interaction.message.reference?.messageId == null) return;
   let message = interaction.channel.messages.cache.get(interaction.message.reference.messageId);
   if (message == null) return;
@@ -124,7 +124,7 @@ export function leave(client: Client, interaction: ButtonInteraction) {
   interaction.reply({content: '参加をやめました', ephemeral: true})
 }
 
-export function start(client: Client, interaction: ButtonInteraction) {
+export function start(interaction: ButtonInteraction) {
   if (interaction.guild == null) return;
 
   let lotteryData = getData('guild', interaction.guild.id, ['lottery', 'list', interaction.message.id]) as {winners: number, entries: string[], owner: string};

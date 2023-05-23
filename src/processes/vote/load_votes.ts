@@ -1,8 +1,9 @@
 import { Client } from "discord.js";
 
 import { setData, getData, deleteData } from 'discordbot-data';
+import { client } from "../../main";
 
-export default async function (client: Client) {
+export default async function () {
   for (let guild of client.guilds.cache) {
     let channels = client.channels.cache;
     let votes = getData('guild',guild[1].id, ['vote', 'list']);

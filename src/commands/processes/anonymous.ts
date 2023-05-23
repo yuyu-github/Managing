@@ -1,8 +1,9 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, Client, Colors, Interaction, ModalBuilder, NewsChannel, StageChannel, TextChannel, TextInputBuilder, TextInputStyle, VoiceChannel, WebhookClient } from "discord.js";
 import { setData, getData, deleteData } from 'discordbot-data';
 import { getWebhook } from "../../webhook";
+import { client } from "../../main";
 
-export async function panel(client: Client, interaction: ChatInputCommandInteraction) {
+export async function panel(interaction: ChatInputCommandInteraction) {
   const channel = interaction.options.getChannel('channel', true);
   const defaultName = interaction.options.getChannel('default-name') ?? '匿名';
   if (interaction.guild == null || interaction.channel == null) return;
@@ -30,7 +31,7 @@ export async function panel(client: Client, interaction: ChatInputCommandInterac
   setData('guild', interaction.guild.id, ['anonymous', 'panels', message.id, 'default-name'], defaultName)
 }
 
-export function send(client: Client, interaction: ButtonInteraction) {
+export function send(interaction: ButtonInteraction) {
   const modal = new ModalBuilder()
     .setCustomId('anonymous-send')
     .setTitle('送信内容')

@@ -1,7 +1,8 @@
 import { Client, Message } from "discord.js";
+import { client } from "../../../main";
 
 export default {
-  'rolevote': async (client: Client, vote: { user: string, role: string, content: string }, msg: Message, counts: object, total: number) => {
+  'rolevote': async (vote: { user: string, role: string, content: string }, msg: Message, counts: object, total: number) => {
     const user = await client.users.fetch(vote.user);
     if (user == null) return;
     const member = msg.guild?.members.resolve(user);
@@ -27,7 +28,7 @@ export default {
       msg.channel.send(`投票により${user.toString()}に${role.name}の${{'add': '付与', 'remove': '剥奪', 'addremove': '付与/剥奪'}[vote.content]}はされませんでした`);
     }
   },
-  'kickvote': async (client: Client, vote: { user: string }, msg: Message, counts: object, total: number) => {
+  'kickvote': async (vote: { user: string }, msg: Message, counts: object, total: number) => {
     const user = await client.users.fetch(vote.user);
     if (user == null) return;
     const member = msg.guild?.members.resolve(user);
@@ -44,7 +45,7 @@ export default {
       msg.channel.send('投票により' + user.toString() + 'はキックされませんでした');
     }
   },
-  'banvote': async (client: Client, vote: { user: string }, msg: Message, counts: object, total: number) => {
+  'banvote': async (vote: { user: string }, msg: Message, counts: object, total: number) => {
     const user = await client.users.fetch(vote.user);
     if (user == null) return;
 
@@ -59,7 +60,7 @@ export default {
       msg.channel.send('投票により' + user.toString() + 'はBANされませんでした');
     }
   },
-  'unbanvote': async (client: Client, vote: { user: string }, msg: Message, counts: object, total: number) => {
+  'unbanvote': async (vote: { user: string }, msg: Message, counts: object, total: number) => {
     const user = await client.users.fetch(vote.user);
     if (user == null) return;
 

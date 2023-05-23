@@ -10,8 +10,9 @@ import * as anonymous from './processes/anonymous';
 import * as lottery from './processes/lottery';
 import { parseTimeString } from '../scheduler/parse_time';
 import { schedule } from '../scheduler/scheduler';
+import { client } from '../main';
 
-export default async function (client: Client, interaction: Interaction) {
+export default async function (interaction: Interaction) {
   if (interaction.channel == null || interaction.channel?.isDMBased()) {
     if ('reply' in interaction) interaction.reply({content: 'DMでは実行できません', ephemeral: true});
     return;
@@ -19,23 +20,23 @@ export default async function (client: Client, interaction: Interaction) {
 
   if (interaction.isChatInputCommand()) {
     switch (interaction.commandName) {
-      case 'vote': votes.vote(client, interaction); break;
-      case 'rolevote': await votes.roleVote(client, interaction); break;
-      case 'kickvote': await votes.kickVote(client, interaction); break;
-      case 'banvote': await votes.banVote(client, interaction); break;
-      case 'unbanvote': await votes.unbanVote(client, interaction); break;
-      case 'vote-setting': votes.voteSetting(client, interaction); break;
-      case 'stats': stats.stats(client, interaction); break;
-      case 'member-stats': stats.memberStats(client, interaction); break;
-      case 'changes': stats.changes(client, interaction); break;
-      case 'avatar': info.avatar(client, interaction); break;
-      case 'user-info': info.userInfo(client, interaction); break;
-      case 'server-info': info.serverInfo(client, interaction); break;
-      case 'channel-info': info.channelInfo(client, interaction); break;
-      case 'role-info': await info.roleInfo(client, interaction); break;
-      case 'role-panel': rolePanel.rolePanelCommand(client, interaction); break;
-      case 'anonymous-panel': await anonymous.panel(client, interaction); break;
-      case 'lottery': await lottery.lottery(client, interaction); break;
+      case 'vote': votes.vote(interaction); break;
+      case 'rolevote': await votes.roleVote(interaction); break;
+      case 'kickvote': await votes.kickVote(interaction); break;
+      case 'banvote': await votes.banVote(interaction); break;
+      case 'unbanvote': await votes.unbanVote(interaction); break;
+      case 'vote-setting': votes.voteSetting(interaction); break;
+      case 'stats': stats.stats(interaction); break;
+      case 'member-stats': stats.memberStats(interaction); break;
+      case 'changes': stats.changes(interaction); break;
+      case 'avatar': info.avatar(interaction); break;
+      case 'user-info': info.userInfo(interaction); break;
+      case 'server-info': info.serverInfo(interaction); break;
+      case 'channel-info': info.channelInfo(interaction); break;
+      case 'role-info': await info.roleInfo(interaction); break;
+      case 'role-panel': rolePanel.rolePanelCommand(interaction); break;
+      case 'anonymous-panel': await anonymous.panel(interaction); break;
+      case 'lottery': await lottery.lottery(interaction); break;
 
       case 'translate': {
         const text = interaction.options.getString('text') ?? '';
@@ -185,8 +186,8 @@ export default async function (client: Client, interaction: Interaction) {
     }
   } else if (interaction.isContextMenuCommand()) {
     switch (interaction.commandName) {
-      case 'キック投票': await votes.kickVote(client, interaction); break;
-      case 'BAN投票': await votes.banVote(client, interaction); break;
+      case 'キック投票': await votes.kickVote(interaction); break;
+      case 'BAN投票': await votes.banVote(interaction); break;
       
       case 'ピン留め': {
         const message = interaction.options.getMessage('message');
@@ -205,22 +206,22 @@ export default async function (client: Client, interaction: Interaction) {
     }
   } else if (interaction.isButton()) {
     switch (interaction.customId) {
-      case 'count-vote': await votes.countVote(client, interaction); break;
-      case 'end-vote': await votes.endVote(client, interaction); break;
-      case 'select-role-panel': rolePanel.selectRolePanel(client, interaction); break;
-      case 'anonymous-send': anonymous.send(client, interaction); break;
-      case 'entry-lottery': lottery.entry(client, interaction); break;
-      case 'leave-lottery': lottery.leave(client, interaction); break;
-      case 'start-lottery': lottery.start(client, interaction); break;
+      case 'count-vote': await votes.countVote(interaction); break;
+      case 'end-vote': await votes.endVote(interaction); break;
+      case 'select-role-panel': rolePanel.selectRolePanel(interaction); break;
+      case 'anonymous-send': anonymous.send(interaction); break;
+      case 'entry-lottery': lottery.entry(interaction); break;
+      case 'leave-lottery': lottery.leave(interaction); break;
+      case 'start-lottery': lottery.start(interaction); break;
     }
   } else if (interaction.isStringSelectMenu()) {
     switch (interaction.customId) {
-      case 'role-panel': rolePanel.rolePanel(client, interaction); break;
+      case 'role-panel': rolePanel.rolePanel(interaction); break;
     }
   } else if (interaction.isRoleSelectMenu()) {
     switch (interaction.customId) {
-      case 'add-role-panel': rolePanel.addRolePanel(client, interaction); break;
-      case 'remove-role-panel': rolePanel.removeRolePanel(client, interaction); break;
+      case 'add-role-panel': rolePanel.addRolePanel(interaction); break;
+      case 'remove-role-panel': rolePanel.removeRolePanel(interaction); break;
     }
   }
 }

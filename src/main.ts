@@ -40,8 +40,8 @@ client.once('ready', async () => {
       for (let id of token.debugServers) await client.application?.commands.set(commands, id);
     } else await client.application?.commands.set(commands);
     
-    actionInit(client);
-    await loadVotes(client);
+    actionInit();
+    await loadVotes();
 
     execute();
     setInterval(execute, 1000);
@@ -68,8 +68,8 @@ client.on('messageCreate', async message => {
       if (i.contentType?.startsWith('image/')) action(message.guildId!, message.author.id, 'sendImage');
     })
 
-    await forward(client, message);
-    await quote(client, message);
+    await forward(message);
+    await quote(message);
   } catch (e) {
     console.error(e);
   }
@@ -80,7 +80,7 @@ client.on('interactionCreate', async (interaction) => {
     if (interaction.isCommand()) action(interaction.guildId!, interaction.user.id, 'useCommand')
     if (interaction.isContextMenuCommand()) action(interaction.guildId!, interaction.user.id, 'useContextMenu')
 
-    await commandProcess(client, interaction);
+    await commandProcess(interaction);
   } catch (e) {
     console.error(e);
   }
@@ -91,7 +91,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
     action(reaction.message.guildId!, user.id, 'addReaction');
     action(reaction.message.guildId!, reaction.message.author?.id ?? null, 'getReaction');
 
-    if ('_equals' in user) await voteEvents.onReactionAdd(client, reaction, user);
+    if ('_equals' in user) await voteEvents.onReactionAdd(reaction, user);
   } catch (e) {
     console.error(e);
   }
@@ -99,7 +99,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
 
 client.on('messageReactionRemove', async (reaction, user) => {
   try {
-    await voteEvents.onReactionRemove(client, reaction, user);
+    await voteEvents.onReactionRemove(reaction, user);
   } catch (e) {
     console.error(e);
   }

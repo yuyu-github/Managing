@@ -5,8 +5,9 @@ import { setData, getData, deleteData } from 'discordbot-data';
 import onReactionAddFn from './funcs/onReactionAdd';
 import endFn from './funcs/end';
 import viewResult from './view_result';
+import { client } from '../../main';
 
-export async function onReactionAdd(client: Client, reaction: MessageReaction | PartialMessageReaction, user: User) {
+export async function onReactionAdd(reaction: MessageReaction | PartialMessageReaction, user: User) {
   if (reaction.message.guildId == null) return;
   const votes = getData('guild', reaction.message.guildId, ['vote', 'list', reaction.message.channelId]) ?? {};
   if (Object.keys(votes ?? {})?.includes?.(reaction.message.id)) {
@@ -56,7 +57,7 @@ export async function onReactionAdd(client: Client, reaction: MessageReaction | 
   }
 }
 
-export async function onReactionRemove(client: Client, reaction: MessageReaction | PartialMessageReaction, user: User | PartialUser) {
+export async function onReactionRemove(reaction: MessageReaction | PartialMessageReaction, user: User | PartialUser) {
   if (reaction.message.guildId == null) return;
   const votes = getData('guild', reaction.message.guildId, ['vote', 'list', reaction.message.channelId]);
   if (Object.keys(votes ?? {})?.includes?.(reaction.message.id)) {

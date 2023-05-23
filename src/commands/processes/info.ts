@@ -1,6 +1,6 @@
 import { APIEmbedField, CategoryChannel, ChannelType, ChatInputCommandInteraction, Client, Colors, EmbedBuilder, ForumChannel, NewsChannel, PublicThreadChannel, Role, StageChannel, TextChannel, VoiceChannel } from "discord.js";
 
-export function avatar(client: Client, interaction: ChatInputCommandInteraction) {
+export function avatar(interaction: ChatInputCommandInteraction) {
   const user = interaction.options.getUser('user', true);
   interaction.reply({
     files: [
@@ -9,7 +9,7 @@ export function avatar(client: Client, interaction: ChatInputCommandInteraction)
   });
 }
 
-export function userInfo(client: Client, interaction: ChatInputCommandInteraction) {
+export function userInfo(interaction: ChatInputCommandInteraction) {
   const user = interaction.options.getUser('user', true);
   const member = interaction.guild?.members.resolve(user);
 
@@ -52,7 +52,7 @@ export function userInfo(client: Client, interaction: ChatInputCommandInteractio
   })
 }
 
-export async function serverInfo(client: Client, interaction: ChatInputCommandInteraction) {
+export async function serverInfo(interaction: ChatInputCommandInteraction) {
   const guild = interaction.guild;
   if (guild == null) return;
 
@@ -166,7 +166,7 @@ export async function serverInfo(client: Client, interaction: ChatInputCommandIn
   })
 }
 
-export async function channelInfo(client: Client, interaction: ChatInputCommandInteraction) {
+export async function channelInfo(interaction: ChatInputCommandInteraction) {
   const channel = interaction.options.getChannel('channel', true) as TextChannel | VoiceChannel | ForumChannel | NewsChannel | StageChannel | CategoryChannel | PublicThreadChannel;
 
   let type = '';
@@ -315,7 +315,7 @@ export async function channelInfo(client: Client, interaction: ChatInputCommandI
   })
 }
 
-export async  function roleInfo(client: Client, interaction: ChatInputCommandInteraction) {
+export async  function roleInfo(interaction: ChatInputCommandInteraction) {
   const role = interaction.options.getRole('role', true);
   if (!(role instanceof Role)) return;
 

@@ -5,6 +5,7 @@ import * as GoogleChartsNode from 'google-charts-node';
 import * as fs from 'fs';
 
 import { updateData } from '../../processes/stats';
+import { client } from '../../main';
 
 function createStatsEmbed(getAction: (name: string, unit: string) => string, getTime: (name: string) => string, user: User | null = null) {
   const displayData = {
@@ -39,7 +40,7 @@ function createStatsEmbed(getAction: (name: string, unit: string) => string, get
   } as any
 }
 
-export async function stats(client: Client, interaction: CommandInteraction) {
+export async function stats(interaction: CommandInteraction) {
   const user = interaction.options.getUser('user') ?? interaction.user;
 
   updateData(interaction.guildId, user.id);
@@ -52,7 +53,7 @@ export async function stats(client: Client, interaction: CommandInteraction) {
   interaction.reply(createStatsEmbed(getAction, getTime))
 }
 
-export async function memberStats(client: Client, interaction: CommandInteraction) {
+export async function memberStats(interaction: CommandInteraction) {
   const user = interaction.options.getUser('user') ?? interaction.user;
 
   updateData(interaction.guildId, user.id);
@@ -66,7 +67,7 @@ export async function memberStats(client: Client, interaction: CommandInteractio
   interaction.reply(createStatsEmbed(getAction, getTime, user))
 }
 
-export async function changes(client: Client, interaction: ChatInputCommandInteraction) {
+export async function changes(interaction: ChatInputCommandInteraction) {
   switch (interaction.options.getSubcommand()) {
     case 'record': {
       const permissions = interaction.member?.permissions;

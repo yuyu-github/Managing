@@ -2,7 +2,7 @@ import { ChannelType, Client, Message, Embed, WebhookClient } from "discord.js";
 
 import { setData, getData, deleteData } from 'discordbot-data';
 
-export default async (client: Client, message: Message) => {
+export default async (message: Message) => {
   if (message.channel.type == ChannelType.DM) return;
   const webhooks: string[] | null = getData('guild', message.guildId!, ['forward', message.channelId]) as string[] | null;
   if (webhooks == null) return;

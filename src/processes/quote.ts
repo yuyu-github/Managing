@@ -1,6 +1,7 @@
 import { Client, Message, Embed, ChannelType } from "discord.js";
+import { client } from "../main";
 
-export default async function(client: Client, message: Message) {
+export default async function(message: Message) {
   let matches = message.content.matchAll(/https?:\/\/discord.com\/channels\/[0-9]+\/([0-9]+)(?:\/([0-9]+))?/g);
   for (let match of matches) {
     let channel = client.channels.cache.get(match[1]);
