@@ -180,7 +180,7 @@ export default async function (interaction: Interaction) {
           interaction.reply('無効な日付指定です'); return;
         }
 
-        schedule('end-timer', {message, channel: interaction.channel.id}, time);
+        schedule('end-timer', {message, channel: interaction.channel.id, owner: interaction.user.id}, time);
         interaction.reply(`<t:${Math.floor(time / 1000)}:R>にタイマーを設定しました`);
       }
     }

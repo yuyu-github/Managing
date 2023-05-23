@@ -1,6 +1,6 @@
 import { APIInteractionGuildMember, GuildMember, MessageMentionOptions, PermissionFlagsBits } from "discord.js";
 
-export function getAllowedMentions(member: GuildMember | APIInteractionGuildMember | null): MessageMentionOptions {
+export function getAllowedMentions(member: GuildMember | APIInteractionGuildMember | null | undefined): MessageMentionOptions {
   if (member == null || !('guild' in member)) return {parse: []}
   if (member.permissions.has(PermissionFlagsBits.MentionEveryone)) return {parse: ['everyone', 'roles', 'users']}
   return {
