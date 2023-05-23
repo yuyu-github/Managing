@@ -1,5 +1,5 @@
 import { Client, Message } from "discord.js";
-import { client } from "../../../main";
+import { client } from "../../../main.js";
 
 export default {
   'rolevote': async (vote: { user: string, role: string, content: string }, msg: Message, counts: object, total: number) => {

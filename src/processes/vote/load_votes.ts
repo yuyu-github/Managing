@@ -1,7 +1,7 @@
 import { Client } from "discord.js";
 
 import { setData, getData, deleteData } from 'discordbot-data';
-import { client } from "../../main";
+import { client } from "../../main.js";
 
 export default async function () {
   for (let guild of client.guilds.cache) {

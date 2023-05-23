@@ -1,7 +1,7 @@
 import { ChannelType, Client, User } from "discord.js";
 
 import { setData, getData, deleteData } from 'discordbot-data';
-import { client } from "../main";
+import { client } from "../main.js";
 type actionType = 
 | 'sendMessage'
 | 'sendImage'

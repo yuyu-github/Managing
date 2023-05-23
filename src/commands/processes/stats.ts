@@ -4,8 +4,8 @@ import { setData, getData, deleteData } from 'discordbot-data';
 import * as GoogleChartsNode from 'google-charts-node';
 import * as fs from 'fs';
 
-import { updateData } from '../../processes/stats';
-import { client } from '../../main';
+import { updateData } from '../../processes/stats.js';
+import { client } from '../../main.js';
 
 function createStatsEmbed(getAction: (name: string, unit: string) => string, getTime: (name: string) => string, user: User | null = null) {
   const displayData = {

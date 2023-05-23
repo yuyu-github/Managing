@@ -2,10 +2,10 @@ import { Client, MessageReaction, PartialMessageReaction, PartialUser, ReactionM
 
 import { setData, getData, deleteData } from 'discordbot-data';
 
-import onReactionAddFn from './funcs/onReactionAdd';
-import endFn from './funcs/end';
-import viewResult from './view_result';
-import { client } from '../../main';
+import onReactionAddFn from './funcs/onReactionAdd.js';
+import endFn from './funcs/end.js';
+import viewResult from './view_result.js';
+import { client } from '../../main.js';
 
 export async function onReactionAdd(reaction: MessageReaction | PartialMessageReaction, user: User) {
   if (reaction.message.guildId == null) return;

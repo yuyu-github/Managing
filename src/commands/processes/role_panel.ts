@@ -1,6 +1,6 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, Channel, ChatInputCommandInteraction, Client, Colors, GuildMemberRoleManager, Message, PermissionFlagsBits, RoleSelectMenuBuilder, RoleSelectMenuInteraction, StringSelectMenuBuilder, StringSelectMenuComponent, StringSelectMenuInteraction, StringSelectMenuOptionBuilder } from "discord.js";
 import { getData, setData } from "discordbot-data";
-import { client } from "../../main";
+import { client } from "../../main.js";
 
 export async function rolePanel(interaction: StringSelectMenuInteraction) {
   interaction.message.edit({components: interaction.message.components})

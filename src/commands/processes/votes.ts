@@ -2,10 +2,10 @@ import { ActionRowBuilder, ButtonInteraction, ChatInputCommandInteraction, Clien
 
 import { setData, getData, deleteData } from 'discordbot-data';
 
-import { vote as createVote } from '../../processes/vote/vote';
-import voteViewResult from '../../processes/vote/view_result';
-import { client } from "../../main";
-import { getAllowedMentions } from "../../functions";
+import { vote as createVote } from '../../processes/vote/vote.js';
+import voteViewResult from '../../processes/vote/view_result.js';
+import { client } from "../../main.js";
+import { getAllowedMentions } from "../../functions.js";
 
 export function vote(interaction: ChatInputCommandInteraction) {
   const multiple = interaction.options.getBoolean('multiple')

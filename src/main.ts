@@ -1,5 +1,5 @@
 import { ChannelType, Client, IntentsBitField } from 'discord.js';
-import * as token from './token';
+import * as token from './token.js';
 export const client = new Client({
   intents: [
     IntentsBitField.Flags.Guilds,
@@ -11,18 +11,21 @@ export const client = new Client({
   ]
 });
 
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { setDebug } from 'discordbot-data';
-import commands from './commands/list';
-import commandProcess from './commands/process';
-import { execute, execute as scheduleExecute } from './scheduler/scheduler';
-import loadVotes from './processes/vote/load_votes';
-import { action, init as actionInit, onExit as actionOnExit } from './processes/stats';
-import * as voteEvents from './processes/vote/events';
-import quote from './processes/quote';
-import forward from './processes/forward';
-import * as keep from './processes/keep';
 
-process.chdir(__dirname + '\\..\\');
+import commands from './commands/list.js';
+import commandProcess from './commands/process.js';
+import { execute, execute as scheduleExecute } from './scheduler/scheduler.js';
+import loadVotes from './processes/vote/load_votes.js';
+import { action, init as actionInit, onExit as actionOnExit } from './processes/stats.js';
+import * as voteEvents from './processes/vote/events.js';
+import quote from './processes/quote.js';
+import forward from './processes/forward.js';
+import * as keep from './processes/keep.js';
+
+process.chdir(path.dirname(path.dirname(fileURLToPath(import.meta.url))));
 
 process.on('exit', () => {
   actionOnExit();

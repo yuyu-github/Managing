@@ -1,5 +1,5 @@
 import { deleteData, getData, setData } from "discordbot-data";
-import process from './process';
+import process from './process.js';
 
 export function schedule(type: string, data: Object, time: number) {
   setData('global', null, ['schedule', 'tasks', Math.floor(time / 1000).toString()], {type, data}, 'push')

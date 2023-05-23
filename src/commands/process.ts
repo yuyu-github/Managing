@@ -2,15 +2,15 @@ import { APIEmbedField, AttachmentBuilder, BaseInteraction, ChannelType, Client,
 
 import { setData, getData, deleteData } from 'discordbot-data';
 
-import * as votes from './processes/votes';
-import * as stats from './processes/stats';
-import * as info from './processes/info';
-import * as rolePanel from './processes/role_panel';
-import * as anonymous from './processes/anonymous';
-import * as lottery from './processes/lottery';
-import { parseTimeString } from '../scheduler/parse_time';
-import { schedule } from '../scheduler/scheduler';
-import { client } from '../main';
+import * as votes from './processes/votes.js';
+import * as stats from './processes/stats.js';
+import * as info from './processes/info.js';
+import * as rolePanel from './processes/role_panel.js';
+import * as anonymous from './processes/anonymous.js';
+import * as lottery from './processes/lottery.js';
+import { parseTimeString } from '../scheduler/parse_time.js';
+import { schedule } from '../scheduler/scheduler.js';
+import { client } from '../main.js';
 
 export default async function (interaction: Interaction) {
   if (interaction.channel == null || interaction.channel?.isDMBased()) {

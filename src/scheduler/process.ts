@@ -1,5 +1,5 @@
-import { getAllowedMentions } from "../functions";
-import { client } from "../main";
+import { getAllowedMentions } from "../functions.js";
+import { client } from "../main.js";
 
 export default function (type: string, data: any) {
   switch (type) {

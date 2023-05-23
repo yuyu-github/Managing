@@ -1,10 +1,10 @@
 import { ApplicationCommandDataResolvable, ApplicationCommandOptionType, ApplicationCommandType, ChannelType, PermissionFlagsBits, SlashCommandChannelOption } from 'discord.js';
 
-import translateLangs from './lists/translate/langs';
+import translateLangs from './lists/translate/langs.js';
 
-import votes from './lists/votes';
-import stats from './lists/stats'
-import info from './lists/info'
+import votes from './lists/votes.js';
+import stats from './lists/stats.js'
+import info from './lists/info.js'
 
 export default [
   ...votes,
