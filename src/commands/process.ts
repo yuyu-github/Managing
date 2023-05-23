@@ -1,6 +1,7 @@
-import { APIEmbedField, AttachmentBuilder, BaseInteraction, ChannelType, Client, CommandInteraction, EmbedBuilder, Interaction, PermissionFlagsBits } from 'discord.js';
-
+import { APIEmbedField, AttachmentBuilder, BaseInteraction, ChannelType, Client, Colors, CommandInteraction, EmbedBuilder, Interaction, PermissionFlagsBits } from 'discord.js';
 import { setData, getData, deleteData } from 'discordbot-data';
+import { schedule } from '../scheduler/scheduler.js';
+import { parseTimeString } from '../scheduler/parse_time.js';
 
 import * as votes from './processes/votes.js';
 import * as stats from './processes/stats.js';
@@ -8,9 +9,7 @@ import * as info from './processes/info.js';
 import * as rolePanel from './processes/role_panel.js';
 import * as anonymous from './processes/anonymous.js';
 import * as lottery from './processes/lottery.js';
-import { parseTimeString } from '../scheduler/parse_time.js';
-import { schedule } from '../scheduler/scheduler.js';
-import { client } from '../main.js';
+import * as stopwatch from './processes/stopwatch.js';
 
 export default async function (interaction: Interaction) {
   if (interaction.channel == null || interaction.channel?.isDMBased()) {
@@ -37,6 +36,7 @@ export default async function (interaction: Interaction) {
       case 'role-panel': rolePanel.rolePanelCommand(interaction); break;
       case 'anonymous-panel': await anonymous.panel(interaction); break;
       case 'lottery': await lottery.lottery(interaction); break;
+      case 'stopwatch': await stopwatch.stopwatch(interaction); break;
 
       case 'translate': {
         const text = interaction.options.getString('text') ?? '';
@@ -141,6 +141,7 @@ export default async function (interaction: Interaction) {
         schedule('end-timer', {message, channel: interaction.channel.id, owner: interaction.user.id}, time);
         interaction.reply(`<t:${Math.floor(time / 1000)}:R>にタイマーを設定しました`);
       }
+      break;
     }
   } else if (interaction.isContextMenuCommand()) {
     switch (interaction.commandName) {

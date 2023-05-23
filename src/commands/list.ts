@@ -236,6 +236,32 @@ export default [
       },
     ]
   },
+  {
+    name: 'stopwatch',
+    description: 'ストップウォッチで時間を計る',
+    options: [
+      {
+        type: ApplicationCommandOptionType.Subcommand,
+        name: 'start',
+        description: 'ストップウォッチを開始/再開する'
+      },
+      {
+        type: ApplicationCommandOptionType.Subcommand,
+        name: 'stop',
+        description: 'ストップウォッチを開始する'
+      },
+      {
+        type: ApplicationCommandOptionType.Subcommand,
+        name: 'pause',
+        description: 'ストップウォッチを一時停止する'
+      },
+      {
+        type: ApplicationCommandOptionType.Subcommand,
+        name: 'now',
+        description: '現在のストップウォッチの時間を表示する'
+      }
+    ]
+  },
 
   {
     type: ApplicationCommandType.Message,
