@@ -5,7 +5,7 @@ import { setData, getData, deleteData } from 'discordbot-data';
 import { vote as createVote } from '../../processes/vote/vote.js';
 import voteViewResult from '../../processes/vote/view_result.js';
 import { client } from "../../main.js";
-import { getAllowedMentions } from "../../functions.js";
+import { getAllowedMentions } from "../../utils.js";
 
 export function vote(interaction: ChatInputCommandInteraction) {
   const multiple = interaction.options.getBoolean('multiple')
