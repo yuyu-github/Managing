@@ -5,8 +5,12 @@ import { client } from "../main.js";
 
 export type ActionType = 
 | 'sendMessage'
+| 'reply'
+| 'replied'
 | 'sendImage'
 | 'sendFile'
+| 'deleteMessage'
+| 'editMessage'
 | 'addReaction'
 | 'getReaction'
 | 'mention'
@@ -15,38 +19,47 @@ export type ActionType =
 | 'joinStageChannel'
 | 'leftVoiceChannel'
 | 'leftStageChannel'
+| 'startStreaming'
+| 'endStreaming'
+| 'changeNickname'
 | 'useCommand'
 | 'useContextMenu'
+| 'holdEvent'
+| 'participateEvent'
+export type MeasuringTimeType = 
+| 'inVoiceChannel'
+| 'inStageChannel'
+| 'streaming'
 
 let startTime = {};
-function startMeasuringTime(name, guildId, userId) {
-  startTime[name] ??= {};
-  startTime[name][guildId] ??= {};
-  startTime[name][guildId][userId] = Math.floor(Date.now() / 1000 / 60);
+function startMeasuringTime(type: MeasuringTimeType, guildId: string, userId: string) {
+  startTime[type] ??= {};
+  startTime[type][guildId] ??= {};
+  startTime[type][guildId][userId] = Math.floor(Date.now() / 1000 / 60);
 }
-function endMeasuringTime(name, guildId, userId) {
-  if (startTime[name]?.[guildId]?.[userId] == null) return;
+function endMeasuringTime(type: MeasuringTimeType, guildId: string, userId: string) {
+  if (startTime[type]?.[guildId]?.[userId] == null) return;
 
-  let time = Math.floor(Date.now() / 1000 / 60) - startTime[name][guildId][userId]
-  setData('guild', guildId, ['stats', 'data', 'member', 'time', name, userId], time, '+');
-  setData('guild', guildId, ['stats', 'data', 'guild', 'time', name], time, '+');
+  let time = Math.floor(Date.now() / 1000 / 60) - startTime[type][guildId][userId]
+  setData('guild', guildId, ['stats', 'data', 'member', 'time', type, userId], time, '+');
+  setData('guild', guildId, ['stats', 'data', 'guild', 'time', type], time, '+');
 
   if (getData('guild', guildId, ['changes', 'record'])) {
-    const recordChangeNames = ['inVoiceChannel'];
-    if (recordChangeNames.includes(name)) {
+    const recordChangeTypes: MeasuringTimeType[] = ['inVoiceChannel'];
+    if (recordChangeTypes.includes(type)) {
       const today = Math.floor(((new Date().getTime() / 1000 / 60 / 60) + 9) / 24);
       const todayTime = Math.min(time, (new Date().getTime() / 1000 / 60 + (9 * 60)) % (60 * 24));
-      setData('guild', guildId, ['changes', 'data', name, today.toString()], Math.floor(todayTime), '+');
+      setData('guild', guildId, ['changes', 'data', type, today.toString()], Math.floor(todayTime), '+');
       if (time > todayTime) {
         time = time - todayTime;
         for (let d = 1; time > 0; d++, time -= 60 * 24) {
-          setData('guild', guildId, ['changes', 'data', name, (today - d).toString()], Math.floor(Math.min(time, 60 * 24)), '+');
+          setData('guild', guildId, ['changes', 'data', type, (today - d).toString()], Math.floor(Math.min(time, 60 * 24)), '+');
         }
       }
     }
   }
 
-  startTime[name][guildId][userId] = null;
+  startTime[type][guildId][userId] = null;
 }
 
 export function init() {
@@ -59,23 +72,25 @@ export function onExit() {
   for (let name in startTime) {
     for (let guildId in startTime[name]) {
       for (let userId in startTime[name][guildId]) {
-        endMeasuringTime(name, guildId, userId);
+        endMeasuringTime(name as MeasuringTimeType, guildId, userId);
       }
     }
   }
 }
 
-export function action(guildId: string, userId: string | null, type: ActionType) {
-  if (userId == null) return;
-
-  setData('guild', guildId, ['stats', 'data', 'member', 'action', type, userId], 1, '+');
+export function action(guildId: string, userId: string | null | undefined, type: ActionType) {
   setData('guild', guildId, ['stats', 'data', 'guild', 'action', type], 1, '+');
+
+  if (userId == null) return;
+  setData('guild', guildId, ['stats', 'data', 'member', 'action', type, userId], 1, '+');
   
   if (type == 'joinVoiceChannel') startMeasuringTime('inVoiceChannel', guildId, userId);
   if (type == 'joinStageChannel') startMeasuringTime('inStageChannel', guildId, userId);
+  if (type == 'startStreaming') startMeasuringTime('streaming', guildId, userId);
 
   if (type == 'leftVoiceChannel') endMeasuringTime('inVoiceChannel', guildId, userId);
   if (type == 'leftStageChannel') endMeasuringTime('inStageChannel', guildId, userId);
+  if (type == 'endStreaming') endMeasuringTime('streaming', guildId, userId);
 
   if (getData('guild', guildId, ['changes', 'record'])) {
     const recordChangeTypes: ActionType[] = ['sendMessage', 'addReaction', 'joinVoiceChannel'];
@@ -84,10 +99,11 @@ export function action(guildId: string, userId: string | null, type: ActionType)
 }
 
 export function updateData(guildId: string | null, userId: string) {
+  if (guildId == null) return;
   for (let name in startTime) {
     if (startTime[name]?.[guildId ?? '']?.[userId] != null) {
-      endMeasuringTime(name, guildId, userId);
-      startMeasuringTime(name, guildId, userId);
+      endMeasuringTime(name as MeasuringTimeType, guildId, userId);
+      startMeasuringTime(name as MeasuringTimeType, guildId, userId);
     }
   }
 }

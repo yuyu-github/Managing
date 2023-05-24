@@ -2,27 +2,49 @@ import { ChatInputCommandInteraction, Client, CommandInteraction, AttachmentBuil
 
 import { setData, getData, deleteData } from 'discordbot-data';
 import * as GoogleChartsNode from 'google-charts-node';
-import * as fs from 'fs';
 
 import { ActionType, updateData } from '../../processes/stats.js';
 import { client } from '../../main.js';
 
 function createStatsEmbed(getAction: (name: ActionType, unit: string) => string, getTime: (name: string) => string, user: User | null = null) {
-  const displayData = [
+  const displayData = user != null ? [
     ['メッセージを送った回数', getAction('sendMessage', '回')],
+    ['返信した回数', getAction('reply', '回')],
+    ['返信された回数', getAction('replied', '回')],
     ['画像を送った回数', getAction('sendImage', '回')],
     ['ファイルを送った回数', getAction('sendFile', '回')],
+    ['メッセージを削除した回数', getAction('deleteMessage', '回')],
+    ['メッセージを編集した回数', getAction('editMessage', '回')],
     ['メンションした回数', getAction('mention', '回')],
-    ['メンションされた回数', user != null ? getAction('mentioned', '回') : ''],
+    ['メンションされた回数', getAction('mentioned', '回')],
     ['リアクションをした回数', getAction('addReaction', '回')],
-    ['リアクションされた回数', user != null ? getAction('getReaction', '回') : ''],
+    ['リアクションされた回数', getAction('getReaction', '回')],
     ['VCに入った回数', getAction('joinVoiceChannel', '回')],
-    ['ステージチャンネルに入った回数', getAction('joinStageChannel', '回')],
     ['VCに入っていた時間', getTime('inVoiceChannel')],
+    ['ステージチャンネルに入った回数', getAction('joinStageChannel', '回')],
     ['ステージチャンネルに入っていた時間', getTime('inStageChannel')],
+    ['配信をした回数', getAction('startStreaming', '回')],
+    ['配信をしていた時間', getTime('streaming')],
+    ['ニックネームを変更した回数', getAction('changeNickname', '回')],
     ['コマンドを使った回数', getAction('useCommand', '回')],
     ['コンテキストメニューを使った回数', getAction('useContextMenu', '回')],
-  ].filter(i => i[1] != '')
+    ['イベントに参加した回数', getAction('participateEvent', '回')],
+  ] : [
+    ['メッセージが送られた回数', getAction('sendMessage', '回')],
+    ['画像が送られた回数', getAction('sendImage', '回')],
+    ['ファイルが送られた回数', getAction('sendFile', '回')],
+    ['メンションされた回数', getAction('mention', '回')],
+    ['リアクションをされた回数', getAction('addReaction', '回')],
+    ['VCに入った回数', getAction('joinVoiceChannel', '回')],
+    ['VCに入っていた時間', getTime('inVoiceChannel')],
+    ['ステージチャンネルに入った回数', getAction('joinStageChannel', '回')],
+    ['ステージチャンネルに入っていた時間', getTime('inStageChannel')],
+    ['配信をした回数', getAction('startStreaming', '回')],
+    ['配信をしていた時間', getTime('streaming')],
+    ['コマンドを使われた回数', getAction('useCommand', '回')],
+    ['コンテキストメニューを使われた回数', getAction('useContextMenu', '回')],
+    ['イベントを開催した回数', getAction('holdEvent', '回')],
+  ]
   return {
     embeds: [
       {
