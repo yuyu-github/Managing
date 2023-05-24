@@ -45,7 +45,7 @@ export default async function (interaction: Interaction) {
 
         interaction.deferReply();
         
-        let url = `https://script.google.com/macros/s/AKfycbwSdQYdmkBKmh1FoJ86xuovTcz-Bfx9eAj3fyKskLqWVGp_ZLPK-ycKmnTTsoMxQLjY/exec?text=${text}${source == null ? '' : '&source=' + source}${target == null ? '' : '&target=' + target}`
+        let url = `https://script.google.com/macros/s/AKfycbwSdQYdmkBKmh1FoJ86xuovTcz-Bfx9eAj3fyKskLqWVGp_ZLPK-ycKmnTTsoMxQLjY/exec?text=${encodeURIComponent(text)}${source == null ? '' : '&source=' + source}${target == null ? '' : '&target=' + target}`
         fetch(url).then(res => res.text()).then(body => interaction.followUp(body)).catch(e => {
           interaction.followUp('翻訳に失敗しました');
           console.error(e);
