@@ -70,6 +70,7 @@ export default [
         type: ApplicationCommandOptionType.Integer,
         name: 'count',
         description: '投票終了する人数',
+        required: true
       },
     ]
   },
@@ -88,6 +89,7 @@ export default [
         type: ApplicationCommandOptionType.Integer,
         name: 'count',
         description: '投票終了する人数',
+        required: true
       },
     ]
   },
@@ -111,6 +113,7 @@ export default [
         type: ApplicationCommandOptionType.Integer,
         name: 'count',
         description: '投票終了する人数',
+        required: true
       },
     ]
   },
@@ -134,6 +137,7 @@ export default [
         type: ApplicationCommandOptionType.Integer,
         name: 'count',
         description: '投票終了する人数',
+        required: true
       },
     ]
   },
