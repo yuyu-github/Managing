@@ -178,19 +178,14 @@ client.on(Events.GuildScheduledEventUpdate, async (oldEvent, newEvent) => {
   }
 })
 
-client.on(Events.GuildAuditLogEntryCreate, async auditLog => {
+client.on(Events.GuildAuditLogEntryCreate, async (auditLog, guild) => {
   try {
-    switch (auditLog.action) {
-      case AuditLogEvent.MemberUpdate: {
-        for (let change of auditLog.changes) {
-          let oldMember = change.old as GuildMember | PartialGuildMember;
-          let newMember = change.new as GuildMember | PartialGuildMember;
-
-          if (auditLog.executorId == newMember.id && oldMember.nickname != newMember.nickname)
-            action(newMember.guild.id!, newMember.id, 'changeNickname');
+    if (auditLog.action == AuditLogEvent.MemberUpdate) {
+      for (let change of auditLog.changes) {
+        if (change.key == 'nick' && auditLog.executorId == auditLog.targetId) {
+          action(guild.id, auditLog.targetId, 'changeNickname');
         }
       }
-      break;
     }
   } catch (e) {
     console.error(e);
