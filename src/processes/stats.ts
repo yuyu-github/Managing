@@ -2,7 +2,8 @@ import { ChannelType, Client, User } from "discord.js";
 
 import { setData, getData, deleteData } from 'discordbot-data';
 import { client } from "../main.js";
-type actionType = 
+
+export type ActionType = 
 | 'sendMessage'
 | 'sendImage'
 | 'sendFile'
@@ -64,7 +65,7 @@ export function onExit() {
   }
 }
 
-export function action(guildId: string, userId: string | null, type: actionType) {
+export function action(guildId: string, userId: string | null, type: ActionType) {
   if (userId == null) return;
 
   setData('guild', guildId, ['stats', 'data', 'member', 'action', type, userId], 1, '+');
@@ -77,7 +78,7 @@ export function action(guildId: string, userId: string | null, type: actionType)
   if (type == 'leftStageChannel') endMeasuringTime('inStageChannel', guildId, userId);
 
   if (getData('guild', guildId, ['changes', 'record'])) {
-    const recordChangeTypes: actionType[] = ['sendMessage', 'addReaction', 'joinVoiceChannel'];
+    const recordChangeTypes: ActionType[] = ['sendMessage', 'addReaction', 'joinVoiceChannel'];
     if (recordChangeTypes.includes(type)) setData('guild', guildId, ['changes', 'data', type, Math.floor(((new Date().getTime() / 1000 / 60 / 60) + 9) / 24).toString()], 1, '+');
   }
 }
