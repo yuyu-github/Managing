@@ -63,9 +63,8 @@ function createStatsEmbed(getAction: (name: ActionType, unit: string) => string,
 }
 
 export async function stats(interaction: CommandInteraction) {
-  const user = interaction.options.getUser('user') ?? interaction.user;
-
-  updateData(interaction.guildId, user.id);
+  let users = interaction.guild?.members.cache ?? [];
+  for (let user of users) updateData(interaction.guildId, user[0]);
 
   const stats = getData('guild', interaction.guildId!, ['stats', 'data', 'guild']);
   const getAction = (name: ActionType, unit: string): string => `${stats?.['action']?.[name] ?? 0}${unit}`;
