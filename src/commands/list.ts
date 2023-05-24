@@ -335,9 +335,11 @@ export default [
   {
     type: ApplicationCommandType.Message,
     name: 'ピン留め',
+    defaultMemberPermissions: PermissionFlagsBits.ManageMessages
   },
   {
     type: ApplicationCommandType.Message,
     name: 'ピン留め解除',
+    defaultMemberPermissions: PermissionFlagsBits.ManageMessages
   },
 ] as ApplicationCommandDataResolvable[];
