@@ -1,4 +1,4 @@
-import { ChannelType, Client, IntentsBitField } from 'discord.js';
+import { ChannelType, Client, Events, IntentsBitField } from 'discord.js';
 import * as token from './token.js';
 export const client = new Client({
   intents: [
@@ -38,7 +38,7 @@ process.on('SIGTERM', () => process.exit(0));
 
 if (process.env.DEBUG == 'true') setDebug(true);
 
-client.once('ready', async () => {
+client.once(Events.ClientReady, async () => {
   try {
     if (process.env.DEBUG == 'true') {
       for (let id of token.debugServers) await client.application?.commands.set(commands, id);
@@ -56,7 +56,7 @@ client.once('ready', async () => {
   }
 })
 
-client.on('messageCreate', async message => {
+client.on(Events.MessageCreate, async message => {
   try {
     action(message.guildId!, message.author.id, 'sendMessage');
 
@@ -79,7 +79,7 @@ client.on('messageCreate', async message => {
   }
 })
 
-client.on('interactionCreate', async (interaction) => {
+client.on(Events.InteractionCreate, async (interaction) => {
   try {
     if (interaction.isCommand()) action(interaction.guildId!, interaction.user.id, 'useCommand')
     if (interaction.isContextMenuCommand()) action(interaction.guildId!, interaction.user.id, 'useContextMenu')
@@ -90,7 +90,7 @@ client.on('interactionCreate', async (interaction) => {
   }
 })
 
-client.on('messageReactionAdd', async (reaction, user) => {
+client.on(Events.MessageReactionAdd, async (reaction, user) => {
   try {
     action(reaction.message.guildId!, user.id, 'addReaction');
     action(reaction.message.guildId!, reaction.message.author?.id ?? null, 'getReaction');
@@ -101,7 +101,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
   }
 })
 
-client.on('messageReactionRemove', async (reaction, user) => {
+client.on(Events.MessageReactionRemove, async (reaction, user) => {
   try {
     await voteEvents.onReactionRemove(reaction, user);
   } catch (e) {
@@ -109,7 +109,7 @@ client.on('messageReactionRemove', async (reaction, user) => {
   }
 })
 
-client.on('voiceStateUpdate', async (oldState, newState) => {
+client.on(Events.VoiceStateUpdate, async (oldState, newState) => {
   try {
     if (oldState.channelId != newState.channelId && oldState.channel?.type != newState.channel?.type && newState.member != null) {
       if (newState.channel?.type == ChannelType.GuildVoice) action(newState.guild.id, newState.member.user.id, 'joinVoiceChannel');
@@ -122,7 +122,7 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
   }
 })
 
-client.on('guildMemberAdd', async member => {
+client.on(Events.GuildMemberAdd, async member => {
   try {
     keep.onMemberAdd(member);
     await joinLeaveMessage.join(member);
@@ -131,7 +131,7 @@ client.on('guildMemberAdd', async member => {
   }
 })
 
-client.on('guildMemberRemove', async member => {
+client.on(Events.GuildMemberRemove, async member => {
   try {
     keep.onMemberRemove(member);
     await joinLeaveMessage.leave(member);
