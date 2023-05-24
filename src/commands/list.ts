@@ -195,7 +195,7 @@ export default [
   },
   {
     name: 'lottery',
-    description: '抽選を行う',
+    description: '抽選を作成する',
     options: [
       {
         name: 'name',
