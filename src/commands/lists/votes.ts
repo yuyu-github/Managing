@@ -57,6 +57,12 @@ export default [
         required: true,
       },
       {
+        type: ApplicationCommandOptionType.Integer,
+        name: 'count',
+        description: '投票終了する人数',
+        required: true
+      },
+      {
         type: ApplicationCommandOptionType.String,
         name: 'content',
         description: '投票内容',
@@ -65,12 +71,6 @@ export default [
           { name: '剥奪', value: 'remove' },
           { name: '付与/剥奪', value: 'addremove' },
         ]
-      },
-      {
-        type: ApplicationCommandOptionType.Integer,
-        name: 'count',
-        description: '投票終了する人数',
-        required: true
       },
     ]
   },
