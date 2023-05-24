@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, Client, CommandInteraction, AttachmentBuilder, PermissionFlagsBits, User, Colors } from 'discord.js';
+import { ChatInputCommandInteraction, Client, CommandInteraction, AttachmentBuilder, PermissionFlagsBits, User, Colors, ButtonInteraction, ActionRowBuilder, ButtonBuilder, ButtonStyle, BaseMessageOptions } from 'discord.js';
 
 import { setData, getData, deleteData } from 'discordbot-data';
 import * as GoogleChartsNode from 'google-charts-node';
@@ -6,7 +6,7 @@ import * as GoogleChartsNode from 'google-charts-node';
 import { ActionType, updateData } from '../../processes/stats.js';
 import { client } from '../../main.js';
 
-function createStatsEmbed(getAction: (name: ActionType, unit: string) => string, getTime: (name: string) => string, user: User | null = null) {
+function createStatsEmbed(getAction: (name: ActionType, unit: string) => string, getTime: (name: string) => string, page: number, user: User | null = null) {
   const displayData = user != null ? [
     ['メッセージを送った回数', getAction('sendMessage', '回')],
     ['返信した回数', getAction('reply', '回')],
@@ -50,19 +50,38 @@ function createStatsEmbed(getAction: (name: ActionType, unit: string) => string,
       {
         author: {
           name: user?.tag,
-          iconURL: user?.displayAvatarURL(),
+          icon_url: user?.displayAvatarURL(),
         },
-        fields: displayData.map(i => ({
+        title: '統計',
+        fields: displayData.slice((page - 1) * 10, page * 10).map(i => ({
           name: i[0],
           value: i[1],
         })),
-        color: Colors.Green
+        color: Colors.Green,
+        footer: {
+          text: `ページ ${page}/${Math.floor(displayData.length / 10) + 1}`
+        }
       }
+    ],
+    components: [
+      new ActionRowBuilder().setComponents(
+        new ButtonBuilder()
+          .setCustomId(`${user == null ? 'stats-page' : 'member-stats-page'}_${page - 1}` + (user != null ? '_' + user.id : ''))
+          .setLabel('◀')
+          .setStyle(ButtonStyle.Secondary)
+          .setDisabled(page <= 1),
+        new ButtonBuilder()
+          .setCustomId(`${user == null ? 'stats-page' : 'member-stats-page'}_${page + 1}` + (user != null ? '_' + user.id : ''))
+          .setLabel('▶')
+          .setStyle(ButtonStyle.Secondary)
+          .setDisabled(page >= displayData.length / 10)
+      )
     ]
-  } as any
+  } as BaseMessageOptions
 }
 
-export async function stats(interaction: CommandInteraction) {
+
+export async function stats(interaction: CommandInteraction | ButtonInteraction, page: number = 1) {
   let users = interaction.guild?.members.cache ?? [];
   for (let user of users) updateData(interaction.guildId, user[0]);
 
@@ -71,12 +90,20 @@ export async function stats(interaction: CommandInteraction) {
   const getTime = (name: string): string => `${minutesToString(stats?.['time']?.[name] ?? 0)}`;
   const minutesToString = (minutes: number): string => (minutes >= 60 ? Math.floor(minutes / 60) + '時間' : '') + minutes % 60 + '分';
 
-  interaction.reply(createStatsEmbed(getAction, getTime))
+  if (interaction instanceof ButtonInteraction) interaction.update(createStatsEmbed(getAction, getTime, page))
+  else interaction.reply(createStatsEmbed(getAction, getTime, page))
 }
 
-export async function memberStats(interaction: CommandInteraction) {
+export async function memberStatsCommand(interaction: CommandInteraction) {
   const user = interaction.options.getUser('user') ?? interaction.user;
-
+  await memberStats(interaction, user);
+}
+export async function memberStatsButton(interaction: ButtonInteraction, data: string[]) {
+  const user = client.users.cache.get(data[1]);
+  if (user == null) return;
+  await memberStats(interaction, user, parseInt(data[0]));
+}
+export async function memberStats(interaction: CommandInteraction | ButtonInteraction, user: User, page: number = 1) {
   updateData(interaction.guildId, user.id);
 
   const memberStats = getData('guild', interaction.guildId!, ['stats', 'data', 'member']);
@@ -85,7 +112,8 @@ export async function memberStats(interaction: CommandInteraction) {
   const minutesToString = (minutes: number): string => (minutes >= 60 ? Math.floor(minutes / 60) + '時間' : '') + minutes % 60 + '分';
   const getRank = list => list == null ? 1 : list[user.id] == null ? Object.keys(list).length + 1 : Object.keys(list).sort((a, b) => list[b] - list[a]).indexOf(user.id) + 1;
 
-  interaction.reply(createStatsEmbed(getAction, getTime, user))
+  if (interaction instanceof ButtonInteraction) interaction.update(createStatsEmbed(getAction, getTime, page, user))
+  else interaction.reply(createStatsEmbed(getAction, getTime, page, user))
 }
 
 export async function changes(interaction: ChatInputCommandInteraction) {

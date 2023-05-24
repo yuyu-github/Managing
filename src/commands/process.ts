@@ -26,7 +26,7 @@ export default async function (interaction: Interaction) {
       case 'unbanvote': await votes.unbanVote(interaction); break;
       case 'vote-setting': votes.voteSetting(interaction); break;
       case 'stats': stats.stats(interaction); break;
-      case 'member-stats': stats.memberStats(interaction); break;
+      case 'member-stats': stats.memberStatsCommand(interaction); break;
       case 'changes': stats.changes(interaction); break;
       case 'avatar': info.avatar(interaction); break;
       case 'user-info': info.userInfo(interaction); break;
@@ -208,9 +208,13 @@ export default async function (interaction: Interaction) {
       break;
     }
   } else if (interaction.isButton()) {
-    switch (interaction.customId) {
+    let name = interaction.customId.split('_')[0];
+    let data = interaction.customId.split('_').slice(1);
+    switch (name) {
       case 'count-vote': await votes.countVote(interaction); break;
       case 'end-vote': await votes.endVote(interaction); break;
+      case 'stats-page': await stats.stats(interaction, parseInt(data[0])); break;
+      case 'member-stats-page': await stats.memberStatsButton(interaction, data); break;
       case 'select-role-panel': rolePanel.selectRolePanel(interaction); break;
       case 'anonymous-send': anonymous.send(interaction); break;
       case 'entry-lottery': lottery.entry(interaction); break;
