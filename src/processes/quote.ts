@@ -32,11 +32,7 @@ export default async function(message: Message) {
                 name: urlMessage.author.tag,
                 iconURL: urlMessage.author.displayAvatarURL()
               },
-              description: urlMessage.content,
-              footer: {
-                iconURL: urlMessage.guild?.iconURL() ?? undefined,
-                text: urlMessage.guild?.name + ('name' in urlMessage.channel ? ' #' + urlMessage.channel.name : ''),
-              }
+              description: urlMessage.content
             },
             ...embeds,
           ],
@@ -55,23 +51,6 @@ export default async function(message: Message) {
           })
         }
       }).catch(e => console.error(e));
-    } else {
-      if (!('name' in channel)) return;
-      if (channel.type == ChannelType.GuildVoice) return;
-      message.reply({
-        embeds: [
-          {
-            title: '#' + channel.name,
-            footer: {
-              icon_url: channel.guild.iconURL() ?? undefined,
-              text: channel.guild.name,
-            }
-          }
-        ],
-        allowedMentions: {
-          repliedUser: false
-        }
-      })
     }
   }
 }
