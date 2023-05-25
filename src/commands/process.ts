@@ -38,6 +38,18 @@ export default async function (interaction: Interaction) {
       case 'lottery': await lottery.lottery(interaction); break;
       case 'stopwatch': await stopwatch.stopwatch(interaction); break;
 
+      case 'help': {
+        interaction.reply({
+          embeds: [
+            {
+              title: 'ヘルプ',
+              description: '**Wiki:** https://github.com/yuyu-github/Managing/wiki',
+              color: Colors.Blue
+            }
+          ]
+        })
+      }
+      break;
       case 'translate': {
         const text = interaction.options.getString('text') ?? '';
         const source = interaction.options.getString('source');

@@ -11,6 +11,10 @@ export default [
   ...stats,
   ...info,
   {
+    name: 'help',
+    description: 'ヘルプを表示する'
+  },
+  {
     name: 'translate',
     description: '文章を翻訳する',
     options: [
