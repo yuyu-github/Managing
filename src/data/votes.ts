@@ -1,4 +1,4 @@
-export const voteTypes = [
+export const voteTypes: {name: string, value: string}[] = [
   {name: 'ロール投票', value: 'role-vote'},
   {name: 'キック投票', value: 'kick-vote'},
   {name: 'BAN投票', value: 'ban-vote'},
