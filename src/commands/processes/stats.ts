@@ -95,7 +95,7 @@ export async function stats(interaction: CommandInteraction | ButtonInteraction,
 }
 
 export async function memberStatsCommand(interaction: CommandInteraction) {
-  const user = interaction.options.getUser('user') ?? interaction.user;
+  const user = interaction.options.getUser('member') ?? interaction.user;
   await memberStats(interaction, user);
 }
 export async function memberStatsButton(interaction: ButtonInteraction, data: string[]) {
