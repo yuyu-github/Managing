@@ -1,6 +1,6 @@
 import { ApplicationCommandDataResolvable, ApplicationCommandOptionType, ApplicationCommandType, ChannelType, PermissionFlagsBits, SlashCommandChannelOption } from 'discord.js';
 
-import translateLangs from './lists/translate/langs.js';
+import { langs } from '../data/translate.js';
 
 import votes from './lists/votes.js';
 import stats from './lists/stats.js'
@@ -28,13 +28,13 @@ export default [
         type: ApplicationCommandOptionType.String,
         name: 'source',
         description: '翻訳元の言語',
-        choices: translateLangs,
+        choices: langs,
       },
       {
         type: ApplicationCommandOptionType.String,
         name: 'target',
         description: '翻訳先の言語',
-        choices: translateLangs,
+        choices: langs,
       },
     ]
   },

@@ -1,6 +1,6 @@
 import { ApplicationCommandDataResolvable, ApplicationCommandOptionType, ApplicationCommandType, PermissionFlagsBits } from 'discord.js';
 
-import voteType from './vote-setting/vote_type.js';
+import { voteTypes } from '../../data/vote.js';
 
 export default [
   {
@@ -156,7 +156,7 @@ export default [
             name: 'type',
             description: '設定する投票の種類',
             required: true,
-            choices: voteType,
+            choices: voteTypes,
           },
           {
             type: ApplicationCommandOptionType.Integer,
@@ -176,7 +176,7 @@ export default [
             name: 'type',
             description: '設定する投票の種類',
             required: true,
-            choices: voteType.filter(i => i.value != 'unban-vote'),
+            choices: voteTypes.filter(i => i.value != 'unban-vote'),
           },
           {
             type: ApplicationCommandOptionType.Boolean,
