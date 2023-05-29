@@ -53,6 +53,8 @@ export function send(interaction: ButtonInteraction) {
   interaction.showModal(modal)
 
   interaction.awaitModalSubmit({ filter: i => i.customId == 'anonymous-send' && i.user.id == interaction.user.id, time: 150000 }).then(async modalInteraction => {
+    modalInteraction.deferUpdate()
+
     let name = modalInteraction.fields.getTextInputValue('name');
     const content = modalInteraction.fields.getTextInputValue('content');
     if (interaction.guild == null) return;
@@ -60,14 +62,13 @@ export function send(interaction: ButtonInteraction) {
     const channelId = getData('guild', interaction.guild.id, ['anonymous', 'panels', interaction.message.id, 'channel']) as string;
     const channel = await client.channels.fetch(channelId) as TextChannel | VoiceChannel | NewsChannel | StageChannel | null;
     if (channel == null) return;
+    let lastMessage = (await channel.messages.fetch({limit: 1})).first()
     
     let webhook = await getWebhook(channel);
     webhook.send({
-      username: name,
+      username: name + (lastMessage?.author.username.endsWith('᲼') ? '' : '᲼'),
       content: content,
       allowedMentions: {parse: []}
     })
-
-    modalInteraction.deferUpdate()
   })
 }
