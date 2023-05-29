@@ -2,34 +2,7 @@ import { ChannelType, Client, User } from "discord.js";
 
 import { setData, getData, deleteData } from 'discordbot-data';
 import { client } from "../main.js";
-
-export type ActionType = 
-| 'sendMessage'
-| 'reply'
-| 'replied'
-| 'sendImage'
-| 'sendFile'
-| 'deleteMessage'
-| 'editMessage'
-| 'addReaction'
-| 'getReaction'
-| 'mention'
-| 'mentioned'
-| 'joinVoiceChannel'
-| 'joinStageChannel'
-| 'leftVoiceChannel'
-| 'leftStageChannel'
-| 'startStreaming'
-| 'endStreaming'
-| 'changeNickname'
-| 'useCommand'
-| 'useContextMenu'
-| 'holdEvent'
-| 'participateEvent'
-export type MeasuringTimeType = 
-| 'inVoiceChannel'
-| 'inStageChannel'
-| 'streaming'
+import { ActionType, MeasuringTimeType, changesTypes } from "../data/stats.js";
 
 let startTime = {};
 function startMeasuringTime(type: MeasuringTimeType, guildId: string, userId: string) {
@@ -45,8 +18,7 @@ function endMeasuringTime(type: MeasuringTimeType, guildId: string, userId: stri
   setData('guild', guildId, ['stats', 'data', 'guild', 'time', type], time, '+');
 
   if (getData('guild', guildId, ['changes', 'record'])) {
-    const recordChangeTypes: MeasuringTimeType[] = ['inVoiceChannel'];
-    if (recordChangeTypes.includes(type)) {
+    if (changesTypes.time.includes(type)) {
       const today = Math.floor(((new Date().getTime() / 1000 / 60 / 60) + 9) / 24);
       const todayTime = Math.min(time, (new Date().getTime() / 1000 / 60 + (9 * 60)) % (60 * 24));
       setData('guild', guildId, ['changes', 'data', type, today.toString()], Math.floor(todayTime), '+');
@@ -93,8 +65,7 @@ export function action(guildId: string, userId: string | null | undefined, type:
   if (type == 'endStreaming') endMeasuringTime('streaming', guildId, userId);
 
   if (getData('guild', guildId, ['changes', 'record'])) {
-    const recordChangeTypes: ActionType[] = ['sendMessage', 'addReaction', 'joinVoiceChannel'];
-    if (recordChangeTypes.includes(type)) setData('guild', guildId, ['changes', 'data', type, Math.floor(((new Date().getTime() / 1000 / 60 / 60) + 9) / 24).toString()], 1, '+');
+    if (changesTypes.action.includes(type)) setData('guild', guildId, ['changes', 'data', type, Math.floor(((new Date().getTime() / 1000 / 60 / 60) + 9) / 24).toString()], 1, '+');
   }
 }
 
