@@ -252,6 +252,7 @@ export async function countVote(interaction: ButtonInteraction) {
   if (!Object.keys(votes ?? {}).includes(message.id)) {
     interaction.reply({content: 'このメッセージは投票ではありません', ephemeral: true})
   } else {
+    interaction.deferReply()
     let counts = {}
     for (let item of await message.reactions.cache) {
       counts[item[0]] = item[1].count - ((await item[1].users.fetch()).has(client.user?.id ?? '') ? 1 : 0);
@@ -268,11 +269,11 @@ export async function endVote(interaction: ButtonInteraction) {
   } else if (votes[message.id].author != interaction.user.id) {
     interaction.reply({content: '作成者以外は終了できません', ephemeral: true});
   } else {
+    interaction.reply('投票を終了しました');
     let counts = {}
     for (let item of message.reactions.cache) {
       counts[item[0]] = item[1].count - ((await item[1].users.fetch()).has(client.user?.id ?? '') ? 1 : 0);
     }
-    interaction.reply('投票を終了しました');
     voteViewResult(votes[message.id], message, counts);
 
     message.edit({components: []})
