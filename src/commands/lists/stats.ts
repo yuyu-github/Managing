@@ -1,5 +1,5 @@
 import { ApplicationCommandDataResolvable, ApplicationCommandOptionType } from "discord.js";
-import { statTypes } from "../../data/stats.js";
+import { changesTypes, statTypes } from "../../data/stats.js";
 
 export default [
   {
@@ -70,12 +70,7 @@ export default [
             name: 'stat',
             description: '出力する統計',
             required: true,
-            choices: [
-              { name: 'メッセージを送った回数', value: 'sendMessage' },
-              { name: 'リアクションをした回数', value: 'addReaction' },
-              { name: 'VCに入った回数', value: 'joinVoiceChannel' },
-              { name: 'VCに入っていた時間', value: 'inVoiceChannel' },
-            ]
+            choices: Object.entries(changesTypes).slice(0, 25).map(([k, v]) => ({name: v.name, value: k}))
           }, 
           {
             type: ApplicationCommandOptionType.String,
