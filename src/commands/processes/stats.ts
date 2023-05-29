@@ -5,7 +5,7 @@ import * as GoogleChartsNode from 'google-charts-node';
 
 import { updateData } from '../../processes/stats.js';
 import { client } from '../../main.js';
-import { ActionType, MeasuringTimeType, statTypes } from '../../data/stats.js';
+import { ActionType, MeasuringTimeType, changesTypes, statTypes } from '../../data/stats.js';
 
 function createStatsEmbed(getAction: (name: ActionType, unit: string) => string, getTime: (name: MeasuringTimeType) => string, page: number, user: User | null = null) {
   const displayData = Object.entries(user != null ? statTypes.member : statTypes.server).map(([k, v]) => [v.name, v.type == 'action' ? getAction(k as ActionType, '回') : getTime(k as MeasuringTimeType)])
@@ -137,13 +137,6 @@ export async function changes(interaction: ChatInputCommandInteraction) {
     }
     break;
     case 'output': {
-      const statString = {
-        'sendMessage': 'メッセージを送った回数',
-        'addReaction': 'リアクションをした回数',
-        'joinVoiceChannel': 'VCに入った回数',
-        'inVoiceChannel': 'VCに入っていた時間'
-      }
-
       const stat = interaction.options.getString('stat', true);
       let startString = interaction.options.getString('start', true);
       let endString = interaction.options.getString('end');
@@ -210,7 +203,7 @@ export async function changes(interaction: ChatInputCommandInteraction) {
             table.addRows([${data.map(i => `['${i[0]}',${i[1]},${Object.values(compData).map(j => `${(j.find(k => k[0] == i[0]) ?? [null, 0])[1]}`).join(',')}]`).join(',')}]);
             let chart = new google.visualization.LineChart(document.getElementById('chart_div'));
             chart.draw(table, {
-              title: '${statString[stat] ?? stat}',
+              title: '${changesTypes[stat]?.name ?? stat}',
               legend: 'bottom',
               chartArea: {
                 width: '85%',
@@ -240,7 +233,7 @@ export async function changes(interaction: ChatInputCommandInteraction) {
             table.addRows([${data.map(i => `['${i[0]}',${i[1]},${Object.values(compData).map(j => `${(j.find(k => k[0] == i[0]) ?? [null, 0])[1]}`).join(',')}]`).join(',')}]);
             let chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
             chart.draw(table, {
-              title: '${statString[stat] ?? stat}',
+              title: '${changesTypes[stat]?.name ?? stat}',
               legend: 'bottom',
               chartArea: {
                 width: '85%',
@@ -273,7 +266,7 @@ export async function changes(interaction: ChatInputCommandInteraction) {
               table.addRows([${item.map(i => `[new Date('${i[0]}'),${i[1]}]`).join(',')}]);
               let chart = new google.visualization.Calendar(document.getElementById('chart_div'));
               chart.draw(table, {
-                title: '${statString[stat] ?? stat}(${name})',
+                title: '${changesTypes[stat]?.name ?? stat}(${name})',
                 legend: 'bottom',
                 chartArea: {
                   width: '85%',

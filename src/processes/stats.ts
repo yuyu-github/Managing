@@ -18,7 +18,7 @@ function endMeasuringTime(type: MeasuringTimeType, guildId: string, userId: stri
   setData('guild', guildId, ['stats', 'data', 'guild', 'time', type], time, '+');
 
   if (getData('guild', guildId, ['changes', 'record'])) {
-    if (changesTypes.time.includes(type)) {
+    if (type in changesTypes) {
       const today = Math.floor(((new Date().getTime() / 1000 / 60 / 60) + 9) / 24);
       const todayTime = Math.min(time, (new Date().getTime() / 1000 / 60 + (9 * 60)) % (60 * 24));
       setData('guild', guildId, ['changes', 'data', type, today.toString()], Math.floor(todayTime), '+');
@@ -65,7 +65,7 @@ export function action(guildId: string, userId: string | null | undefined, type:
   if (type == 'endStreaming') endMeasuringTime('streaming', guildId, userId);
 
   if (getData('guild', guildId, ['changes', 'record'])) {
-    if (changesTypes.action.includes(type)) setData('guild', guildId, ['changes', 'data', type, Math.floor(((new Date().getTime() / 1000 / 60 / 60) + 9) / 24).toString()], 1, '+');
+    if (type in changesTypes) setData('guild', guildId, ['changes', 'data', type, Math.floor(((new Date().getTime() / 1000 / 60 / 60) + 9) / 24).toString()], 1, '+');
   }
 }
 

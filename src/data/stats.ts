@@ -73,15 +73,10 @@ export const statTypes: {
 }
 
 export const changesTypes: {
-  action: ActionType[]
-  time: MeasuringTimeType[]
+  [key in ActionType | MeasuringTimeType]?: {name: string}
 } =  {
-  action: [
-    'sendMessage',
-    'addReaction', 
-    'joinVoiceChannel',
-  ],
-  time: [
-    'inVoiceChannel',
-  ]
+  'sendMessage': {name: 'メッセージを送った回数'},
+  'addReaction': {name: 'リアクションをした回数'},
+  'joinVoiceChannel': {name: 'VCに入った回数'},
+  'inVoiceChannel': {name: 'VCに入っていた時間'},
 }
