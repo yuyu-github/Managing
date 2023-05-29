@@ -250,7 +250,7 @@ export async function countVote(interaction: ButtonInteraction) {
   const votes = getData('guild', message.guildId!, ['vote', 'list', message.channelId]) ?? {};
 
   if (!Object.keys(votes ?? {}).includes(message.id)) {
-    interaction.reply('このメッセージは投票ではありません')
+    interaction.reply({content: 'このメッセージは投票ではありません', ephemeral: true})
   } else {
     let counts = {}
     for (let item of await message.reactions.cache) {
@@ -264,9 +264,9 @@ export async function endVote(interaction: ButtonInteraction) {
   const message = interaction.message;
   const votes = getData('guild', message.guildId!, ['vote', 'list', message.channelId]) ?? {};
   if (!Object.keys(votes ?? {}).includes(message.id)) {
-    interaction.reply('このメッセージは投票ではありません')
+    interaction.reply({content: 'このメッセージは投票ではありません', ephemeral: true})
   } else if (votes[message.id].author != interaction.user.id) {
-    interaction.reply('作成者以外は終了できません');
+    interaction.reply({content: '作成者以外は終了できません', ephemeral: true});
   } else {
     let counts = {}
     for (let item of message.reactions.cache) {
