@@ -6,3 +6,4 @@ dev.ts
 run.ps1
 token.ts
 tsconfig.tsbuildinfo
+*.bat
