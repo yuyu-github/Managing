@@ -1,4 +1,5 @@
 import { ApplicationCommandDataResolvable, ApplicationCommandOptionType } from "discord.js";
+import { statTypes } from "../../data/stats.js";
 
 export default [
   {
@@ -13,6 +14,19 @@ export default [
         type: ApplicationCommandOptionType.User,
         name: 'member',
         description: '表示するメンバー',
+      }
+    ]
+  },
+  {
+    name: 'ranking',
+    description: 'ランキングを表示する',
+    options: [
+      {
+        type: ApplicationCommandOptionType.String,
+        name: 'stat',
+        description: '表示する統計',
+        required: true,
+        choices: Object.entries(statTypes.member).slice(0, 25).map(([k, v]) => ({name: v.name, value: k})),
       }
     ]
   },

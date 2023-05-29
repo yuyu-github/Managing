@@ -46,9 +46,6 @@ function createStatsEmbed(getAction: (name: ActionType, unit: string) => string,
 
 
 export async function stats(interaction: CommandInteraction | ButtonInteraction, page: number = 1) {
-  let users = interaction.guild?.members.cache ?? [];
-  for (let user of users) updateData(interaction.guildId, user[0]);
-
   const stats = getData('guild', interaction.guildId!, ['stats', 'data', 'guild']);
   const getAction = (name: ActionType, unit: string): string => `${stats?.['action']?.[name] ?? 0}${unit}`;
   const getTime = (name: string): string => `${minutesToString(stats?.['time']?.[name] ?? 0)}`;
@@ -78,6 +75,52 @@ export async function memberStats(interaction: CommandInteraction | ButtonIntera
 
   if (interaction instanceof ButtonInteraction) interaction.update(createStatsEmbed(getAction, getTime, page, user))
   else interaction.reply(createStatsEmbed(getAction, getTime, page, user))
+}
+
+export function rankingCommand(interaction: ChatInputCommandInteraction) {
+  const stat = interaction.options.getString('stat', true);
+  ranking(interaction, stat as ActionType | MeasuringTimeType);
+}
+export function rankingButton(interaction: ButtonInteraction, data: string[]) {
+  ranking(interaction, data[1] as ActionType | MeasuringTimeType, parseInt(data[0]));
+}
+export function ranking(interaction: CommandInteraction | ButtonInteraction, stat: ActionType | MeasuringTimeType, page: number = 1) {
+  const pageSize = 15;
+
+  const memberStats = getData('guild', interaction.guildId!, ['stats', 'data', 'member']);
+  const statType = statTypes.member[stat]!.type;
+
+  let list = memberStats?.[statType]?.[stat] ?? {};
+  let sorted = Object.keys(list).sort((a, b) => list[b] - list[a]);
+  let displayList = sorted.slice((page - 1) * pageSize, page * pageSize);
+
+  const minutesToString = (minutes: number): string => (minutes >= 60 ? Math.floor(minutes / 60) + '時間' : '') + minutes % 60 + '分';
+  interaction.reply({
+    embeds: [
+      {
+        title: statTypes.member[stat]!.name,
+        description: displayList.map((user, i) => `**#${(page - 1) * pageSize + i + 1}** <@${user}>: ${statType == 'action' ? list[user] + '回' : minutesToString(list[user])}`).join('\n'),
+        color: Colors.DarkGold,
+        footer: {
+          text: `ページ ${page}/${Math.floor(sorted.length / pageSize) + 1}`
+        }
+      }
+    ],
+    components: [
+      new ActionRowBuilder<ButtonBuilder>().setComponents(
+        new ButtonBuilder()
+          .setCustomId(`ranking-page_${page - 1}_${stat}`)
+          .setLabel('◀')
+          .setStyle(ButtonStyle.Secondary)
+          .setDisabled(page <= 1),
+        new ButtonBuilder()
+          .setCustomId(`ranking-page_${page + 1}_${stat}`)
+          .setLabel('▶')
+          .setStyle(ButtonStyle.Secondary)
+          .setDisabled(page >= sorted.length / pageSize)
+      )
+    ]
+  })
 }
 
 export async function changes(interaction: ChatInputCommandInteraction) {
