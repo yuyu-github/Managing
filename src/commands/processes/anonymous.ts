@@ -5,7 +5,7 @@ import { client } from "../../main.js";
 
 export async function panel(interaction: ChatInputCommandInteraction) {
   const channel = interaction.options.getChannel('channel', true);
-  const defaultName = interaction.options.getChannel('default-name') ?? '匿名';
+  const defaultName = interaction.options.getString('default-name') ?? '匿名';
   if (interaction.guild == null || interaction.channel == null) return;
 
   let message = await interaction.channel.send({
