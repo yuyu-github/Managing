@@ -1,4 +1,4 @@
-import { getAllowedMentions } from "../utils.js";
+import { getAllowedMentions } from "../utils/mention.js";
 import { client } from "../main.js";
 
 export default function (type: string, data: any) {

@@ -1,6 +1,6 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, Client, Colors, Interaction, ModalBuilder, NewsChannel, StageChannel, TextChannel, TextInputBuilder, TextInputStyle, VoiceChannel, WebhookClient } from "discord.js";
 import { setData, getData, deleteData } from 'discordbot-data';
-import { getWebhook } from "../../webhook.js";
+import { getWebhook } from "../../utils/webhook.js";
 import { client } from "../../main.js";
 
 export async function panel(interaction: ChatInputCommandInteraction) {
