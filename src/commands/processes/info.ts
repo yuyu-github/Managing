@@ -5,7 +5,7 @@ export function avatar(interaction: ChatInputCommandInteraction) {
   const user = interaction.options.getUser('user', true);
   interaction.reply({
     files: [
-      user.displayAvatarURL()
+      user.displayAvatarURL({extension: 'png'})
     ]
   });
 }
