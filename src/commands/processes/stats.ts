@@ -7,9 +7,12 @@ import { updateData } from '../../processes/stats.js';
 import { client } from '../../main.js';
 import { ActionType, MeasuringTimeType, changesTypes, statTypes } from '../../data/stats.js';
 import { parseTimeStringToDate } from '../../utils/parse_time.js';
+import { pageEmbed } from '../../utils/page.js';
 
-function createStatsEmbed(getAction: (name: ActionType, unit: string) => string, getTime: (name: MeasuringTimeType) => string, page: number, user: User | null = null) {
-  const displayData = Object.entries(user != null ? statTypes.member : statTypes.server).map(([k, v]) => [v.name, v.type == 'action' ? getAction(k as ActionType, '回') : getTime(k as MeasuringTimeType)])
+function getDisplayData(getAction: (name: ActionType, unit: string) => string, getTime: (name: MeasuringTimeType) => string, user: User | null = null) {
+  return Object.entries(user != null ? statTypes.member : statTypes.server).map(([k, v]) => [v.name, v.type == 'action' ? getAction(k as ActionType, '回') : getTime(k as MeasuringTimeType)]);
+}
+function createStatsEmbed(displayData: string[][], page: number, pageSize: number, user: User | null = null) {
   return {
     embeds: [
       {
@@ -18,110 +21,90 @@ function createStatsEmbed(getAction: (name: ActionType, unit: string) => string,
           icon_url: user?.displayAvatarURL(),
         },
         title: '統計',
-        fields: displayData.slice((page - 1) * 10, page * 10).map(i => ({
+        fields: displayData.slice((page - 1) * pageSize, page * pageSize).map(i => ({
           name: i[0],
           value: i[1],
         })),
-        color: Colors.Green,
-        footer: {
-          text: `ページ ${page}/${Math.floor(displayData.length / 10) + 1}`
-        }
+        color: Colors.Green
       }
-    ],
-    components: [
-      new ActionRowBuilder().setComponents(
-        new ButtonBuilder()
-          .setCustomId(`${user == null ? 'stats-page' : 'member-stats-page'}_${page - 1}` + (user != null ? '_' + user.id : ''))
-          .setLabel('◀')
-          .setStyle(ButtonStyle.Secondary)
-          .setDisabled(page <= 1),
-        new ButtonBuilder()
-          .setCustomId(`${user == null ? 'stats-page' : 'member-stats-page'}_${page + 1}` + (user != null ? '_' + user.id : ''))
-          .setLabel('▶')
-          .setStyle(ButtonStyle.Secondary)
-          .setDisabled(page >= displayData.length / 10)
-      )
     ]
   } as BaseMessageOptions
 }
 
 
-export async function stats(interaction: CommandInteraction | ButtonInteraction, page: number = 1) {
-  const stats = getData('guild', interaction.guildId!, ['stats', 'data', 'guild']);
-  const getAction = (name: ActionType, unit: string): string => `${stats?.['action']?.[name] ?? 0}${unit}`;
-  const getTime = (name: string): string => `${minutesToString(stats?.['time']?.[name] ?? 0)}`;
-  const minutesToString = (minutes: number): string => (minutes >= 60 ? Math.floor(minutes / 60) + '時間' : '') + minutes % 60 + '分';
+export async function stats(interaction: CommandInteraction | ButtonInteraction, data: string[] = []) {
+  pageEmbed(
+    interaction, data, 10, 'stats-page',
+    () => {}, () => {},
+    (args, page, pageSize) => {
+      const stats = getData('guild', interaction.guildId!, ['stats', 'data', 'guild']);
+      const getAction = (name: ActionType, unit: string): string => `${stats?.['action']?.[name] ?? 0}${unit}`;
+      const getTime = (name: string): string => `${minutesToString(stats?.['time']?.[name] ?? 0)}`;
+      const minutesToString = (minutes: number): string => (minutes >= 60 ? Math.floor(minutes / 60) + '時間' : '') + minutes % 60 + '分';
 
-  if (interaction instanceof ButtonInteraction) interaction.update(createStatsEmbed(getAction, getTime, page))
-  else interaction.reply(createStatsEmbed(getAction, getTime, page))
+      const displayData = getDisplayData(getAction, getTime);
+      return {
+        itemCount: displayData.length,
+        message: createStatsEmbed(displayData, page, pageSize),
+      }
+    }
+  )
 }
 
-export async function memberStatsCommand(interaction: CommandInteraction) {
-  const user = interaction.options.getUser('member') ?? interaction.user;
-  await memberStats(interaction, user);
+export async function memberStats(interaction: CommandInteraction | ButtonInteraction, data: string[] = []) {
+  pageEmbed<{user: User | undefined}, CommandInteraction>(
+    interaction, data, 10, 'member-stats-page',
+    interaction => ({user: interaction.options.getUser('member') ?? interaction.user}),
+    data => ({user: client.users.cache.get(data[0])}),
+    (args, page, pageSize) => {
+      if (args.user == null) return;
+      updateData(interaction.guildId, args.user.id);
+
+      const memberStats = getData('guild', interaction.guildId!, ['stats', 'data', 'member']);
+      const getAction = (name: ActionType, unit: string): string => `${memberStats?.['action']?.[name]?.[args.user!.id] ?? 0}${unit} (#${getRank(memberStats?.['action']?.[name])})`;
+      const getTime = (name: string): string => `${minutesToString(memberStats?.['time']?.[name]?.[args.user!.id] ?? 0)} (#${getRank(memberStats?.['time']?.[name])})`;
+      const minutesToString = (minutes: number): string => (minutes >= 60 ? Math.floor(minutes / 60) + '時間' : '') + minutes % 60 + '分';
+      const getRank = list => list == null ? 1 : list[args.user!.id] == null ? Object.keys(list).length + 1 : Object.keys(list).sort((a, b) => list[b] - list[a]).indexOf(args.user!.id) + 1;
+
+      const displayData = getDisplayData(getAction, getTime, args.user);
+      return {
+        itemCount: displayData.length,
+        buttonData: [args.user.id],
+        message: createStatsEmbed(displayData, page, pageSize, args.user),
+      }
+    }
+  )
 }
-export async function memberStatsButton(interaction: ButtonInteraction, data: string[]) {
-  const user = client.users.cache.get(data[1]);
-  if (user == null) return;
-  await memberStats(interaction, user, parseInt(data[0]));
-}
-export async function memberStats(interaction: CommandInteraction | ButtonInteraction, user: User, page: number = 1) {
-  updateData(interaction.guildId, user.id);
 
-  const memberStats = getData('guild', interaction.guildId!, ['stats', 'data', 'member']);
-  const getAction = (name: ActionType, unit: string): string => `${memberStats?.['action']?.[name]?.[user.id] ?? 0}${unit} (#${getRank(memberStats?.['action']?.[name])})`;
-  const getTime = (name: string): string => `${minutesToString(memberStats?.['time']?.[name]?.[user.id] ?? 0)} (#${getRank(memberStats?.['time']?.[name])})`;
-  const minutesToString = (minutes: number): string => (minutes >= 60 ? Math.floor(minutes / 60) + '時間' : '') + minutes % 60 + '分';
-  const getRank = list => list == null ? 1 : list[user.id] == null ? Object.keys(list).length + 1 : Object.keys(list).sort((a, b) => list[b] - list[a]).indexOf(user.id) + 1;
+export function ranking(interaction: ChatInputCommandInteraction | ButtonInteraction, data: string[] = []) {
+  pageEmbed<{stat: string}>(
+    interaction, data, 5, 'ranking-page',
+    interaction => ({stat: interaction.options.getString('stat', true)}),
+    data => ({stat: data[0]}),
+    (args, page, pageSize) => {
+      const memberStats = getData('guild', interaction.guildId!, ['stats', 'data', 'member']);
+      const statType = statTypes.member[args.stat]!.type;
 
-  if (interaction instanceof ButtonInteraction) interaction.update(createStatsEmbed(getAction, getTime, page, user))
-  else interaction.reply(createStatsEmbed(getAction, getTime, page, user))
-}
+      let list = memberStats?.[statType]?.[args.stat] ?? {};
+      let sorted = Object.keys(list).sort((a, b) => list[b] - list[a]);
+      let displayList = sorted.slice((page - 1) * pageSize, page * pageSize);
 
-export function rankingCommand(interaction: ChatInputCommandInteraction) {
-  const stat = interaction.options.getString('stat', true);
-  ranking(interaction, stat as ActionType | MeasuringTimeType);
-}
-export function rankingButton(interaction: ButtonInteraction, data: string[]) {
-  ranking(interaction, data[1] as ActionType | MeasuringTimeType, parseInt(data[0]));
-}
-export function ranking(interaction: CommandInteraction | ButtonInteraction, stat: ActionType | MeasuringTimeType, page: number = 1) {
-  const pageSize = 15;
-
-  const memberStats = getData('guild', interaction.guildId!, ['stats', 'data', 'member']);
-  const statType = statTypes.member[stat]!.type;
-
-  let list = memberStats?.[statType]?.[stat] ?? {};
-  let sorted = Object.keys(list).sort((a, b) => list[b] - list[a]);
-  let displayList = sorted.slice((page - 1) * pageSize, page * pageSize);
-
-  const minutesToString = (minutes: number): string => (minutes >= 60 ? Math.floor(minutes / 60) + '時間' : '') + minutes % 60 + '分';
-  interaction.reply({
-    embeds: [
-      {
-        title: statTypes.member[stat]!.name,
-        description: displayList.map((user, i) => `**#${(page - 1) * pageSize + i + 1}** <@${user}>: ${statType == 'action' ? list[user] + '回' : minutesToString(list[user])}`).join('\n'),
-        color: Colors.DarkGold,
-        footer: {
-          text: `ページ ${page}/${Math.floor(sorted.length / pageSize) + 1}`
+      const minutesToString = (minutes: number): string => (minutes >= 60 ? Math.floor(minutes / 60) + '時間' : '') + minutes % 60 + '分';
+      return {
+        itemCount: sorted.length,
+        buttonData: [args.stat],
+        message: {
+          embeds: [
+            {
+              title: statTypes.member[args.stat]!.name,
+              description: displayList.map((user, i) => `**#${(page - 1) * pageSize + i + 1}** <@${user}>: ${statType == 'action' ? list[user] + '回' : minutesToString(list[user])}`).join('\n'),
+              color: Colors.DarkGold
+            }
+          ]
         }
       }
-    ],
-    components: [
-      new ActionRowBuilder<ButtonBuilder>().setComponents(
-        new ButtonBuilder()
-          .setCustomId(`ranking-page_${page - 1}_${stat}`)
-          .setLabel('◀')
-          .setStyle(ButtonStyle.Secondary)
-          .setDisabled(page <= 1),
-        new ButtonBuilder()
-          .setCustomId(`ranking-page_${page + 1}_${stat}`)
-          .setLabel('▶')
-          .setStyle(ButtonStyle.Secondary)
-          .setDisabled(page >= sorted.length / pageSize)
-      )
-    ]
-  })
+    }
+  )
 }
 
 export async function changes(interaction: ChatInputCommandInteraction) {
