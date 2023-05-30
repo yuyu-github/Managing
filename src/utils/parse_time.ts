@@ -55,3 +55,7 @@ export function parseTimeStringToDate(str: string | null, millisecond: boolean =
     return millisecond ? (date * 24 - 9) * 60 * 60 * 1000 : date;
   }
 }
+
+export function timeToString(time: number, style: string | null = null): string {
+  return `<t:${Math.floor(time / 1000)}${style == null ? '' : ':' + style}>`
+}

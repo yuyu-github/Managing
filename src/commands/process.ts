@@ -1,7 +1,7 @@
 import { APIEmbedField, AttachmentBuilder, BaseInteraction, ChannelType, Client, Colors, CommandInteraction, EmbedBuilder, Interaction, PermissionFlagsBits } from 'discord.js';
 import { setData, getData, deleteData } from 'discordbot-data';
 import { schedule } from '../scheduler/scheduler.js';
-import { parseTimeString } from '../utils/parse_time.js';
+import { parseTimeString, timeToString } from '../utils/parse_time.js';
 
 import * as votes from './processes/votes.js';
 import * as stats from './processes/stats.js';
@@ -139,7 +139,7 @@ export default async function (interaction: Interaction) {
           interaction.reply('タイムアウト期間は28日以内にしてください')
         } else {
           member.timeout(time);
-          interaction.reply(`<t:${Math.floor((new Date().getTime() + time) / 1000)}>まで${member.toString()}をタイムアウトしました`)
+          interaction.reply(`${timeToString(new Date().getTime() + time)}まで${member.toString()}をタイムアウトしました`)
         }
       }
       break;
@@ -152,7 +152,7 @@ export default async function (interaction: Interaction) {
         }
 
         schedule('end-timer', {message, channel: interaction.channel.id, owner: interaction.user.id}, time);
-        interaction.reply(`<t:${Math.floor(time / 1000)}:R>にタイマーを設定しました`);
+        interaction.reply(`${timeToString(time, 'R')}にタイマーを設定しました`);
       }
       break;
       case 'join-message': {

@@ -1,4 +1,5 @@
 import { APIEmbedField, CategoryChannel, ChannelType, ChatInputCommandInteraction, Client, Colors, EmbedBuilder, ForumChannel, NewsChannel, PublicThreadChannel, Role, StageChannel, TextChannel, VoiceChannel } from "discord.js";
+import { timeToString } from "../../utils/parse_time.js";
 
 export function avatar(interaction: ChatInputCommandInteraction) {
   const user = interaction.options.getUser('user', true);
@@ -16,12 +17,12 @@ export function userInfo(interaction: ChatInputCommandInteraction) {
   let fields: (APIEmbedField & {cond?: boolean})[] = [
     {
       name: 'アカウント作成日時',
-      value: `<t:${Math.floor(user.createdTimestamp / 1000)}>\n<t:${Math.floor(user.createdTimestamp / 1000)}:R>`,
+      value: `${timeToString(user.createdTimestamp)}\n${timeToString(user.createdTimestamp, 'R')}`,
       inline: true,
     },
     {
       name: 'サーバー参加日時',
-      value: `<t:${Math.floor((member?.joinedTimestamp ?? 0) / 1000)}>\n<t:${Math.floor((member?.joinedTimestamp ?? 0) / 1000)}:R>`,
+      value: `${timeToString((member?.joinedTimestamp ?? 0))}\n${timeToString((member?.joinedTimestamp ?? 0), 'R')}`,
       inline: true,
       cond: member != null
     },
@@ -78,7 +79,7 @@ export async function serverInfo(interaction: ChatInputCommandInteraction) {
   let fields: (APIEmbedField & {cond?: boolean})[] = [
     {
       name: 'サーバー作成日時',
-      value: `<t:${Math.floor(guild?.createdTimestamp / 1000)}>\n<t:${Math.floor(guild.createdTimestamp / 1000)}:R>`,
+      value: `${timeToString(guild?.createdTimestamp)}\n${timeToString(guild.createdTimestamp, 'R')}`,
       inline: true,
     },
     {
@@ -188,7 +189,7 @@ export async function channelInfo(interaction: ChatInputCommandInteraction) {
     },
     {
       name: 'チャンネル作成日時',
-      value: `<t:${Math.floor((channel.createdTimestamp ?? 0) / 1000)}>\n<t:${Math.floor((channel.createdTimestamp ?? 0) / 1000)}:R>`,
+      value: `${timeToString((channel.createdTimestamp ?? 0))}\n${timeToString((channel.createdTimestamp ?? 0), 'R')}`,
       inline: true,
     }
   ];
@@ -327,7 +328,7 @@ export async  function roleInfo(interaction: ChatInputCommandInteraction) {
   let fields: (APIEmbedField & {cond?: boolean})[] = [
     {
       name: 'ロール作成日時',
-      value: `<t:${Math.floor(role.createdTimestamp / 1000)}>\n<t:${Math.floor(role.createdTimestamp / 1000)}:R>`,
+      value: `${timeToString(role.createdTimestamp)}\n${timeToString(role.createdTimestamp, 'R')}`,
       inline: true,
     },
     {

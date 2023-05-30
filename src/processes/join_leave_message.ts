@@ -1,5 +1,6 @@
 import { GuildMember, PartialGuildMember } from "discord.js";
 import { getData } from "discordbot-data";
+import { timeToString } from "../utils/parse_time.js";
 
 function replaceVar(message: string, member: GuildMember | PartialGuildMember): string {
   message = message.replace('$name', member.displayName);
@@ -7,8 +8,8 @@ function replaceVar(message: string, member: GuildMember | PartialGuildMember): 
   message = message.replace('$username', member.user.username);
   message = message.replace('$nickname', member.nickname ?? '');
   message = message.replace('$tag', member.user.tag ?? '');
-  message = message.replace('$time', `<t:${Math.floor(Date.now() / 1000)}>`);
-  message = message.replace('$joinedtime', `<t:${Math.floor((member.joinedTimestamp ?? 0) / 1000)}>`);
+  message = message.replace('$time', `${timeToString(Date.now())}`);
+  message = message.replace('$joinedtime', `${timeToString((member.joinedTimestamp ?? 0))}`);
 
   message = message.replace('$ ', '$');
   return message;
