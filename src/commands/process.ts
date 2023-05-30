@@ -1,7 +1,7 @@
 import { APIEmbedField, AttachmentBuilder, BaseInteraction, ChannelType, Client, Colors, CommandInteraction, EmbedBuilder, Interaction, PermissionFlagsBits } from 'discord.js';
 import { setData, getData, deleteData } from 'discordbot-data';
 import { schedule } from '../scheduler/scheduler.js';
-import { parseTimeString } from '../scheduler/parse_time.js';
+import { parseTimeString } from '../utils/parse_time.js';
 
 import * as votes from './processes/votes.js';
 import * as stats from './processes/stats.js';
