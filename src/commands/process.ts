@@ -202,9 +202,6 @@ export default async function (interaction: Interaction) {
     }
   } else if (interaction.isContextMenuCommand()) {
     switch (interaction.commandName) {
-      case 'キック投票': await votes.kickVote(interaction); break;
-      case 'BAN投票': await votes.banVote(interaction); break;
-      
       case 'ピン留め': {
         const message = interaction.options.getMessage('message');
         if (message == null || !('pin' in message)) return;

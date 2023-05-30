@@ -94,11 +94,6 @@ export default [
     ]
   },
   {
-    type: ApplicationCommandType.User,
-    name: 'キック投票',
-    defaultMemberPermissions: PermissionFlagsBits.KickMembers,
-  },
-  {
     name: 'banvote',
     description: 'BANするか投票をとる',
     defaultMemberPermissions: PermissionFlagsBits.BanMembers,
@@ -116,11 +111,6 @@ export default [
         required: true
       },
     ]
-  },
-  {
-    type: ApplicationCommandType.User,
-    name: 'BAN投票',
-    defaultMemberPermissions: PermissionFlagsBits.BanMembers,
   },
   {
     name: 'unbanvote',
