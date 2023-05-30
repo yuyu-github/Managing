@@ -10,6 +10,7 @@ import * as rolePanel from './processes/role_panel.js';
 import * as anonymous from './processes/anonymous.js';
 import * as lottery from './processes/lottery.js';
 import * as stopwatch from './processes/stopwatch.js';
+import * as violation from './processes/violation.js';
 
 export default async function (interaction: Interaction) {
   if (interaction.channel == null || interaction.channel?.isDMBased()) {
@@ -38,6 +39,8 @@ export default async function (interaction: Interaction) {
       case 'anonymous-panel': await anonymous.panel(interaction); break;
       case 'lottery': await lottery.lottery(interaction); break;
       case 'stopwatch': await stopwatch.stopwatch(interaction); break;
+      case 'violation': await violation.violation(interaction); break;
+      case 'violation-history': await violation.history(interaction); break;
 
       case 'help': {
         interaction.reply({
@@ -230,6 +233,7 @@ export default async function (interaction: Interaction) {
       case 'stats-page': await stats.stats(interaction, data); break;
       case 'member-stats-page': await stats.memberStats(interaction, data); break;
       case 'ranking-page': await stats.ranking(interaction, data); break;
+      case 'violation-history-page': await violation.history(interaction, data); break;
 
       case 'count-vote': await votes.countVote(interaction); break;
       case 'end-vote': await votes.endVote(interaction); break;

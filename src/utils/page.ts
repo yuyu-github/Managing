@@ -21,7 +21,7 @@ export function pageEmbed<ArgsType, CommandType extends CommandInteraction = Cha
       {
         ...(message.embeds?.at(-1) ?? {}),
         footer: {
-          text: `ページ ${page}/${Math.floor(itemCount / pageSize) + 1}`
+          text: `ページ ${page}/${Math.ceil(itemCount / pageSize)}`
         }
       }
     ],

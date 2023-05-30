@@ -335,6 +335,60 @@ export default [
       }
     ]
   },
+  {
+    name: 'violation',
+    description: '違反を記録する',
+    defaultMemberPermissions: PermissionFlagsBits.ModerateMembers,
+    options: [
+      {
+        type: ApplicationCommandOptionType.Subcommand,
+        name: 'add',
+        description: '違反を記録する',
+        options: [
+          {
+            type: ApplicationCommandOptionType.User,
+            name: 'user',
+            description: '違反したユーザー',
+            required: true,
+          },
+          {
+            type: ApplicationCommandOptionType.String,
+            name: 'details',
+            description: '違反内容',
+            required: true,
+          },
+          {
+            type: ApplicationCommandOptionType.String,
+            name: 'punishment',
+            description: '処罰内容'
+          }
+        ]
+      },
+      {
+        type: ApplicationCommandOptionType.Subcommand,
+        name: 'remove',
+        description: '違反を取り消す',
+        options: [
+          {
+            type: ApplicationCommandOptionType.String,
+            name: 'id',
+            description: '違反ID'
+          }
+        ]
+      }
+    ]
+  },
+  {
+    name: 'violation-history',
+    description: '違反履歴を見る',
+    options: [
+      {
+        type: ApplicationCommandOptionType.User,
+        name: 'user',
+        description: '違反履歴を見るユーザー'
+      }
+    ]
+  },
 
   {
     type: ApplicationCommandType.Message,
