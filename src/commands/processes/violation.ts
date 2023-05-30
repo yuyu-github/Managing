@@ -33,7 +33,7 @@ export function violation(interaction: ChatInputCommandInteraction) {
     case 'remove': {
       const id = interaction.options.getString('id');
       
-      let history = getData('guild', interaction.guildId!, ['violation', 'data']) as {id: string}[];
+      let history = getData<{id: string}[]>('guild', interaction.guildId!, ['violation', 'data']) ?? [];
       let removedViolation;
       if (id == null) {
         removedViolation = history.pop();
@@ -77,7 +77,7 @@ export function history(interaction: ChatInputCommandInteraction | ButtonInterac
     interaction => ({user: interaction.options.getUser('user')?.id ?? ''}),
     data => ({user: data[0]}),
     (args, page, pageSize) => {
-      let history = getData('guild', interaction.guildId!, ['violation', 'data']) as {user: string, details: string, punishment: string, timestamp: number, id: string}[];
+      let history = getData<{user: string, details: string, punishment: string, timestamp: number, id: string}[]>('guild', interaction.guildId!, ['violation', 'data']) ?? [];
       let filtered = args.user == '' ? history : history.filter(i => i.user == args.user);
       let displayList = filtered.slice(-(page * pageSize), filtered.length - (page - 1) * pageSize).reverse();
       return {
