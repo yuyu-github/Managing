@@ -1,4 +1,4 @@
-import { APIEmbedField, CategoryChannel, ChannelType, ChatInputCommandInteraction, Client, Colors, EmbedBuilder, ForumChannel, NewsChannel, PublicThreadChannel, Role, StageChannel, TextChannel, VoiceChannel } from "discord.js";
+import { APIEmbedField, CategoryChannel, ChannelType, ChatInputCommandInteraction, Client, Colors, EmbedBuilder, ForumChannel, NewsChannel, PublicThreadChannel, Role, StageChannel, TextChannel, UserContextMenuCommandInteraction, VoiceChannel } from "discord.js";
 import { timeToString } from "../../utils/parse_time.js";
 
 export function avatar(interaction: ChatInputCommandInteraction) {
@@ -10,7 +10,7 @@ export function avatar(interaction: ChatInputCommandInteraction) {
   });
 }
 
-export function userInfo(interaction: ChatInputCommandInteraction) {
+export function userInfo(interaction: ChatInputCommandInteraction | UserContextMenuCommandInteraction) {
   const user = interaction.options.getUser('user', true);
   const member = interaction.guild?.members.resolve(user);
 

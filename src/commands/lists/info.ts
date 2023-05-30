@@ -1,4 +1,4 @@
-import { ApplicationCommandDataResolvable, ApplicationCommandOptionType, ChannelType, SlashCommandChannelOption, SlashCommandRoleOption } from "discord.js";
+import { ApplicationCommandDataResolvable, ApplicationCommandOptionType, ApplicationCommandType, ChannelType, SlashCommandChannelOption, SlashCommandRoleOption } from "discord.js";
 
 export default [
   {
@@ -62,5 +62,10 @@ export default [
         
       }
     ]
+  },
+
+  {
+    type: ApplicationCommandType.User,
+    name: '情報'
   }
 ] as ApplicationCommandDataResolvable[];

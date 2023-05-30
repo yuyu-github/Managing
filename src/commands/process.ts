@@ -200,7 +200,12 @@ export default async function (interaction: Interaction) {
       }
       break;
     }
-  } else if (interaction.isContextMenuCommand()) {
+  } else if (interaction.isUserContextMenuCommand()) {
+    switch (interaction.commandName) {
+      case '統計': stats.memberStats(interaction); break;
+      case '情報': info.userInfo(interaction); break;
+    }
+  } else if (interaction.isMessageContextMenuCommand()) {
     switch (interaction.commandName) {
       case 'ピン留め': {
         const message = interaction.options.getMessage('message');

@@ -1,4 +1,4 @@
-import { ApplicationCommandDataResolvable, ApplicationCommandOptionType } from "discord.js";
+import { ApplicationCommandDataResolvable, ApplicationCommandOptionType, ApplicationCommandType } from "discord.js";
 import { changesTypes, statTypes } from "../../data/stats.js";
 
 export default [
@@ -106,5 +106,10 @@ export default [
         description: '比較IDを生成',
       }
     ]
+  },
+
+  {
+    type: ApplicationCommandType.User,
+    name: '統計'
   }
 ] as ApplicationCommandDataResolvable[];
