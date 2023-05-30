@@ -203,6 +203,7 @@ export default async function (interaction: Interaction) {
   } else if (interaction.isUserContextMenuCommand()) {
     switch (interaction.commandName) {
       case '統計': stats.memberStats(interaction); break;
+      case 'アバター': info.avatar(interaction); break;
       case '情報': info.userInfo(interaction); break;
     }
   } else if (interaction.isMessageContextMenuCommand()) {

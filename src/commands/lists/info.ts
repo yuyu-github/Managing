@@ -66,6 +66,10 @@ export default [
 
   {
     type: ApplicationCommandType.User,
+    name: 'アバター'
+  },
+  {
+    type: ApplicationCommandType.User,
     name: '情報'
   }
 ] as ApplicationCommandDataResolvable[];
