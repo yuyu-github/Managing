@@ -6,6 +6,7 @@ import * as GoogleChartsNode from 'google-charts-node';
 import { updateData } from '../../processes/stats.js';
 import { client } from '../../main.js';
 import { ActionType, MeasuringTimeType, changesTypes, statTypes } from '../../data/stats.js';
+import { parseTimeStringToDate } from '../../utils/parse_time.js';
 
 function createStatsEmbed(getAction: (name: ActionType, unit: string) => string, getTime: (name: MeasuringTimeType) => string, page: number, user: User | null = null) {
   const displayData = Object.entries(user != null ? statTypes.member : statTypes.server).map(([k, v]) => [v.name, v.type == 'action' ? getAction(k as ActionType, '回') : getTime(k as MeasuringTimeType)])
@@ -138,19 +139,12 @@ export async function changes(interaction: ChatInputCommandInteraction) {
     break;
     case 'output': {
       const stat = interaction.options.getString('stat', true);
-      let startString = interaction.options.getString('start', true);
-      let endString = interaction.options.getString('end');
-      if (startString.match(/^[0-9]{1,2}\/[0-9]{1,2}$/)) startString = new Date().getFullYear() + '/' + startString;
-      if (endString?.match(/^[0-9]{1,2}\/[0-9]{1,2}$/)) endString = new Date().getFullYear() + '/' + endString;
-      const startTime = new Date(startString).getTime();
-      const endTime = new Date(endString ?? new Date()).getTime();
-      if (isNaN(startTime) || isNaN(endTime)) {
+      const start = parseTimeStringToDate(interaction.options.getString('start', true));
+      const end = parseTimeStringToDate(interaction.options.getString('end'));
+      if (start == null || end == null) {
         interaction.reply('有効な日付ではありません')
         return;
       }
-      const start = Math.floor(((startTime / 1000 / 60 / 60) + 9) / 24);
-      const end = Math.floor(((endTime / 1000 / 60 / 60) + 9) / 24);
-
       if (end - start < 1 || end - start >= 2000) {
         interaction.reply('範囲は2日以上2000日以下である必要があります')
         return;

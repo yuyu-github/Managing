@@ -1,4 +1,6 @@
-export function parseTimeString(str: string, getSpan: boolean = false): number | null {
+export function parseTimeString(str: string | null, getSpan: boolean = false): number | null {
+  if (str == null) return getSpan ? 0 : new Date().getTime();
+
   str = str.trim();
   if (str.match(/[\/\-:]/) != null) {
     let date = new Date();
@@ -11,7 +13,7 @@ export function parseTimeString(str: string, getSpan: boolean = false): number |
     let timeStr = match[2] != null ? match[2] : match[1].match(/:/) ? match[1] : '';
 
     if (dateStr != '') {
-      let matchGroups = dateStr.match(/^(?:(?<year>[0-9]{2,4})\/)?(?<month>[01]?[0-9])\/(?<day>[0-3]?[1-9])$/)?.groups;
+      let matchGroups = dateStr.match(/^(?:(?<year>[0-9]{2,4})\/)?(?<month>[01]?[0-9])\/(?<day>[0-3]?[0-9])$/)?.groups;
       if (matchGroups == null) matchGroups = dateStr.match(/^(?<year>[0-9]{2,4})\-(?<month>[01][0-9])\-(?<day>[0-3][0-9])$/)?.groups;
       if (matchGroups == null) return null;
       if (matchGroups.year != null) date.setFullYear(matchGroups.year.length == 2 ? parseInt(matchGroups.year) + 2000 : parseInt(matchGroups.year));
@@ -41,5 +43,15 @@ export function parseTimeString(str: string, getSpan: boolean = false): number |
 
     if (getSpan) return span;
     else return Date.now() + span;
+  }
+}
+
+export function parseTimeStringToDate(str: string | null, millisecond: boolean = false, getSpan: boolean = false): number | null {
+  let time = parseTimeString(str, getSpan);
+  if (time == null) return null;
+  if (getSpan) return Math.floor(time / 24 / 60 / 60 / 1000) * (millisecond ? 24 * 60 * 60 * 1000 : 1);
+  else {
+    let date = Math.floor((time / 60 / 60 / 1000 + 9) / 24);
+    return millisecond ? (date * 24 - 9) * 60 * 60 * 1000 : date;
   }
 }
