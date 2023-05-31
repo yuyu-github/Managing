@@ -78,7 +78,7 @@ export async function memberStats(interaction: CommandInteraction | ButtonIntera
 
 export function ranking(interaction: ChatInputCommandInteraction | ButtonInteraction, data: string[] = []) {
   pageEmbed<{stat: string}>(
-    interaction, data, 5, 'ranking-page',
+    interaction, data, 15, 'ranking-page',
     interaction => ({stat: interaction.options.getString('stat', true)}),
     data => ({stat: data[0]}),
     (args, page, pageSize) => {
