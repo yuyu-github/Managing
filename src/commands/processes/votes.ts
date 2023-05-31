@@ -252,12 +252,12 @@ export async function countVote(interaction: ButtonInteraction) {
   if (!Object.keys(votes ?? {}).includes(message.id)) {
     interaction.reply({content: 'このメッセージは投票ではありません', ephemeral: true})
   } else {
-    interaction.deferReply()
+    await interaction.deferReply()
     let counts = {}
-    for (let item of await message.reactions.cache) {
+    for (let item of message.reactions.cache) {
       counts[item[0]] = item[1].count - ((await item[1].users.fetch()).has(client.user?.id ?? '') ? 1 : 0);
     }
-    voteViewResult(votes[message.id], message, counts, interaction);
+    await voteViewResult(votes[message.id], message, counts, interaction);
   }
 }
 
@@ -274,7 +274,7 @@ export async function endVote(interaction: ButtonInteraction) {
     for (let item of message.reactions.cache) {
       counts[item[0]] = item[1].count - ((await item[1].users.fetch()).has(client.user?.id ?? '') ? 1 : 0);
     }
-    voteViewResult(votes[message.id], message, counts);
+    await voteViewResult(votes[message.id], message, counts);
 
     message.edit({components: []})
     deleteData('guild', message.guildId!, ['vote', 'list', message.channelId, message.id])
