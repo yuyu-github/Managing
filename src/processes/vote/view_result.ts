@@ -1,9 +1,9 @@
-import { Colors, Message, MessageComponentInteraction, PartialMessage } from "discord.js";
+import { BaseMessageOptions, Colors, Message, MessageComponentInteraction, PartialMessage } from "discord.js";
 
-export default function(vote: {choices: string[][]}, message: Message | PartialMessage, counts: object, interaction?: MessageComponentInteraction) {
+export default function(vote: {choices: string[][]}, message: Message | PartialMessage, counts: object, send: (BaseMessageOptions) => void = message.reply) {
   const total = Object.values(counts ?? {}).reduce((sum, i) => sum + i, 0);
 
-  (interaction ?? message).reply({
+  send({
     embeds: [
       {
         title: message.embeds[0]?.title ?? '',

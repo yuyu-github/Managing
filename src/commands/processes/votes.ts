@@ -257,7 +257,7 @@ export async function countVote(interaction: ButtonInteraction) {
     for (let item of await message.reactions.cache) {
       counts[item[0]] = item[1].count - ((await item[1].users.fetch()).has(client.user?.id ?? '') ? 1 : 0);
     }
-    voteViewResult(votes[message.id], message, counts, interaction);
+    voteViewResult(votes[message.id], message, counts, interaction.followUp);
   }
 }
 
