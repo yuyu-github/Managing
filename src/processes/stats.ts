@@ -50,11 +50,11 @@ export function onExit() {
   }
 }
 
-export function action(guildId: string, userId: string | null | undefined, type: ActionType, userAction: boolean = true) {
-  setData('guild', guildId, ['stats', 'data', 'guild', 'action', type], 1, '+');
+export function action(guildId: string, userId: string | null | undefined, type: ActionType, userAction: boolean = true, count: number = 1) {
+  setData('guild', guildId, ['stats', 'data', 'guild', 'action', type], count, '+');
 
   if (userId == null || !userAction) return;
-  setData('guild', guildId, ['stats', 'data', 'member', 'action', type, userId], 1, '+');
+  setData('guild', guildId, ['stats', 'data', 'member', 'action', type, userId], count, '+');
   
   if (type == 'joinVoiceChannel') startMeasuringTime('inVoiceChannel', guildId, userId);
   if (type == 'joinStageChannel') startMeasuringTime('inStageChannel', guildId, userId);

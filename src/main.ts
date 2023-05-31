@@ -16,6 +16,7 @@ export const client = new Client({
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { setDebug } from 'discordbot-data';
+import emojiRegex from 'emoji-regex';
 
 import commands from './commands/list.js';
 import commandProcess from './commands/process.js';
@@ -68,6 +69,16 @@ client.on(Events.MessageCreate, async message => {
       let repliedMessage = message.channel.messages.cache.get(message.reference.messageId);
       if (repliedMessage != null) action(message.guildId!, repliedMessage.author.id, 'replied');
     }
+    message.attachments.each(i => {
+      action(message.guildId!, message.author.id, 'sendFile', !isWebhook);
+      if (i.contentType?.startsWith('image/')) action(message.guildId!, message.author.id, 'sendImage', !isWebhook);
+    })
+    if (message.stickers.size > 0) action(message.guildId!, message.author.id, 'sendSticker', !isWebhook, message.stickers.size);
+
+    let emojiCount = 0;
+    emojiCount += message.content.match(emojiRegex())?.length ?? 0;
+    emojiCount += message.content.match(/<:[^:]+:[0-9]+>/g)?.length ?? 0;
+    if (emojiCount > 0) action(message.guildId!, message.author.id, 'sendEmoji', !isWebhook, emojiCount);
 
     let mentionedMembers: string[] = [];
     message.mentions.members?.each(member => { if (!mentionedMembers.includes(member.id)) mentionedMembers.push(member.id) });
@@ -75,11 +86,6 @@ client.on(Events.MessageCreate, async message => {
     if (message.mentions.everyone) (await message.guild?.members.fetch())?.each(member => {if (!mentionedMembers.includes(member.id)) mentionedMembers.push(member.id) });
     mentionedMembers.forEach(id => action(message.guildId!, id, 'mentioned'));
     if (mentionedMembers.length > 0) action(message.guildId!, message.author.id, 'mention', !isWebhook);
-
-    message.attachments.each(i => {
-      action(message.guildId!, message.author.id, 'sendFile', !isWebhook);
-      if (i.contentType?.startsWith('image/')) action(message.guildId!, message.author.id, 'sendImage', !isWebhook);
-    })
 
     await forward(message);
     await quote(message);
