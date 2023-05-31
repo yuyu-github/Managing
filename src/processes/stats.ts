@@ -50,10 +50,10 @@ export function onExit() {
   }
 }
 
-export function action(guildId: string, userId: string | null | undefined, type: ActionType) {
+export function action(guildId: string, userId: string | null | undefined, type: ActionType, userAction: boolean = true) {
   setData('guild', guildId, ['stats', 'data', 'guild', 'action', type], 1, '+');
 
-  if (userId == null) return;
+  if (userId == null || !userAction) return;
   setData('guild', guildId, ['stats', 'data', 'member', 'action', type, userId], 1, '+');
   
   if (type == 'joinVoiceChannel') startMeasuringTime('inVoiceChannel', guildId, userId);

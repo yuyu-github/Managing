@@ -60,9 +60,11 @@ client.once(Events.ClientReady, async () => {
 
 client.on(Events.MessageCreate, async message => {
   try {
-    action(message.guildId!, message.author.id, 'sendMessage');
+    let isWebhook = message.webhookId != null;
+
+    action(message.guildId!, message.author.id, 'sendMessage', !isWebhook);
     if (message.reference?.messageId != null) {
-      action(message.guildId!, message.author.id, 'reply');
+      action(message.guildId!, message.author.id, 'reply', !isWebhook);
       let repliedMessage = message.channel.messages.cache.get(message.reference.messageId);
       if (repliedMessage != null) action(message.guildId!, repliedMessage.author.id, 'replied');
     }
@@ -72,11 +74,11 @@ client.on(Events.MessageCreate, async message => {
     message.mentions.roles.each(role => role.members.each(member => { if (!mentionedMembers.includes(member.id)) mentionedMembers.push(member.id) }));
     if (message.mentions.everyone) (await message.guild?.members.fetch())?.each(member => {if (!mentionedMembers.includes(member.id)) mentionedMembers.push(member.id) });
     mentionedMembers.forEach(id => action(message.guildId!, id, 'mentioned'));
-    if (mentionedMembers.length > 0) action(message.guildId!, message.author.id, 'mention');
+    if (mentionedMembers.length > 0) action(message.guildId!, message.author.id, 'mention', !isWebhook);
 
     message.attachments.each(i => {
-      action(message.guildId!, message.author.id, 'sendFile');
-      if (i.contentType?.startsWith('image/')) action(message.guildId!, message.author.id, 'sendImage');
+      action(message.guildId!, message.author.id, 'sendFile', !isWebhook);
+      if (i.contentType?.startsWith('image/')) action(message.guildId!, message.author.id, 'sendImage', !isWebhook);
     })
 
     await forward(message);
@@ -88,7 +90,7 @@ client.on(Events.MessageCreate, async message => {
 
 client.on(Events.MessageDelete, async message => {
   try {
-    if (message.author != null && message.guild != null) action(message.guildId!, message.author.id, 'deleteMessage');
+    if (message.author != null && message.guild != null) action(message.guildId!, message.author.id, 'deleteMessage', message.webhookId == null);
   } catch (e) {
     console.error(e);
   }
