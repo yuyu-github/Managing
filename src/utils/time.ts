@@ -41,10 +41,10 @@ export function parseTimeString(str: string | null, getSpan: boolean = false): n
     if (matchGroups == null || str == '') return null;
 
     let span = 0;
-    if (matchGroups.day != null) span += parseInt(matchGroups.day.slice(0, -1)) * 24 * 60 * 60 * 1000;
-    if (matchGroups.hours != null) span += parseInt(matchGroups.hours.slice(0, -1)) * 60 * 60 * 1000;
-    if (matchGroups.minutes != null) span += parseInt(matchGroups.minutes.slice(0, -1)) * 60 * 1000;
-    if (matchGroups.seconds != null) span += parseInt(matchGroups.seconds.slice(0, -1)) * 1000;
+    if (matchGroups.day != null) span += parseInt(matchGroups.day.slice(0, -1)) * DAY;
+    if (matchGroups.hours != null) span += parseInt(matchGroups.hours.slice(0, -1)) * HOUR;
+    if (matchGroups.minutes != null) span += parseInt(matchGroups.minutes.slice(0, -1)) * MINUTE;
+    if (matchGroups.seconds != null) span += parseInt(matchGroups.seconds.slice(0, -1)) * SECOND;
 
     if (getSpan) return span;
     else return Date.now() + span;
@@ -54,10 +54,10 @@ export function parseTimeString(str: string | null, getSpan: boolean = false): n
 export function parseTimeStringToDate(str: string | null, millisecond: boolean = false, getSpan: boolean = false): number | null {
   let time = parseTimeString(str, getSpan);
   if (time == null) return null;
-  if (getSpan) return Math.floor(time / 24 / 60 / 60 / 1000) * (millisecond ? 24 * 60 * 60 * 1000 : 1);
+  if (getSpan) return Math.floor(time / DAY) * (millisecond ? DAY : 1);
   else {
-    let date = Math.floor((time / 60 / 60 / 1000 + 9) / 24);
-    return millisecond ? (date * 24 - 9) * 60 * 60 * 1000 : date;
+    let date = Math.floor((time / HOUR + 9) / 24);
+    return millisecond ? (date * 24 - 9) * HOUR : date;
   }
 }
 
