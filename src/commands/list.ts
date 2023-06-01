@@ -418,7 +418,8 @@ export default [
           {
             type: ApplicationCommandOptionType.User,
             name: 'user',
-            description: '表示するユーザー'
+            description: '表示するユーザー',
+            required: true,
           }
         ]
       }
