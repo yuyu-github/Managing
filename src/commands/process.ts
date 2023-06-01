@@ -132,6 +132,7 @@ export default async function (interaction: Interaction) {
         const member = interaction.guild?.members.resolve(user);
         const timeStr = interaction.options.getString('time', true);
         const time = parseTimeString(timeStr, true);
+        const reason = interaction.options.getString('reason') ?? undefined;
         if (member == null || time == null) return;
         if (!member.moderatable) {
           interaction.reply('ユーザーをタイムアウトする権限がありません');
@@ -143,7 +144,7 @@ export default async function (interaction: Interaction) {
         } else if (time > 28 * 24 * 60 * 60 * 1000) {
           interaction.reply('タイムアウト期間は28日以内にしてください')
         } else {
-          member.timeout(time);
+          member.timeout(time, reason);
           interaction.reply(`${timeToString(new Date().getTime() + time)}まで${member.toString()}をタイムアウトしました`)
         }
       }

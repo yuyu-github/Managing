@@ -149,6 +149,11 @@ export default [
         description: '時間',
         required: true
       },
+      {
+        type: ApplicationCommandOptionType.String,
+        name: 'reason',
+        description: '理由',
+      }
     ]
   },
   {
