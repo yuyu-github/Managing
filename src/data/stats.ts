@@ -1,3 +1,5 @@
+import { punishmentActionType } from "./punishment.js"
+
 export type ActionType = 
 | 'sendMessage'
 | 'reply'
@@ -23,6 +25,7 @@ export type ActionType =
 | 'useContextMenu'
 | 'holdEvent'
 | 'participateEvent'
+| punishmentActionType
 export type MeasuringTimeType = 
 | 'inVoiceChannel'
 | 'inStageChannel'

@@ -28,6 +28,7 @@ import quote from './processes/quote.js';
 import forward from './processes/forward.js';
 import * as keep from './processes/keep.js';
 import * as joinLeaveMessage from './processes/join_leave_message.js';
+import { punishment } from './processes/punishment.js';
 
 process.chdir(path.dirname(path.dirname(fileURLToPath(import.meta.url))));
 
@@ -144,13 +145,16 @@ client.on(Events.VoiceStateUpdate, async (oldState, newState) => {
   try {
     if (newState.member != null) {
       if (oldState.channelId != newState.channelId && oldState.channel?.type != newState.channel?.type) {
-        if (newState.channel?.type == ChannelType.GuildVoice) action(newState.guild.id, newState.member.user.id, 'joinVoiceChannel');
-        if (oldState.channel?.type == ChannelType.GuildVoice) action(newState.guild.id, newState.member.user.id, 'leftVoiceChannel');
-        if (newState.channel?.type == ChannelType.GuildStageVoice) action(newState.guild.id, newState.member.user.id, 'joinStageChannel');
-        if (oldState.channel?.type == ChannelType.GuildStageVoice) action(newState.guild.id, newState.member.user.id, 'leftStageChannel');
+        if (newState.channel?.type == ChannelType.GuildVoice) action(newState.guild.id, newState.member.id, 'joinVoiceChannel');
+        if (oldState.channel?.type == ChannelType.GuildVoice) action(newState.guild.id, newState.member.id, 'leftVoiceChannel');
+        if (newState.channel?.type == ChannelType.GuildStageVoice) action(newState.guild.id, newState.member.id, 'joinStageChannel');
+        if (oldState.channel?.type == ChannelType.GuildStageVoice) action(newState.guild.id, newState.member.id, 'leftStageChannel');
       }
-      if (!oldState.streaming && newState.streaming) action(newState.guild.id, newState.member.user.id, 'startStreaming');
-      if (oldState.streaming && !newState.streaming) action(newState.guild.id, newState.member.user.id, 'endStreaming');
+      if (!oldState.streaming && newState.streaming) action(newState.guild.id, newState.member.id, 'startStreaming');
+      if (oldState.streaming && !newState.streaming) action(newState.guild.id, newState.member.id, 'endStreaming');
+
+      if (!oldState.serverMute && newState.serverMute) punishment(newState.guild.id, newState.member.id, 'serverMuted')
+      if (!oldState.serverDeaf && newState.serverDeaf) punishment(newState.guild.id, newState.member.id, 'serverDeafed')
     }
   } catch (e) {
     console.error(e);
@@ -190,11 +194,18 @@ client.on(Events.GuildAuditLogEntryCreate, async (auditLog, guild) => {
   try {
     if (auditLog.action == AuditLogEvent.MemberUpdate) {
       for (let change of auditLog.changes) {
-        if (change.key == 'nick' && auditLog.executorId == auditLog.targetId) {
-          action(guild.id, auditLog.targetId, 'changeNickname');
+        if (change.key == 'nick' && auditLog.executorId == auditLog.targetId) action(guild.id, auditLog.targetId, 'changeNickname');
+
+        if (change.key == 'communication_disabled_until') {
+          let oldTime = change.old == null ? 0 : new Date(change.old as string).getTime();
+          let newTime = change.new == null ? 0 : new Date(change.new as string).getTime();
+          if (newTime > oldTime) punishment(guild.id, auditLog.targetId, 'timedOut', auditLog.reason ?? '', newTime - Date.now());
         }
       }
     }
+
+    if (auditLog.action == AuditLogEvent.MemberKick) punishment(guild.id, auditLog.targetId, 'kicked', auditLog.reason ?? '');
+    if (auditLog.action == AuditLogEvent.MemberBanAdd) punishment(guild.id, auditLog.targetId, 'banned', auditLog.reason ?? '');
   } catch (e) {
     console.error(e);
   }

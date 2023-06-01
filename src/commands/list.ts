@@ -380,12 +380,42 @@ export default [
   },
   {
     name: 'violation-history',
-    description: '違反履歴を見る',
+    description: '違反履歴を表示',
     options: [
       {
         type: ApplicationCommandOptionType.User,
         name: 'user',
-        description: '違反履歴を見るユーザー'
+        description: '表示するユーザー'
+      }
+    ]
+  },
+  {
+    name: 'punishment-info',
+    description: '処罰情報を表示',
+    options: [
+      {
+        type: ApplicationCommandOptionType.Subcommand,
+        name: 'history',
+        description: '処罰履歴を表示',
+        options: [
+          {
+            type: ApplicationCommandOptionType.User,
+            name: 'user',
+            description: '表示するユーザー'
+          }
+        ]
+      },
+      {
+        type: ApplicationCommandOptionType.Subcommand,
+        name: 'count',
+        description: '処罰回数を表示',
+        options: [
+          {
+            type: ApplicationCommandOptionType.User,
+            name: 'user',
+            description: '表示するユーザー'
+          }
+        ]
       }
     ]
   },

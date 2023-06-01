@@ -1,3 +1,8 @@
+export const SECOND = 1000;
+export const MINUTE = 60 * SECOND;
+export const HOUR = 60 * MINUTE;
+export const DAY = 24 * HOUR;
+
 export function parseTimeString(str: string | null, getSpan: boolean = false): number | null {
   if (str == null) return getSpan ? 0 : new Date().getTime();
 
@@ -58,4 +63,13 @@ export function parseTimeStringToDate(str: string | null, millisecond: boolean =
 
 export function timeToString(time: number, style: string | null = null): string {
   return `<t:${Math.floor(time / 1000)}${style == null ? '' : ':' + style}>`
+}
+
+export function timeSpanToString(time: number): string {
+  let str = '';
+  if (time > DAY) str += Math.floor(time / DAY) + '日';
+  if (time > HOUR && time % DAY >= SECOND) str += Math.floor(time % DAY / HOUR) + '時間';
+  if (time > MINUTE && time % HOUR >= SECOND) str += Math.floor(time % HOUR / MINUTE) + '分';
+  if (time % MINUTE >= SECOND) str += Math.floor(time % MINUTE / SECOND) + '秒';
+  return str;
 }

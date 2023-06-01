@@ -11,6 +11,7 @@ import * as anonymous from './processes/anonymous.js';
 import * as lottery from './processes/lottery.js';
 import * as stopwatch from './processes/stopwatch.js';
 import * as violation from './processes/violation.js';
+import * as punishment from './processes/punishment.js';
 
 export default async function (interaction: Interaction) {
   if (interaction.channel == null || interaction.channel?.isDMBased()) {
@@ -41,6 +42,7 @@ export default async function (interaction: Interaction) {
       case 'stopwatch': await stopwatch.stopwatch(interaction); break;
       case 'violation': await violation.violation(interaction); break;
       case 'violation-history': await violation.history(interaction); break;
+      case 'punishment-info': await punishment.info(interaction); break;
 
       case 'help': {
         interaction.reply({
@@ -234,6 +236,7 @@ export default async function (interaction: Interaction) {
       case 'member-stats-page': await stats.memberStats(interaction, data); break;
       case 'ranking-page': await stats.ranking(interaction, data); break;
       case 'violation-history-page': await violation.history(interaction, data); break;
+      case 'punishment-history-page': await punishment.history(interaction, data); break;
 
       case 'count-vote': await votes.countVote(interaction); break;
       case 'end-vote': await votes.endVote(interaction); break;
