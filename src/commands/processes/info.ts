@@ -1,5 +1,5 @@
 import { APIEmbedField, CategoryChannel, ChannelType, ChatInputCommandInteraction, Client, Colors, EmbedBuilder, ForumChannel, NewsChannel, PublicThreadChannel, Role, StageChannel, TextChannel, UserContextMenuCommandInteraction, VoiceChannel } from "discord.js";
-import { timeToString } from "../../utils/parse_time.js";
+import { timeToString } from "../../utils/time.js";
 
 export function avatar(interaction: ChatInputCommandInteraction | UserContextMenuCommandInteraction) {
   const user = interaction.options.getUser('user', true);

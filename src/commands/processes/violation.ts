@@ -1,7 +1,7 @@
 import { ButtonInteraction, ChatInputCommandInteraction, Colors, EmbedBuilder, SnowflakeUtil } from "discord.js";
 import { getData, setData } from "discordbot-data";
 import { pageEmbed } from "../../utils/page.js";
-import { timeToString } from "../../utils/parse_time.js";
+import { timeToString } from "../../utils/time.js";
 
 export function violation(interaction: ChatInputCommandInteraction) {
   switch (interaction.options.getSubcommand(true)) {

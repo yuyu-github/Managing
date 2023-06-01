@@ -1,7 +1,7 @@
 import { setData } from "discordbot-data";
 import { punishmentActionType, punishmentStatTypes } from "../data/punishment.js";
 import { action } from "./stats.js";
-import { SECOND } from "../utils/parse_time.js";
+import { SECOND } from "../utils/time.js";
 
 export function punishment(guildId: string, userId: string | null | undefined, type: punishmentActionType, reason: string = '', duration: number = 0) {
   if (userId == null) return;

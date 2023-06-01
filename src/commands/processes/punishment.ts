@@ -1,6 +1,6 @@
 import { getData } from "discordbot-data";
 import { pageEmbed } from "../../utils/page.js";
-import { SECOND, timeSpanToString, timeToString } from "../../utils/parse_time.js";
+import { SECOND, timeSpanToString, timeToString } from "../../utils/time.js";
 import { ButtonInteraction, ChatInputCommandInteraction } from "discord.js";
 import { punishmentStatTypes } from "../../data/punishment.js";
 

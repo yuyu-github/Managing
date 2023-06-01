@@ -1,6 +1,6 @@
 import { GuildMember, PartialGuildMember } from "discord.js";
 import { getData } from "discordbot-data";
-import { timeToString } from "../utils/parse_time.js";
+import { timeToString } from "../utils/time.js";
 
 function replaceVar(message: string, member: GuildMember | PartialGuildMember): string {
   message = message.replace('$name', member.displayName);

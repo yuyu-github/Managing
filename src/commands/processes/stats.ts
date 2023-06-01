@@ -6,7 +6,7 @@ import * as GoogleChartsNode from 'google-charts-node';
 import { updateData } from '../../processes/stats.js';
 import { client } from '../../main.js';
 import { ActionType, MeasuringTimeType, changesTypes, statTypes } from '../../data/stats.js';
-import { parseTimeStringToDate } from '../../utils/parse_time.js';
+import { parseTimeStringToDate } from '../../utils/time.js';
 import { pageEmbed } from '../../utils/page.js';
 
 function getDisplayData(getAction: (name: ActionType, unit: string) => string, getTime: (name: MeasuringTimeType) => string, user: User | null = null) {
