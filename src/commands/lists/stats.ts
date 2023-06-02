@@ -1,4 +1,4 @@
-import { ApplicationCommandDataResolvable, ApplicationCommandOptionType, ApplicationCommandType } from "discord.js";
+import { ApplicationCommandDataResolvable, ApplicationCommandOptionType, ApplicationCommandType, PermissionFlagsBits } from "discord.js";
 import { changesTypes, statTypes } from "../../data/stats.js";
 
 export default [
@@ -32,21 +32,8 @@ export default [
   },
   {
     name: 'changes',
-    description: '-',
+    description: '推移を出力する',
     options: [
-      {
-        type: ApplicationCommandOptionType.Subcommand,
-        name: 'record',
-        description: '推移を記録するか設定する',
-        options: [
-          {
-            type: ApplicationCommandOptionType.Boolean,
-            name: 'value',
-            description: '推移を記録する',
-            required: true,
-          }
-        ]
-      },
       {
         type: ApplicationCommandOptionType.Subcommand,
         name: 'output',
@@ -104,6 +91,19 @@ export default [
         type: ApplicationCommandOptionType.Subcommand,
         name: 'generate-comp-id',
         description: '比較IDを生成',
+      }
+    ]
+  },
+  {
+    name: 'changes-setting',
+    description: '推移を記録するか設定する',
+    defaultMemberPermissions: PermissionFlagsBits.ManageGuild,
+    options: [
+      {
+        type: ApplicationCommandOptionType.Boolean,
+        name: 'value',
+        description: '推移を記録する',
+        required: true,
       }
     ]
   },

@@ -109,17 +109,6 @@ export function ranking(interaction: ChatInputCommandInteraction | ButtonInterac
 
 export async function changes(interaction: ChatInputCommandInteraction) {
   switch (interaction.options.getSubcommand()) {
-    case 'record': {
-      const permissions = interaction.member?.permissions;
-      if (typeof permissions != 'string' && !permissions?.has(PermissionFlagsBits.ManageGuild)) {
-        interaction.reply('設定を変更する権限がありません');
-      }
-
-      const value = interaction.options.getBoolean('value', true)
-      setData('guild', interaction.guildId!, ['changes', 'record'], value);
-      interaction.reply(`推移を記録${value ? 'する' : 'しない'}ように設定しました`);
-    }
-    break;
     case 'output': {
       const stat = interaction.options.getString('stat', true);
       const start = parseTimeStringToDate(interaction.options.getString('start', true));
@@ -299,4 +288,15 @@ export async function changes(interaction: ChatInputCommandInteraction) {
     }
     break;
   }
+}
+
+export async function changesSetting(interaction: ChatInputCommandInteraction) {
+  const permissions = interaction.member?.permissions;
+  if (typeof permissions != 'string' && !permissions?.has(PermissionFlagsBits.ManageGuild)) {
+    interaction.reply('設定を変更する権限がありません');
+  }
+
+  const value = interaction.options.getBoolean('value', true)
+  setData('guild', interaction.guildId!, ['changes', 'record'], value);
+  interaction.reply(`推移を記録${value ? 'する' : 'しない'}ように設定しました`);
 }

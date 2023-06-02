@@ -31,6 +31,7 @@ export default async function (interaction: Interaction) {
       case 'member-stats': stats.memberStats(interaction); break;
       case 'ranking': stats.ranking(interaction); break;
       case 'changes': stats.changes(interaction); break;
+      case 'changes-setting': stats.changesSetting(interaction); break;
       case 'avatar': info.avatar(interaction); break;
       case 'user-info': info.userInfo(interaction); break;
       case 'server-info': info.serverInfo(interaction); break;
