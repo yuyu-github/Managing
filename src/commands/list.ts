@@ -277,6 +277,7 @@ export default [
   {
     name: 'join-message',
     description: '参加メッセージを設定する',
+    defaultMemberPermissions: PermissionFlagsBits.ManageMessages,
     options: [
       {
         type: ApplicationCommandOptionType.Subcommand,
@@ -310,6 +311,7 @@ export default [
   {
     name: 'leave-message',
     description: '退出メッセージを設定する',
+    defaultMemberPermissions: PermissionFlagsBits.ManageMessages,
     options: [
       {
         type: ApplicationCommandOptionType.Subcommand,
