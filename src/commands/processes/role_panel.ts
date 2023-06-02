@@ -1,6 +1,7 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, Channel, ChatInputCommandInteraction, Client, Colors, GuildMemberRoleManager, Message, PermissionFlagsBits, RoleSelectMenuBuilder, RoleSelectMenuInteraction, StringSelectMenuBuilder, StringSelectMenuComponent, StringSelectMenuInteraction, StringSelectMenuOptionBuilder } from "discord.js";
 import { getData, setData } from "discordbot-data";
 import { client } from "../../main.js";
+import { canRoleManage } from "../../utils/role.js";
 
 export async function rolePanel(interaction: StringSelectMenuInteraction) {
   interaction.message.edit({components: interaction.message.components})
@@ -115,7 +116,8 @@ export async function addRolePanel(interaction: RoleSelectMenuInteraction) {
   let options = (message.components[0].components[0] as StringSelectMenuComponent).options;
   if (options[0].value == '_' && roles.size > 0) options = [];
   for (let role of roles) {
-    if (options.find(i => i.value == role[0]) == null) options.push({label: role[1].name, value: role[0]});
+    if (canRoleManage(interaction.member, role[0]) && options.find(i => i.value == role[0]) == null)
+      options.push({label: role[1].name, value: role[0]});
   }
   
   message.edit({
@@ -141,7 +143,7 @@ export async function removeRolePanel(interaction: RoleSelectMenuInteraction) {
 
   let roleIds = interaction.roles.map(i => i.id);
   let options = (message.components[0].components[0] as StringSelectMenuComponent).options;
-  options = options.filter(i => !roleIds.includes(i.value));
+  options = options.filter(i => !canRoleManage(interaction.member, i.value) || !roleIds.includes(i.value));
   if (options.length == 0) options = [{label: 'ロールを追加してください', value: '_'}];
   
   message.edit({
