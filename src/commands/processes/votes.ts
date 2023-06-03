@@ -6,6 +6,7 @@ import { vote as createVote } from '../../processes/vote/vote.js';
 import voteViewResult from '../../processes/vote/view_result.js';
 import { client } from "../../main.js";
 import { getAllowedMentions } from "../../utils/mention.js";
+import { canRoleManage } from "../../utils/role.js";
 
 export function vote(interaction: ChatInputCommandInteraction) {
   const multiple = interaction.options.getBoolean('multiple')
@@ -75,16 +76,14 @@ export async function roleVote(interaction: ChatInputCommandInteraction) {
   if (guildRoles == null) return;
   const roles = interaction.member?.roles;
   if (roles == undefined || !('highest' in roles)) return;
-  const sameRole = getData('guild', interaction.guildId!, ['vote', 'setting', 'same-role', 'role-vote']) ?? false;
+  const sameRole = getData<boolean>('guild', interaction.guildId!, ['vote', 'setting', 'same-role', 'role-vote']) ?? false;
 
   const minCount = getData('guild', interaction.guildId!, ['vote', 'setting', 'min-count', 'role-vote']) ?? 3;
   const count = interaction.options.getInteger('count') ?? minCount;
 
-  if (guildRoles.comparePositions(role, roles.highest) > 0 && interaction.guild?.ownerId != interaction.user.id) {
+  if (!canRoleManage(interaction.member, role, sameRole)) {
     interaction.reply('自分より上のロールの投票をとることはできません');
-  } else if (!sameRole && guildRoles.comparePositions(role, roles.highest) == 0 && interaction.guild?.ownerId != interaction.user.id) {
-    interaction.reply('自分と同じロールの投票をとることはできません');
-  } else if (count < minCount) {
+  }  else if (count < minCount) {
     interaction.reply(`投票を終了する人数を${minCount}人未満にすることはできません`);
   } else if (!role.editable) {
     interaction.reply(`${role.name}を${contentText}する権限がありません`)
@@ -124,17 +123,15 @@ export async function kickVote(interaction: CommandInteraction) {
   if (guildRoles == null) return;
   const roles = interaction.member?.roles;
   if (roles == null || Array.isArray(roles)) return;
-  const sameRole = getData('guild', interaction.guildId!, ['vote', 'setting', 'same-role', 'kick-vote']) ?? false;
+  const sameRole = getData<boolean>('guild', interaction.guildId!, ['vote', 'setting', 'same-role', 'kick-vote']) ?? false;
 
   const minCount = getData('guild', interaction.guildId!, ['vote', 'setting', 'min-count', 'kick-vote']) ?? 4;
   const count = interaction.isChatInputCommand() ? interaction.options.getInteger('count') ?? minCount : minCount;
 
   if (!member.kickable) {
     interaction.reply(user.toString() + 'をキックする権限がありません')
-  } else if ((guildRoles.comparePositions(member.roles.highest, roles.highest) > 0 && interaction.guild?.ownerId != interaction.user.id) || interaction.guild?.ownerId == member.id) {
+  } else if (!canRoleManage(interaction.member, member.roles.highest, sameRole) || interaction.guild?.ownerId == member.id) {
     interaction.reply('自分より上のロールがある人の投票をとることはできません');
-  } else if (!sameRole && guildRoles.comparePositions(member.roles.highest, roles.highest) == 0 && interaction.guild?.ownerId != interaction.user.id) {
-    interaction.reply('自分と同じロールの投票をとることはできません');
   } else if (count < minCount) {
     interaction.reply(`投票を終了する人数を${minCount}人未満にすることはできません`);
   } else {
@@ -165,17 +162,15 @@ export async function banVote(interaction: CommandInteraction) {
   if (guildRoles == null) return;
   const roles = interaction.member?.roles;
   if (roles == null || Array.isArray(roles)) return;
-  const sameRole = getData('guild', interaction.guildId!, ['vote', 'setting', 'same-role', 'ban-vote']) ?? false;
+  const sameRole = getData<boolean>('guild', interaction.guildId!, ['vote', 'setting', 'same-role', 'ban-vote']) ?? false;
 
   const minCount = getData('guild', interaction.guildId!, ['vote', 'setting', 'min-count', 'ban-vote']) ?? 5;
   const count = interaction.isChatInputCommand() ? interaction.options.getInteger('count') ?? minCount : minCount;
 
   if (!member.bannable) {
     interaction.reply(user.toString() + 'をBANする権限がありません')
-  } else if ((guildRoles.comparePositions(member.roles.highest, roles.highest) > 0 && interaction.guild?.ownerId != interaction.user.id) || interaction.guild?.ownerId == member.id) {
+  } else if (!canRoleManage(interaction.member, member.roles.highest, sameRole) || interaction.guild?.ownerId == member.id) {
     interaction.reply('自分より上のロールがある人の投票をとることはできません');
-  } else if (!sameRole && guildRoles.comparePositions(member.roles.highest, roles.highest) == 0 && interaction.guild?.ownerId != interaction.user.id) {
-    interaction.reply('自分と同じロールの投票をとることはできません');
   } else if (count < minCount) {
     interaction.reply(`投票を終了する人数を${minCount}人未満にすることはできません`);
   } else {
