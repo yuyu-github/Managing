@@ -8,6 +8,8 @@ import { client } from '../../main.js';
 import { ActionType, MeasuringTimeType, changesTypes, statTypes } from '../../data/stats.js';
 import { MINUTE, parseTimeStringToDate, timeSpanToString } from '../../utils/time.js';
 import { pageEmbed } from '../../utils/page.js';
+import { getDividedOption } from '../../utils/option.js';
+
 
 function getDisplayData(getValue: (name: ActionType | MeasuringTimeType, type: 'action' | 'time') => number, guild: Guild,
   getRank?: ((name: ActionType | MeasuringTimeType, type: 'action' | 'time') => number), user?: User) {
@@ -83,11 +85,16 @@ export async function memberStats(interaction: CommandInteraction | ButtonIntera
 }
 
 export function ranking(interaction: ChatInputCommandInteraction | ButtonInteraction, data: string[] = []) {
-  pageEmbed<{stat: string}>(
+  pageEmbed<{stat: string | null}>(
     interaction, data, 15, 'ranking-page',
-    interaction => ({stat: interaction.options.getString('stat', true)}),
+    interaction => ({stat: getDividedOption(interaction, Object.keys(statTypes.member).length, 'stat')}),
     data => ({stat: data[0]}),
     (args, page, pageSize) => {
+      if (args.stat == null) {
+        interaction.reply({content: '統計を指定してください', ephemeral: true});
+        return;
+      }
+
       const memberStats = getData('guild', interaction.guildId!, ['stats', 'data', 'member']);
       const statType = statTypes.member[args.stat]!.type;
 

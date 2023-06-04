@@ -1,5 +1,6 @@
 import { ApplicationCommandDataResolvable, ApplicationCommandOptionType, ApplicationCommandType, PermissionFlagsBits } from "discord.js";
 import { changesTypes, statTypes } from "../../data/stats.js";
+import { createDividedOption } from "../../utils/option.js";
 
 export default [
   {
@@ -21,13 +22,12 @@ export default [
     name: 'ranking',
     description: 'ランキングを表示する',
     options: [
-      {
+      ...createDividedOption(Object.entries(statTypes.member), (v, i) => ({
         type: ApplicationCommandOptionType.String,
-        name: 'stat',
+        name: 'stat' + i,
         description: '表示する統計',
-        required: true,
-        choices: Object.entries(statTypes.member).slice(0, 25).map(([k, v]) => ({name: v.name, value: k})),
-      }
+        choices: v.map(([k, v]) => ({name: v.name, value: k})),
+      }))
     ]
   },
   {
