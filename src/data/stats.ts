@@ -3,12 +3,17 @@ import { punishmentActionType } from "./punishment.js"
 
 export type ActionType = 
 | 'sendMessage'
-| 'reply'
-| 'replied'
+| 'sendEmbedMessage'
+| 'sendLink'
 | 'sendImage'
+| 'sendVideo'
+| 'sendVoiceMessage'
+| 'sendAudio'
 | 'sendFile'
 | 'sendEmoji'
 | 'sendSticker'
+| 'reply'
+| 'replied'
 | 'deleteMessage'
 | 'editMessage'
 | 'addReaction'
@@ -39,14 +44,19 @@ export const statTypes: {
 } = {
   member: {
     sendMessage: {type: 'action', name: 'メッセージを送った回数'},
-    reply: {type: 'action', name: '返信した回数'},
-    replied: {type: 'action', name: '返信された回数'},
+    sendEmbedMessage: {type: 'action', name: '埋め込みメッセージを送った回数', condition: (g, u) => u?.bot ?? false},
+    sendLink: {type: 'action', name: 'リンクを送った回数'},
     sendImage: {type: 'action', name: '画像を送った回数'},
+    sendVideo: {type: 'action', name: '動画を送った回数'},
+    sendVoiceMessage: {type: 'action', name: 'ボイスメッセージを送った回数'},
+    sendAudio: {type: 'action', name: '音声を送った回数'},
     sendFile: {type: 'action', name: 'ファイルを送った回数'},
     sendEmoji: {type: 'action', name: '絵文字を送った回数'},
     sendSticker: {type: 'action', name: 'スタンプを送った回数'},
     deleteMessage: {type: 'action', name: 'メッセージを削除した回数'},
     editMessage: {type: 'action', name: 'メッセージを編集した回数'},
+    reply: {type: 'action', name: '返信した回数'},
+    replied: {type: 'action', name: '返信された回数'},
     mention: {type: 'action', name: 'メンションした回数'},
     mentioned: {type: 'action', name: 'メンションされた回数'},
     addReaction: {type: 'action', name: 'リアクションをした回数'},
@@ -64,7 +74,12 @@ export const statTypes: {
   },
   server: {
     sendMessage: {type: 'action', name: 'メッセージが送られた回数'},
+    sendEmbedMessage: {type: 'action', name: '埋め込みメッセージが送られた回数'},
+    sendLink: {type: 'action', name: 'リンクが送られた回数'},
     sendImage: {type: 'action', name: '画像が送られた回数'},
+    sendVideo: {type: 'action', name: '動画が送られた回数'},
+    sendVoiceMessage: {type: 'action', name: 'ボイスメッセージが送られた回数'},
+    sendAudio: {type: 'action', name: '音声が送られた回数'},
     sendFile: {type: 'action', name: 'ファイルが送られた回数'},
     sendEmoji: {type: 'action', name: '絵文字が送られた回数'},
     sendSticker: {type: 'action', name: 'スタンプが送られた回数'},

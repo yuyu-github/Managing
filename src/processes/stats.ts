@@ -84,16 +84,29 @@ export async function onMessage(message: Message) {
   let isWebhook = message.webhookId != null && message.guild!.members.cache.get(message.author.id) == null;
 
   action(message.guildId!, message.author.id, 'sendMessage', !isWebhook);
-  
-  if (message.reference?.messageId != null) {
-    action(message.guildId!, message.author.id, 'reply', !isWebhook);
-    let repliedMessage = message.channel.messages.cache.get(message.reference.messageId);
-    if (repliedMessage != null) action(message.guildId!, repliedMessage.author.id, 'replied');
-  }
 
+  let invalidChars = '\\^~\\[\\]:;<';
+  let lastInvalidChars = invalidChars + '"\')@.,';
+  let linkRegex = new RegExp(`https?://[^${invalidChars}]+[^${lastInvalidChars}]`, 'g');
+  let links = (decodeURI(message.content).match(linkRegex) ?? []).map(i => encodeURI(i));
+  if (links.length > 0) action(message.guildId!, message.author.id, 'sendLink', !isWebhook, links.length);
+  
+  setTimeout(() => {
+    message.embeds.forEach(i => {
+      if (i.url != null && links.includes(i.url)) {
+        console.log(Object.keys(i.data));
+        if (Object.keys(i.data).filter(k => !['type', 'thumbnail', 'url'].includes(k)).length == 0) action(message.guildId!, message.author.id, 'sendImage', !isWebhook);
+        if (Object.keys(i.data).filter(k => !['type', 'video', 'url'].includes(k)).length == 0) action(message.guildId!, message.author.id, 'sendVideo', !isWebhook);
+      } else action(message.guildId!, message.author.id, 'sendEmbedMessage', !isWebhook)
+    })
+  }, 500)
+  
   message.attachments.each(i => {
     action(message.guildId!, message.author.id, 'sendFile', !isWebhook);
     if (i.contentType?.startsWith('image/')) action(message.guildId!, message.author.id, 'sendImage', !isWebhook);
+    if (i.contentType?.startsWith('video/')) action(message.guildId!, message.author.id, 'sendVideo', !isWebhook);
+    if (i.contentType?.startsWith('audio/')) action(message.guildId!, message.author.id, 'sendAudio', !isWebhook);
+    if (i.waveform != null) action(message.guildId!, message.author.id, 'sendVoiceMessage', !isWebhook);
   })
 
   let emojiCount = 0;
@@ -102,6 +115,12 @@ export async function onMessage(message: Message) {
   if (emojiCount > 0) action(message.guildId!, message.author.id, 'sendEmoji', !isWebhook, emojiCount);
   if (message.stickers.size > 0) action(message.guildId!, message.author.id, 'sendSticker', !isWebhook, message.stickers.size);
 
+  if (message.reference?.messageId != null) {
+    action(message.guildId!, message.author.id, 'reply', !isWebhook);
+    let repliedMessage = message.channel.messages.cache.get(message.reference.messageId);
+    if (repliedMessage != null) action(message.guildId!, repliedMessage.author.id, 'replied');
+  }
+  
   let mentionedMembers: string[] = [];
   message.mentions.members?.each(member => { if (!mentionedMembers.includes(member.id)) mentionedMembers.push(member.id) });
   message.mentions.roles.each(role => role.members.each(member => { if (!mentionedMembers.includes(member.id)) mentionedMembers.push(member.id) }));
