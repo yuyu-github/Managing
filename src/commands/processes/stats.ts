@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, Client, CommandInteraction, AttachmentBuilder, PermissionFlagsBits, User, Colors, ButtonInteraction, ActionRowBuilder, ButtonBuilder, ButtonStyle, BaseMessageOptions } from 'discord.js';
+import { ChatInputCommandInteraction, Client, CommandInteraction, AttachmentBuilder, PermissionFlagsBits, User, Colors, ButtonInteraction, ActionRowBuilder, ButtonBuilder, ButtonStyle, BaseMessageOptions, Guild } from 'discord.js';
 
 import { setData, getData, deleteData } from 'discordbot-data';
 import * as GoogleChartsNode from 'google-charts-node';
@@ -6,11 +6,16 @@ import * as GoogleChartsNode from 'google-charts-node';
 import { updateData } from '../../processes/stats.js';
 import { client } from '../../main.js';
 import { ActionType, MeasuringTimeType, changesTypes, statTypes } from '../../data/stats.js';
-import { parseTimeStringToDate } from '../../utils/time.js';
+import { MINUTE, parseTimeStringToDate, timeSpanToString } from '../../utils/time.js';
 import { pageEmbed } from '../../utils/page.js';
 
-function getDisplayData(getAction: (name: ActionType, unit: string) => string, getTime: (name: MeasuringTimeType) => string, user: User | null = null) {
-  return Object.entries(user != null ? statTypes.member : statTypes.server).map(([k, v]) => [v.name, v.type == 'action' ? getAction(k as ActionType, '回') : getTime(k as MeasuringTimeType)]);
+function getDisplayData(getValue: (name: ActionType | MeasuringTimeType, type: 'action' | 'time') => number, guild: Guild,
+  getRank?: ((name: ActionType | MeasuringTimeType, type: 'action' | 'time') => number), user?: User) {
+  return Object.entries(user != null ? statTypes.member : statTypes.server).map(([k, v]) => {
+    let value = getValue(k as ActionType | MeasuringTimeType, v.type);
+    let rank = getRank != null ? ` (#${getRank(k as ActionType | MeasuringTimeType, v.type)})` : '';
+    return (v.condition?.(guild, user) ?? true) ? [v.name, (v.type == 'action' ? `${value}回` : timeSpanToString(value * MINUTE, false)) + rank] : null;
+  }).filter(i => i != null) as string[][];
 }
 function createStatsEmbed(displayData: string[][], page: number, pageSize: number, user: User | null = null) {
   return {
@@ -38,11 +43,9 @@ export async function stats(interaction: CommandInteraction | ButtonInteraction,
     () => {}, () => {},
     (args, page, pageSize) => {
       const stats = getData('guild', interaction.guildId!, ['stats', 'data', 'guild']);
-      const getAction = (name: ActionType, unit: string): string => `${stats?.['action']?.[name] ?? 0}${unit}`;
-      const getTime = (name: string): string => `${minutesToString(stats?.['time']?.[name] ?? 0)}`;
-      const minutesToString = (minutes: number): string => (minutes >= 60 ? Math.floor(minutes / 60) + '時間' : '') + minutes % 60 + '分';
+      const getValue = (name: ActionType | MeasuringTimeType, type: 'action' | 'time') => stats?.[type]?.[name] ?? 0;
 
-      const displayData = getDisplayData(getAction, getTime);
+      const displayData = getDisplayData(getValue, interaction.guild!);
       return {
         itemCount: displayData.length,
         message: createStatsEmbed(displayData, page, pageSize),
@@ -61,12 +64,15 @@ export async function memberStats(interaction: CommandInteraction | ButtonIntera
       updateData(interaction.guildId, args.user.id);
 
       const memberStats = getData('guild', interaction.guildId!, ['stats', 'data', 'member']);
-      const getAction = (name: ActionType, unit: string): string => `${memberStats?.['action']?.[name]?.[args.user!.id] ?? 0}${unit} (#${getRank(memberStats?.['action']?.[name])})`;
-      const getTime = (name: string): string => `${minutesToString(memberStats?.['time']?.[name]?.[args.user!.id] ?? 0)} (#${getRank(memberStats?.['time']?.[name])})`;
-      const minutesToString = (minutes: number): string => (minutes >= 60 ? Math.floor(minutes / 60) + '時間' : '') + minutes % 60 + '分';
-      const getRank = list => list == null ? 1 : list[args.user!.id] == null ? Object.keys(list).length + 1 : Object.keys(list).sort((a, b) => list[b] - list[a]).indexOf(args.user!.id) + 1;
+      const getValue = (name: ActionType | MeasuringTimeType, type: 'action' | 'time') => memberStats?.[type]?.[name]?.[args.user!.id] ?? 0;
+      const getRank = (name: ActionType | MeasuringTimeType, type: 'action' | 'time') => {
+        let list = memberStats?.[type]?.[name];
+        if (list == null) return 1;
+        if (list[args.user!.id] == null) return Object.keys(list).length + 1;
+        return Object.keys(list).sort((a, b) => list[b] - list[a]).indexOf(args.user!.id) + 1;
+      }
 
-      const displayData = getDisplayData(getAction, getTime, args.user);
+      const displayData = getDisplayData(getValue, interaction.guild!, getRank, args.user);
       return {
         itemCount: displayData.length,
         buttonData: [args.user.id],

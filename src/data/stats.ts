@@ -1,3 +1,4 @@
+import { Guild, User } from "discord.js"
 import { punishmentActionType } from "./punishment.js"
 
 export type ActionType = 
@@ -33,7 +34,7 @@ export type MeasuringTimeType =
 
 export const statTypes: {
   [key in 'member' | 'server']: {
-    [key in ActionType | MeasuringTimeType]?: {type: 'action' | 'time', name: string}
+    [key in ActionType | MeasuringTimeType]?: {type: 'action' | 'time', name: string, condition?: (guild: Guild, user?: User) => boolean}
   }
 } = {
   member: {
@@ -52,8 +53,8 @@ export const statTypes: {
     getReaction: {type: 'action', name: 'リアクションされた回数'},
     joinVoiceChannel: {type: 'action', name: 'VCに入った回数'},
     inVoiceChannel: {type: 'time', name: 'VCに入っていた時間'},
-    joinStageChannel: {type: 'action', name: 'ステージチャンネルに入った回数'},
-    inStageChannel: {type: 'time', name: 'ステージチャンネルに入っていた時間'},
+    joinStageChannel: {type: 'action', name: 'ステージチャンネルに入った回数', condition: g => g.features.includes('COMMUNITY')},
+    inStageChannel: {type: 'time', name: 'ステージチャンネルに入っていた時間', condition: g => g.features.includes('COMMUNITY')},
     startStreaming: {type: 'action', name: '配信をした回数'},
     streaming: {type: 'time', name: '配信をしていた時間'},
     changeNickname: {type: 'action', name: 'ニックネームを変更した回数'},
@@ -71,8 +72,8 @@ export const statTypes: {
     addReaction: {type: 'action', name: 'リアクションが行われた回数'},
     joinVoiceChannel: {type: 'action', name: 'VCに入ってきた回数'},
     inVoiceChannel: {type: 'time', name: 'VCに入っていた時間'},
-    joinStageChannel: {type: 'action', name: 'ステージチャンネルに入ってきた回数'},
-    inStageChannel: {type: 'time', name: 'ステージチャンネルに入っていた時間'},
+    joinStageChannel: {type: 'action', name: 'ステージチャンネルに入ってきた回数', condition: g => g.features.includes('COMMUNITY')},
+    inStageChannel: {type: 'time', name: 'ステージチャンネルに入っていた時間', condition: g => g.features.includes('COMMUNITY')},
     startStreaming: {type: 'action', name: '配信が行われた回数'},
     streaming: {type: 'time', name: '配信をしていた時間'},
     useCommand: {type: 'action', name: 'コマンドが使われた回数'},

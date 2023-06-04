@@ -22,7 +22,7 @@ import commands from './commands/list.js';
 import commandProcess from './commands/process.js';
 import { execute, execute as scheduleExecute } from './scheduler/scheduler.js';
 import loadVotes from './processes/vote/load_votes.js';
-import { action, init as actionInit, onExit as actionOnExit } from './processes/stats.js';
+import { action, init as actionInit, onExit as actionOnExit, onMessage as actionOnMessage } from './processes/stats.js';
 import * as voteEvents from './processes/vote/events.js';
 import quote from './processes/quote.js';
 import forward from './processes/forward.js';
@@ -62,32 +62,7 @@ client.once(Events.ClientReady, async () => {
 
 client.on(Events.MessageCreate, async message => {
   try {
-    let isWebhook = message.webhookId != null;
-
-    action(message.guildId!, message.author.id, 'sendMessage', !isWebhook);
-    if (message.reference?.messageId != null) {
-      action(message.guildId!, message.author.id, 'reply', !isWebhook);
-      let repliedMessage = message.channel.messages.cache.get(message.reference.messageId);
-      if (repliedMessage != null) action(message.guildId!, repliedMessage.author.id, 'replied');
-    }
-    message.attachments.each(i => {
-      action(message.guildId!, message.author.id, 'sendFile', !isWebhook);
-      if (i.contentType?.startsWith('image/')) action(message.guildId!, message.author.id, 'sendImage', !isWebhook);
-    })
-    if (message.stickers.size > 0) action(message.guildId!, message.author.id, 'sendSticker', !isWebhook, message.stickers.size);
-
-    let emojiCount = 0;
-    emojiCount += message.content.match(emojiRegex())?.length ?? 0;
-    emojiCount += message.content.match(/<:[^:]+:[0-9]+>/g)?.length ?? 0;
-    if (emojiCount > 0) action(message.guildId!, message.author.id, 'sendEmoji', !isWebhook, emojiCount);
-
-    let mentionedMembers: string[] = [];
-    message.mentions.members?.each(member => { if (!mentionedMembers.includes(member.id)) mentionedMembers.push(member.id) });
-    message.mentions.roles.each(role => role.members.each(member => { if (!mentionedMembers.includes(member.id)) mentionedMembers.push(member.id) }));
-    if (message.mentions.everyone) (await message.guild?.members.fetch())?.each(member => {if (!mentionedMembers.includes(member.id)) mentionedMembers.push(member.id) });
-    mentionedMembers.forEach(id => action(message.guildId!, id, 'mentioned'));
-    if (mentionedMembers.length > 0) action(message.guildId!, message.author.id, 'mention', !isWebhook);
-
+    if (message.guild != null) await actionOnMessage(message);
     await forward(message);
     await quote(message);
   } catch (e) {
