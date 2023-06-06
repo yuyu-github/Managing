@@ -1,8 +1,7 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors, Component, ComponentBuilder, Message, MessageMentionOptions, User } from 'discord.js';
 
 import { setData, getData, deleteData } from 'discordbot-data';
-
-type VoteType = 'normal' | 'rolevote' | 'kickvote' | 'banvote' | 'unbanvote'
+import { VoteType } from '../../data/votes.js';
 
 export function vote(type: VoteType, title: string, description: string, choices: string[][], data: object, author: User,
   sendFn: (data: object) => Message | undefined | Promise<Message | undefined>, allowedMentions: MessageMentionOptions = {}): void {

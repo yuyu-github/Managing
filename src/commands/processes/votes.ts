@@ -95,7 +95,7 @@ export async function roleVote(interaction: ChatInputCommandInteraction) {
     }[content];
 
     createVote(
-      'rolevote',
+      'role-vote',
       user.tag + 'に' + `${role.name}を${contentText}する`,
       `${description}\n投票終了人数 ${count}人`,
       [['⭕', `${content.includes('add') ? '付与' : '削除'}する`], ['❌', `${content.includes('add') ? '付与' : '削除'}しない`]],
@@ -136,7 +136,7 @@ export async function kickVote(interaction: CommandInteraction) {
     interaction.reply(`投票を終了する人数を${minCount}人未満にすることはできません`);
   } else {
     createVote(
-      'kickvote',
+      'kick-vote',
       user.tag + 'をキックする',
       'キックするが7割を超えた場合キックします\n投票終了人数 ' + count + '人',
       [['⭕', 'キックする'], ['❌', 'キックしない']],
@@ -175,7 +175,7 @@ export async function banVote(interaction: CommandInteraction) {
     interaction.reply(`投票を終了する人数を${minCount}人未満にすることはできません`);
   } else {
     createVote(
-      'banvote',
+      'ban-vote',
       user.tag + 'をBANする',
       'BANするが8割を超えた場合BANします\n投票終了人数 ' + count + '人',
       [['⭕', 'BANする'], ['❌', 'BANしない']],
@@ -208,7 +208,7 @@ export async function unbanVote(interaction: CommandInteraction) {
       interaction.reply(`投票を終了する人数を${minCount}人未満にすることはできません`);
     } else {
       createVote(
-        'unbanvote',
+        'unban-vote',
         user.tag + 'をBAN解除する',
         'BAN解除するが8割を超えた場合BAN解除します\n投票終了人数 ' + count + '人',
         [['⭕', 'BAN解除する'], ['❌', 'BAN解除しない']],

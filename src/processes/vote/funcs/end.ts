@@ -1,8 +1,9 @@
-import { Client, Message } from "discord.js";
+import { Client, Message, PartialMessage } from "discord.js";
 import { client } from "../../../main.js";
+import { VoteType } from "../../../data/votes.js";
 
 export default {
-  'rolevote': async (vote: { user: string, role: string, content: string }, msg: Message, counts: object, total: number) => {
+  'role-vote': async (vote: { user: string, role: string, content: string }, msg: Message, counts: object, total: number) => {
     const user = await client.users.fetch(vote.user);
     if (user == null) return;
     const member = msg.guild?.members.resolve(user);
@@ -28,7 +29,7 @@ export default {
       msg.channel.send(`投票により${user.toString()}に${role.name}の${{'add': '付与', 'remove': '剥奪', 'addremove': '付与/剥奪'}[vote.content]}はされませんでした`);
     }
   },
-  'kickvote': async (vote: { user: string }, msg: Message, counts: object, total: number) => {
+  'kick-vote': async (vote: { user: string }, msg: Message, counts: object, total: number) => {
     const user = await client.users.fetch(vote.user);
     if (user == null) return;
     const member = msg.guild?.members.resolve(user);
@@ -45,7 +46,7 @@ export default {
       msg.channel.send('投票により' + user.toString() + 'はキックされませんでした');
     }
   },
-  'banvote': async (vote: { user: string }, msg: Message, counts: object, total: number) => {
+  'ban-vote': async (vote: { user: string }, msg: Message, counts: object, total: number) => {
     const user = await client.users.fetch(vote.user);
     if (user == null) return;
 
@@ -60,7 +61,7 @@ export default {
       msg.channel.send('投票により' + user.toString() + 'はBANされませんでした');
     }
   },
-  'unbanvote': async (vote: { user: string }, msg: Message, counts: object, total: number) => {
+  'unban-vote': async (vote: { user: string }, msg: Message, counts: object, total: number) => {
     const user = await client.users.fetch(vote.user);
     if (user == null) return;
 
@@ -74,4 +75,4 @@ export default {
       msg.channel.send('投票により' + user.toString() + 'はBAN解除されませんでした');
     }
   }
-};
+} as {[key in VoteType]?: (vote: object, message: Message | PartialMessage, counts: object, total: number) => void};

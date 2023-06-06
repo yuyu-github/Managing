@@ -6,11 +6,12 @@ import onReactionAddFn from './funcs/onReactionAdd.js';
 import endFn from './funcs/end.js';
 import viewResult from './view_result.js';
 import { client } from '../../main.js';
+import { VoteType } from '../../data/votes.js';
 
 export async function onReactionAdd(reaction: MessageReaction | PartialMessageReaction, user: User) {
   if (reaction.message.guildId == null) return;
   const votes = getData('guild', reaction.message.guildId, ['vote', 'list', reaction.message.channelId]) ?? {};
-  if (Object.keys(votes ?? {})?.includes?.(reaction.message.id)) {
+  if (Object.keys(votes)?.includes?.(reaction.message.id)) {
     const vote = votes[reaction.message.id];
 
     if (user.id == client.user?.id) return;
@@ -43,7 +44,7 @@ export async function onReactionAdd(reaction: MessageReaction | PartialMessageRe
       }
     }
 
-    if (onReactionAddFn[vote.type]?.(client, vote, reaction, user, reactionCount, reactionMemberCount)) {
+    if (onReactionAddFn[vote.type as VoteType]?.(vote, reaction, user, reactionCount, reactionMemberCount)) {
       deleteData('guild', reaction.message.guildId!, ['vote', 'list', reaction.message.channelId, reaction.message.id])
 
       let counts = {}
@@ -52,7 +53,7 @@ export async function onReactionAdd(reaction: MessageReaction | PartialMessageRe
       }
 
       await viewResult(vote, reaction.message, counts);
-      await endFn[vote.type]?.(client, vote, reaction.message, counts, reactionCount);
+      await endFn[vote.type as VoteType]?.(vote, reaction.message, counts, reactionCount);
     }
   }
 }

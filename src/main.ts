@@ -102,7 +102,7 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
     action(reaction.message.guildId!, user.id, 'addReaction');
     action(reaction.message.guildId!, reaction.message.author?.id, 'getReaction');
 
-    if ('_equals' in user) await voteEvents.onReactionAdd(reaction, user);
+    if (!user.partial) await voteEvents.onReactionAdd(reaction, user);
   } catch (e) {
     console.error(e);
   }
