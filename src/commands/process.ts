@@ -136,17 +136,17 @@ export default async function (interaction: Interaction) {
         const reason = interaction.options.getString('reason') ?? undefined;
         if (member == null || time == null) return;
         if (!member.moderatable) {
-          interaction.reply('ユーザーをタイムアウトする権限がありません');
+          interaction.reply({content: 'ユーザーをタイムアウトする権限がありません', ephemeral: true});
           return;
         }
 
         if (time < 0) {
-          interaction.reply('日時が現在よりも昔です'); 
+          interaction.reply({content: '日時が現在よりも昔です', ephemeral: true}); 
         } else if (time > 28 * 24 * 60 * 60 * 1000) {
-          interaction.reply('タイムアウト期間は28日以内にしてください')
+          interaction.reply({content: 'タイムアウト期間は28日以内にしてください', ephemeral: true})
         } else {
           member.timeout(time, reason);
-          interaction.reply(`${timeToString(new Date().getTime() + time)}まで${member.toString()}をタイムアウトしました`)
+          interaction.reply({content: `${timeToString(new Date().getTime() + time)}まで${member.toString()}をタイムアウトしました`, ephemeral: true})
         }
       }
       break;
