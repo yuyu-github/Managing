@@ -1,8 +1,29 @@
-import { Client, Message, PartialMessage } from "discord.js";
-import { client } from "../../../main.js";
-import { VoteType } from "../../../data/votes.js";
+import { Client, Interaction, Message, MessageComponentInteraction, PartialMessage } from "discord.js";
+import { client } from "../../main.js";
+import { VoteType } from "../../data/votes.js";
+import { deleteData } from "discordbot-data";
+import viewResult from "./view_result.js";
 
-export default {
+export async function end(vote, message: Message | PartialMessage, interaction?: MessageComponentInteraction | null, countOnly: boolean = false) {
+  let counts = {}
+  let total = 0;
+  for (let item of message.reactions.cache) {
+    let count = item[1].count - (item[1].users.cache.has(client.user?.id ?? '') ? 1 : 0);
+    counts[item[0]] = count;
+    total += count;
+  }
+  
+  if (!countOnly) {
+    deleteData('guild', message.guildId!, ['vote', 'list', message.channelId, message.id])
+    await interaction?.reply('投票を終了しました');
+    message.edit({components: []});
+  }
+
+  await viewResult(vote, message, counts, countOnly ? interaction : null);
+  if (!countOnly) await endFn[vote.type as VoteType]?.(vote, message, counts, total);
+}
+
+const endFn = {
   'role-vote': async (vote: { user: string, role: string, content: string }, msg: Message, counts: object, total: number) => {
     const user = await client.users.fetch(vote.user);
     if (user == null) return;
@@ -75,4 +96,4 @@ export default {
       msg.channel.send('投票により' + user.toString() + 'はBAN解除されませんでした');
     }
   }
-} as {[key in VoteType]?: (vote: object, message: Message | PartialMessage, counts: object, total: number) => void};
+} as {[key in VoteType]?: (vote: object, message: Message | PartialMessage, counts: object, total: number) => Promise<void>};

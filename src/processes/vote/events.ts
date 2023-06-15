@@ -2,11 +2,10 @@ import { Client, Collection, MessageReaction, PartialMessageReaction, PartialUse
 
 import { setData, getData, deleteData } from 'discordbot-data';
 
-import onReactionAddFn from './funcs/onReactionAdd.js';
-import endFn from './funcs/end.js';
 import viewResult from './view_result.js';
 import { client } from '../../main.js';
 import { VoteType } from '../../data/votes.js';
+import { end } from './end.js';
 
 export async function onReactionAdd(reaction: MessageReaction | PartialMessageReaction, user: User) {
   if (reaction.message.guildId == null) return;
@@ -56,16 +55,8 @@ export async function onReactionAdd(reaction: MessageReaction | PartialMessageRe
     }
     await Promise.all(promises);
 
-    if (onReactionAddFn[vote.type as VoteType]?.(vote, reaction, user, reactionCount, reactionMemberCount)) {
-      deleteData('guild', reaction.message.guildId!, ['vote', 'list', reaction.message.channelId, reaction.message.id])
-
-      let counts = {}
-      for (let item of reaction.message.reactions.cache) {
-        counts[item[0]] = item[1].count - (item[1].users.cache.has(client.user?.id ?? '') ? 1 : 0);
-      }
-
-      await viewResult(vote, reaction.message, counts);
-      await endFn[vote.type as VoteType]?.(vote, reaction.message, counts, reactionCount);
+    if (vote.count > 0 && reactionMemberCount >= vote.count) {
+      end(vote, reaction.message)
     }
   }
 }

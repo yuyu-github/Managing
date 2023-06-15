@@ -7,6 +7,7 @@ import voteViewResult from '../../processes/vote/view_result.js';
 import { client } from "../../main.js";
 import { getAllowedMentions } from "../../utils/mention.js";
 import { canRoleManage } from "../../utils/role.js";
+import { end } from "../../processes/vote/end.js";
 
 export function vote(interaction: ChatInputCommandInteraction) {
   const multiple = interaction.options.getBoolean('multiple')
@@ -49,10 +50,10 @@ export function vote(interaction: ChatInputCommandInteraction) {
       '',
       choices,
       {
-        multiple: multiple,
-        count: count,
+        multiple: multiple
       },
       interaction.user,
+      {count},
       async data => {
         await interaction.reply({ content: '投票を作成しました', ephemeral: true })
         return interaction.channel?.send({
@@ -78,7 +79,7 @@ export async function roleVote(interaction: ChatInputCommandInteraction) {
   if (roles == undefined || !('highest' in roles)) return;
   const sameRole = getData<boolean>('guild', interaction.guildId!, ['vote', 'setting', 'same-role', 'role-vote']) ?? false;
 
-  const minCount = getData('guild', interaction.guildId!, ['vote', 'setting', 'min-count', 'role-vote']) ?? 0;
+  const minCount = getData<number>('guild', interaction.guildId!, ['vote', 'setting', 'min-count', 'role-vote']) ?? 0;
   const count = interaction.options.getInteger('count') ?? minCount;
 
   if (!canRoleManage(interaction.member, role, sameRole)) {
@@ -92,20 +93,20 @@ export async function roleVote(interaction: ChatInputCommandInteraction) {
       'add': '付与するが6割を超えた場合ロールを付与します',
       'remove': '剥奪するが6割を超えた場合ロールを剥奪します',
       'addremove': '付与するが6割を超えた場合ロールを付与、付与しないが6割を超えた場合ロールを剥奪します',
-    }[content];
+    }[content] ?? '';
 
     createVote(
       'role-vote',
       user.username + 'に' + `${role.name}を${contentText}する`,
-      `${description}\n投票終了人数 ${count}人`,
+      description,
       [['⭕', `${content.includes('add') ? '付与' : '削除'}する`], ['❌', `${content.includes('add') ? '付与' : '削除'}しない`]],
       {
         user: user.id,
         role: role.id,
-        content: content,
-        count: count,
+        content: content
       },
       interaction.user,
+      {count},
       async data => {
         await interaction.reply({ content: '投票を作成しました', ephemeral: true })
         return interaction.channel?.send(data)
@@ -125,7 +126,7 @@ export async function kickVote(interaction: CommandInteraction) {
   if (roles == null || Array.isArray(roles)) return;
   const sameRole = getData<boolean>('guild', interaction.guildId!, ['vote', 'setting', 'same-role', 'kick-vote']) ?? false;
 
-  const minCount = getData('guild', interaction.guildId!, ['vote', 'setting', 'min-count', 'kick-vote']) ?? 0;
+  const minCount = getData<number>('guild', interaction.guildId!, ['vote', 'setting', 'min-count', 'kick-vote']) ?? 0;
   const count = interaction.isChatInputCommand() ? interaction.options.getInteger('count') ?? minCount : minCount;
 
   if (!member.kickable) {
@@ -138,13 +139,13 @@ export async function kickVote(interaction: CommandInteraction) {
     createVote(
       'kick-vote',
       user.username + 'をキックする',
-      'キックするが7割を超えた場合キックします\n投票終了人数 ' + count + '人',
+      'キックするが7割を超えた場合キックします',
       [['⭕', 'キックする'], ['❌', 'キックしない']],
       {
-        user: user.id,
-        count: count,
+        user: user.id
       },
       interaction.user,
+      {count},
       async data => {
         await interaction.reply({ content: '投票を作成しました', ephemeral: true })
         return interaction.channel?.send(data)
@@ -164,7 +165,7 @@ export async function banVote(interaction: CommandInteraction) {
   if (roles == null || Array.isArray(roles)) return;
   const sameRole = getData<boolean>('guild', interaction.guildId!, ['vote', 'setting', 'same-role', 'ban-vote']) ?? false;
 
-  const minCount = getData('guild', interaction.guildId!, ['vote', 'setting', 'min-count', 'ban-vote']) ?? 0;
+  const minCount = getData<number>('guild', interaction.guildId!, ['vote', 'setting', 'min-count', 'ban-vote']) ?? 0;
   const count = interaction.isChatInputCommand() ? interaction.options.getInteger('count') ?? minCount : minCount;
 
   if (!member.bannable) {
@@ -180,10 +181,10 @@ export async function banVote(interaction: CommandInteraction) {
       'BANするが8割を超えた場合BANします\n投票終了人数 ' + count + '人',
       [['⭕', 'BANする'], ['❌', 'BANしない']],
       {
-        user: user.id,
-        count: count,
+        user: user.id
       },
       interaction.user,
+      {count},
       async data => {
         await interaction.reply({ content: '投票を作成しました', ephemeral: true })
         return interaction.channel?.send(data)
@@ -201,7 +202,7 @@ export async function unbanVote(interaction: CommandInteraction) {
       return;
     }
 
-    const minCount = getData('guild', interaction.guildId!, ['vote', 'setting', 'min-count', 'unban-vote']) ?? 0;
+    const minCount = getData<number>('guild', interaction.guildId!, ['vote', 'setting', 'min-count', 'unban-vote']) ?? 0;
     const count = interaction.isChatInputCommand() ? interaction.options.getInteger('count') ?? minCount : minCount;
 
     if (count < minCount) {
@@ -213,10 +214,10 @@ export async function unbanVote(interaction: CommandInteraction) {
         'BAN解除するが8割を超えた場合BAN解除します\n投票終了人数 ' + count + '人',
         [['⭕', 'BAN解除する'], ['❌', 'BAN解除しない']],
         {
-          user: user.id,
-          count: count,
+          user: user.id
         },
         interaction.user,
+        {count},
         async data => {
           await interaction.reply({ content: '投票を作成しました', ephemeral: true })
           return interaction.channel?.send(data)
@@ -248,11 +249,7 @@ export async function countVote(interaction: ButtonInteraction) {
     interaction.reply({content: 'このメッセージは投票ではありません', ephemeral: true})
   } else {
     await interaction.deferReply()
-    let counts = {}
-    for (let item of message.reactions.cache) {
-      counts[item[0]] = item[1].count - ((await item[1].users.fetch()).has(client.user?.id ?? '') ? 1 : 0);
-    }
-    await voteViewResult(votes[message.id], message, counts, interaction);
+    end(votes[message.id], message, interaction, true);
   }
 }
 
@@ -264,14 +261,6 @@ export async function endVote(interaction: ButtonInteraction) {
   } else if (votes[message.id].author != interaction.user.id) {
     interaction.reply({content: '作成者以外は終了できません', ephemeral: true});
   } else {
-    interaction.reply('投票を終了しました');
-    let counts = {}
-    for (let item of message.reactions.cache) {
-      counts[item[0]] = item[1].count - ((await item[1].users.fetch()).has(client.user?.id ?? '') ? 1 : 0);
-    }
-    await voteViewResult(votes[message.id], message, counts);
-
-    message.edit({components: []})
-    deleteData('guild', message.guildId!, ['vote', 'list', message.channelId, message.id])
+    end(votes[message.id], message, interaction);
   }
 }

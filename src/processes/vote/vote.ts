@@ -3,27 +3,27 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors, Component, Compon
 import { setData, getData, deleteData } from 'discordbot-data';
 import { VoteType } from '../../data/votes.js';
 
-export function vote(type: VoteType, title: string, description: string, choices: string[][], data: object, author: User,
+export function vote(type: VoteType, title: string, description: string, choices: string[][], data: object, author: User, endCondition: {count: number},
   sendFn: (data: object) => Message | undefined | Promise<Message | undefined>, allowedMentions: MessageMentionOptions = {}): void {
-  let components: ComponentBuilder[] = [];
-  if (type == 'normal') {
-    components = [new ActionRowBuilder().addComponents(
-      new ButtonBuilder()
-        .setCustomId('count-vote')
-        .setLabel('集計')
-        .setStyle(ButtonStyle.Primary),
-      new ButtonBuilder()
-        .setCustomId('end-vote')
-        .setLabel('終了')
-        .setStyle(ButtonStyle.Primary),
-    )]
-  }
+  let components = [new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId('count-vote')
+      .setLabel('集計')
+      .setStyle(ButtonStyle.Primary),
+    new ButtonBuilder()
+      .setCustomId('end-vote')
+      .setLabel('終了')
+      .setStyle(ButtonStyle.Primary),
+  )]
+
+  let endConditionDescrption = '';
+  if (endCondition.count > 0) endConditionDescrption += `**終了人数: ${endCondition.count}人**\n`;
 
   Promise.resolve(sendFn({
     embeds: [
       {
         title: title,
-        description: description + '\n\n' + choices.map(v => `${v[0]} ${v[1]}`).join('\n'),
+        description: description + (description == '' ? '' : '\n') + endConditionDescrption + choices.map(v => `${v[0]} ${v[1]}`).join('\n'),
         footer: {
           iconURL: author.displayAvatarURL(),
           text: author.username,
@@ -45,6 +45,7 @@ export function vote(type: VoteType, title: string, description: string, choices
       type: type,
       choices: choices,
       author: author.id,
+      count: endCondition.count,
     })
   }).catch(e => console.error(e));
 }
