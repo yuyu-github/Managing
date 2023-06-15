@@ -24,7 +24,7 @@ function createStatsEmbed(displayData: string[][], page: number, pageSize: numbe
     embeds: [
       {
         author: {
-          name: user?.tag,
+          name: user?.username,
           icon_url: user?.displayAvatarURL(),
         },
         title: '統計',

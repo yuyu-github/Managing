@@ -96,7 +96,7 @@ export async function roleVote(interaction: ChatInputCommandInteraction) {
 
     createVote(
       'role-vote',
-      user.tag + 'に' + `${role.name}を${contentText}する`,
+      user.username + 'に' + `${role.name}を${contentText}する`,
       `${description}\n投票終了人数 ${count}人`,
       [['⭕', `${content.includes('add') ? '付与' : '削除'}する`], ['❌', `${content.includes('add') ? '付与' : '削除'}しない`]],
       {
@@ -137,7 +137,7 @@ export async function kickVote(interaction: CommandInteraction) {
   } else {
     createVote(
       'kick-vote',
-      user.tag + 'をキックする',
+      user.username + 'をキックする',
       'キックするが7割を超えた場合キックします\n投票終了人数 ' + count + '人',
       [['⭕', 'キックする'], ['❌', 'キックしない']],
       {
@@ -176,7 +176,7 @@ export async function banVote(interaction: CommandInteraction) {
   } else {
     createVote(
       'ban-vote',
-      user.tag + 'をBANする',
+      user.username + 'をBANする',
       'BANするが8割を超えた場合BANします\n投票終了人数 ' + count + '人',
       [['⭕', 'BANする'], ['❌', 'BANしない']],
       {
@@ -193,9 +193,9 @@ export async function banVote(interaction: CommandInteraction) {
 }
 
 export async function unbanVote(interaction: CommandInteraction) {
-  const userTagOrId = interaction.isChatInputCommand() ? interaction.options.getString('user', true) : interaction.options.getUser('user', true).id;
+  const userNameOrId = interaction.isChatInputCommand() ? interaction.options.getString('user', true) : interaction.options.getUser('user', true).id;
   interaction.guild?.bans.fetch().then(banUsers => {
-    const user = banUsers.find((v) => v.user.tag == userTagOrId || v.user.id == userTagOrId)?.user;
+    const user = banUsers.find((v) => v.user.username == userNameOrId || v.user.id == userNameOrId)?.user;
     if (user == null) {
       interaction.reply('無効なユーザーです');
       return;
@@ -209,7 +209,7 @@ export async function unbanVote(interaction: CommandInteraction) {
     } else {
       createVote(
         'unban-vote',
-        user.tag + 'をBAN解除する',
+        user.username + 'をBAN解除する',
         'BAN解除するが8割を超えた場合BAN解除します\n投票終了人数 ' + count + '人',
         [['⭕', 'BAN解除する'], ['❌', 'BAN解除しない']],
         {

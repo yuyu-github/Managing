@@ -4,10 +4,10 @@ import { timeToString } from "../utils/time.js";
 
 function replaceVar(message: string, member: GuildMember | PartialGuildMember): string {
   message = message.replace('$name', member.displayName);
+  // message = message.replace('$globalname', member.globalName);
   message = message.replace('$mention', member.toString());
   message = message.replace('$username', member.user.username);
   message = message.replace('$nickname', member.nickname ?? '');
-  message = message.replace('$tag', member.user.tag ?? '');
   message = message.replace('$time', `${timeToString(Date.now())}`);
   message = message.replace('$joinedtime', `${timeToString((member.joinedTimestamp ?? 0))}`);
 

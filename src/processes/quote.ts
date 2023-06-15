@@ -8,7 +8,7 @@ export default async function(message: Message) {
     if (channel == null || !('messages' in channel)) continue;
 
     if (match[2] != null) {
-      channel.messages.fetch(match[2]).then(urlMessage => {
+      channel.messages.fetch(match[2]).then((urlMessage: Message) => {
         if (urlMessage == null) return;
 
         const isImageEmbed = (embed: Embed) =>
@@ -29,8 +29,8 @@ export default async function(message: Message) {
           embeds: [
             {
               author: {
-                name: urlMessage.author.tag,
-                iconURL: urlMessage.author.displayAvatarURL()
+                name: urlMessage.author.username,
+                icon_url: urlMessage.author.displayAvatarURL()
               },
               description: urlMessage.content
             },

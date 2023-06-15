@@ -8,6 +8,7 @@ export default async (message: Message) => {
   if (webhooks == null) return;
 
   const name = `${message.guild?.members.cache.get(message.author.id)?.nickname ?? message.author.username} (${message.guild?.name} #${message.channel.name})`
+  // const name = `${message.guild?.members.cache.get(message.author.id)?.nickname ?? message.author.globalName} (${message.guild?.name} #${message.channel.name})`
 
   const isImageEmbed = (embed: Embed) =>
     embed.author == null && embed.color == null && embed.description == null && embed.fields.length == 0 &&

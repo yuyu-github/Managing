@@ -20,7 +20,7 @@ export function info(interaction: ChatInputCommandInteraction) {
         embeds: [
           {
             author: {
-              name: user.tag,
+              name: user.username,
               icon_url: user.displayAvatarURL(),
             },
             title: '処罰回数',

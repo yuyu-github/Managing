@@ -38,10 +38,11 @@ export function userInfo(interaction: ChatInputCommandInteraction | UserContextM
     embeds: [
       new EmbedBuilder()
       .setAuthor({
-        name: member?.nickname == null ? user.username: `${member.nickname} (${user.username})`,
+        name: member?.nickname == null ? user.username : `${member.nickname} (${user.username})`,
+        // name: member?.nickname == null ? user.globalName : `${member.nickname} (${user.globalName})`,
         iconURL: user.displayAvatarURL(),
       })
-      .setTitle(user.tag)
+      .setTitle(user.username)
       .setThumbnail(user.displayAvatarURL())
       .setFooter({
         text: user.id

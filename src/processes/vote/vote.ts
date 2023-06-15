@@ -26,7 +26,7 @@ export function vote(type: VoteType, title: string, description: string, choices
         description: description + '\n\n' + choices.map(v => `${v[0]} ${v[1]}`).join('\n'),
         footer: {
           iconURL: author.displayAvatarURL(),
-          text: author.tag,
+          text: author.username,
         },
         color: Colors.Orange
       }
