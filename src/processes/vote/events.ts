@@ -1,4 +1,4 @@
-import { Client, Collection, MessageReaction, PartialMessageReaction, PartialUser, ReactionManager, User } from 'discord.js';
+import { Client, Collection, Message, MessageReaction, PartialMessage, PartialMessageReaction, PartialUser, ReactionManager, User } from 'discord.js';
 
 import { setData, getData, deleteData } from 'discordbot-data';
 
@@ -6,6 +6,26 @@ import viewResult from './view_result.js';
 import { client } from '../../main.js';
 import { VoteType } from '../../data/votes.js';
 import { end } from './end.js';
+
+export async function onReady() {
+  for (let guild of client.guilds.cache) {
+    let channels = client.channels.cache;
+    let votes = getData('guild',guild[1].id, ['vote', 'list']);
+    for (let id of Object.keys(votes ?? {})) {
+      let channel = channels.get(id);
+      if (channel == null || !('messages' in channel)) continue;
+      for (let vote of Object.keys(votes?.[id] ?? {})) {
+        channel.messages.fetch(vote).catch(e => {});
+      }
+    }
+  }
+}
+
+export function onMessageDelete(message: Message | PartialMessage) {
+  if (message.guildId == null) return;
+  const votes = getData('guild', message.guildId, ['vote', 'list', message.channelId]) ?? {};
+  if (Object.keys(votes)?.includes?.(message.id)) deleteData('guild', message.guildId, ['vote', 'list', message.channelId, message.id]);
+}
 
 export async function onReactionAdd(reaction: MessageReaction | PartialMessageReaction, user: User) {
   if (reaction.message.guildId == null) return;

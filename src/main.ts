@@ -21,7 +21,6 @@ import emojiRegex from 'emoji-regex';
 import commands from './commands/list.js';
 import commandProcess from './commands/process.js';
 import { execute, execute as scheduleExecute } from './scheduler/scheduler.js';
-import loadVotes from './processes/vote/load_votes.js';
 import { action, init as actionInit, onExit as actionOnExit, onMessage as actionOnMessage } from './processes/stats.js';
 import * as voteEvents from './processes/vote/events.js';
 import quote from './processes/quote.js';
@@ -49,7 +48,7 @@ client.once(Events.ClientReady, async () => {
     } else await client.application?.commands.set(commands);
     
     actionInit();
-    await loadVotes();
+    await voteEvents.onReady();
 
     execute();
     setInterval(execute, 1000);
@@ -73,6 +72,8 @@ client.on(Events.MessageCreate, async message => {
 client.on(Events.MessageDelete, async message => {
   try {
     if (message.author != null && message.guild != null) action(message.guildId!, message.author.id, 'deleteMessage', message.webhookId == null);
+
+    voteEvents.onMessageDelete(message);
   } catch (e) {
     console.error(e);
   }
