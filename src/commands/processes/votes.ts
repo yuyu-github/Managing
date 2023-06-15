@@ -78,7 +78,7 @@ export async function roleVote(interaction: ChatInputCommandInteraction) {
   if (roles == undefined || !('highest' in roles)) return;
   const sameRole = getData<boolean>('guild', interaction.guildId!, ['vote', 'setting', 'same-role', 'role-vote']) ?? false;
 
-  const minCount = getData('guild', interaction.guildId!, ['vote', 'setting', 'min-count', 'role-vote']) ?? 3;
+  const minCount = getData('guild', interaction.guildId!, ['vote', 'setting', 'min-count', 'role-vote']) ?? 0;
   const count = interaction.options.getInteger('count') ?? minCount;
 
   if (!canRoleManage(interaction.member, role, sameRole)) {
@@ -125,7 +125,7 @@ export async function kickVote(interaction: CommandInteraction) {
   if (roles == null || Array.isArray(roles)) return;
   const sameRole = getData<boolean>('guild', interaction.guildId!, ['vote', 'setting', 'same-role', 'kick-vote']) ?? false;
 
-  const minCount = getData('guild', interaction.guildId!, ['vote', 'setting', 'min-count', 'kick-vote']) ?? 4;
+  const minCount = getData('guild', interaction.guildId!, ['vote', 'setting', 'min-count', 'kick-vote']) ?? 0;
   const count = interaction.isChatInputCommand() ? interaction.options.getInteger('count') ?? minCount : minCount;
 
   if (!member.kickable) {
@@ -164,7 +164,7 @@ export async function banVote(interaction: CommandInteraction) {
   if (roles == null || Array.isArray(roles)) return;
   const sameRole = getData<boolean>('guild', interaction.guildId!, ['vote', 'setting', 'same-role', 'ban-vote']) ?? false;
 
-  const minCount = getData('guild', interaction.guildId!, ['vote', 'setting', 'min-count', 'ban-vote']) ?? 5;
+  const minCount = getData('guild', interaction.guildId!, ['vote', 'setting', 'min-count', 'ban-vote']) ?? 0;
   const count = interaction.isChatInputCommand() ? interaction.options.getInteger('count') ?? minCount : minCount;
 
   if (!member.bannable) {
@@ -201,7 +201,7 @@ export async function unbanVote(interaction: CommandInteraction) {
       return;
     }
 
-    const minCount = getData('guild', interaction.guildId!, ['vote', 'setting', 'min-count', 'unban-vote']) ?? 5;
+    const minCount = getData('guild', interaction.guildId!, ['vote', 'setting', 'min-count', 'unban-vote']) ?? 0;
     const count = interaction.isChatInputCommand() ? interaction.options.getInteger('count') ?? minCount : minCount;
 
     if (count < minCount) {
