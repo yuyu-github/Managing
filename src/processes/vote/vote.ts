@@ -2,8 +2,10 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors, Component, Compon
 
 import { setData, getData, deleteData } from 'discordbot-data';
 import { VoteType } from '../../data/votes.js';
+import { parseTimeString, timeToString } from '../../utils/time.js';
+import { schedule } from '../../scheduler/scheduler.js';
 
-export function vote(type: VoteType, title: string, description: string, choices: string[][], data: object, author: User, endCondition: {count: number},
+export function vote(type: VoteType, title: string, description: string, choices: string[][], data: object, author: User, endCondition: {count: number, time: string | null},
   sendFn: (data: object) => Message | undefined | Promise<Message | undefined>, allowedMentions: MessageMentionOptions = {}): void {
   let components = [new ActionRowBuilder().addComponents(
     new ButtonBuilder()
@@ -16,9 +18,11 @@ export function vote(type: VoteType, title: string, description: string, choices
       .setStyle(ButtonStyle.Primary),
   )]
 
+  let time = parseTimeString(endCondition.time);
+
   let endConditionDescrption = '';
   if (endCondition.count > 0) endConditionDescrption += `**終了人数: ${endCondition.count}人**\n`;
-
+  if (time != null) endConditionDescrption += `**終了時間: **${timeToString(time)}\n`;
   Promise.resolve(sendFn({
     embeds: [
       {
@@ -46,6 +50,8 @@ export function vote(type: VoteType, title: string, description: string, choices
       choices: choices,
       author: author.id,
       count: endCondition.count,
-    })
+    });
+
+    if (time != null) schedule('end-vote', {message: [msg.channelId, msg.id]}, time);
   }).catch(e => console.error(e));
 }

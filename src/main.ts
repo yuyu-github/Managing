@@ -50,7 +50,7 @@ client.once(Events.ClientReady, async () => {
     actionInit();
     await voteEvents.onReady();
 
-    execute();
+    await execute();
     setInterval(execute, 1000);
 
     console.log('Managing Ready');

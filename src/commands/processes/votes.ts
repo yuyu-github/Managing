@@ -12,6 +12,7 @@ import { end } from "../../processes/vote/end.js";
 export function vote(interaction: ChatInputCommandInteraction) {
   const multiple = interaction.options.getBoolean('multiple')
   const count = interaction.options.getInteger('count') ?? 0;
+  const time = interaction.options.getString('time');
   const mentions = [...Array(4).keys()].map(i => interaction.options.getMentionable('mention' + (i + 1))).filter(i => i != null);
 
   const modal = new ModalBuilder()
@@ -53,7 +54,7 @@ export function vote(interaction: ChatInputCommandInteraction) {
         multiple: multiple
       },
       interaction.user,
-      {count},
+      {count, time},
       async data => {
         await interaction.reply({ content: '投票を作成しました', ephemeral: true })
         return interaction.channel?.send({
@@ -81,6 +82,7 @@ export async function roleVote(interaction: ChatInputCommandInteraction) {
 
   const minCount = getData<number>('guild', interaction.guildId!, ['vote', 'setting', 'min-count', 'role-vote']) ?? 0;
   const count = interaction.options.getInteger('count') ?? minCount;
+  const time = interaction.options.getString('time');
 
   if (!canRoleManage(interaction.member, role, sameRole)) {
     interaction.reply('自分より上のロールの投票をとることはできません');
@@ -106,7 +108,7 @@ export async function roleVote(interaction: ChatInputCommandInteraction) {
         content: content
       },
       interaction.user,
-      {count},
+      {count, time},
       async data => {
         await interaction.reply({ content: '投票を作成しました', ephemeral: true })
         return interaction.channel?.send(data)
@@ -115,7 +117,7 @@ export async function roleVote(interaction: ChatInputCommandInteraction) {
   }
 }
 
-export async function kickVote(interaction: CommandInteraction) {
+export async function kickVote(interaction: ChatInputCommandInteraction) {
   const user = interaction.options.getUser('user', true);
   const member = interaction.guild?.members.resolve(user);
   if (member == null) return;
@@ -127,7 +129,8 @@ export async function kickVote(interaction: CommandInteraction) {
   const sameRole = getData<boolean>('guild', interaction.guildId!, ['vote', 'setting', 'same-role', 'kick-vote']) ?? false;
 
   const minCount = getData<number>('guild', interaction.guildId!, ['vote', 'setting', 'min-count', 'kick-vote']) ?? 0;
-  const count = interaction.isChatInputCommand() ? interaction.options.getInteger('count') ?? minCount : minCount;
+  const count = interaction.options.getInteger('count') ?? minCount;
+  const time = interaction.options.getString('time');
 
   if (!member.kickable) {
     interaction.reply(user.toString() + 'をキックする権限がありません')
@@ -145,7 +148,7 @@ export async function kickVote(interaction: CommandInteraction) {
         user: user.id
       },
       interaction.user,
-      {count},
+      {count, time},
       async data => {
         await interaction.reply({ content: '投票を作成しました', ephemeral: true })
         return interaction.channel?.send(data)
@@ -154,7 +157,7 @@ export async function kickVote(interaction: CommandInteraction) {
   }
 }
 
-export async function banVote(interaction: CommandInteraction) {
+export async function banVote(interaction: ChatInputCommandInteraction) {
   const user = interaction.options.getUser('user', true);
   const member = interaction.guild?.members.resolve(user);
   if (member == null) return;
@@ -166,7 +169,8 @@ export async function banVote(interaction: CommandInteraction) {
   const sameRole = getData<boolean>('guild', interaction.guildId!, ['vote', 'setting', 'same-role', 'ban-vote']) ?? false;
 
   const minCount = getData<number>('guild', interaction.guildId!, ['vote', 'setting', 'min-count', 'ban-vote']) ?? 0;
-  const count = interaction.isChatInputCommand() ? interaction.options.getInteger('count') ?? minCount : minCount;
+  const count = interaction.options.getInteger('count') ?? minCount;
+  const time = interaction.options.getString('time');
 
   if (!member.bannable) {
     interaction.reply(user.toString() + 'をBANする権限がありません')
@@ -184,7 +188,7 @@ export async function banVote(interaction: CommandInteraction) {
         user: user.id
       },
       interaction.user,
-      {count},
+      {count, time},
       async data => {
         await interaction.reply({ content: '投票を作成しました', ephemeral: true })
         return interaction.channel?.send(data)
@@ -193,8 +197,8 @@ export async function banVote(interaction: CommandInteraction) {
   }
 }
 
-export async function unbanVote(interaction: CommandInteraction) {
-  const userNameOrId = interaction.isChatInputCommand() ? interaction.options.getString('user', true) : interaction.options.getUser('user', true).id;
+export async function unbanVote(interaction: ChatInputCommandInteraction) {
+  const userNameOrId = interaction.options.getString('user', true);
   interaction.guild?.bans.fetch().then(banUsers => {
     const user = banUsers.find((v) => v.user.username == userNameOrId || v.user.id == userNameOrId)?.user;
     if (user == null) {
@@ -203,7 +207,8 @@ export async function unbanVote(interaction: CommandInteraction) {
     }
 
     const minCount = getData<number>('guild', interaction.guildId!, ['vote', 'setting', 'min-count', 'unban-vote']) ?? 0;
-    const count = interaction.isChatInputCommand() ? interaction.options.getInteger('count') ?? minCount : minCount;
+    const count = interaction.options.getInteger('count') ?? minCount;
+    const time = interaction.options.getString('time');
 
     if (count < minCount) {
       interaction.reply(`投票を終了する人数を${minCount}人未満にすることはできません`);
@@ -217,7 +222,7 @@ export async function unbanVote(interaction: CommandInteraction) {
           user: user.id
         },
         interaction.user,
-        {count},
+        {count, time},
         async data => {
           await interaction.reply({ content: '投票を作成しました', ephemeral: true })
           return interaction.channel?.send(data)
