@@ -4,7 +4,7 @@ export const HOUR = 60 * MINUTE;
 export const DAY = 24 * HOUR;
 
 export function parseTimeString(str: string | null, getSpan: boolean = false): number | null {
-  if (str == null) return getSpan ? 0 : new Date().getTime();
+  if (str == null) return null;
 
   str = str.trim();
   if (str.match(/[\/\-:]/) != null) {

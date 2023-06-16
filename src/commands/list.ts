@@ -228,6 +228,16 @@ export default [
         description: '最大参加人数',
         type: ApplicationCommandOptionType.Integer,
         minValue: 1
+      },
+      {
+        name: 'count',
+        description: '抽選開始する人数',
+        type: ApplicationCommandOptionType.Integer
+      },
+      {
+        name: 'time',
+        description: '抽選開始する時間',
+        type: ApplicationCommandOptionType.String
       }
     ]
   },

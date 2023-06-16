@@ -246,7 +246,7 @@ export default async function (interaction: Interaction) {
       case 'anonymous-send': anonymous.send(interaction); break;
       case 'entry-lottery': lottery.entry(interaction); break;
       case 'leave-lottery': lottery.leave(interaction); break;
-      case 'start-lottery': lottery.start(interaction); break;
+      case 'start-lottery': lottery.startCommand(interaction); break;
     }
   } else if (interaction.isStringSelectMenu()) {
     switch (interaction.customId) {

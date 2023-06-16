@@ -1,17 +1,24 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, Client, Colors, GuildMemberManager } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, Client, Colors, GuildMemberManager, Message } from "discord.js";
 import { deleteData, getData, setData } from "discordbot-data";
+import { parseTimeString, timeToString } from "../../utils/time.js";
+import { schedule } from "../../scheduler/scheduler.js";
 
 export async function lottery(interaction: ChatInputCommandInteraction) {
   const name = interaction.options.getString('name', true);
   const winners = interaction.options.getInteger('winners') ?? 1;
   const qualification = interaction.options.getRole('qualification');
   const maximum = interaction.options.getInteger('maximum');
+  const count = interaction.options.getInteger('count') ?? 0;
+  const timeStr = interaction.options.getString('time');
+  const time = parseTimeString(timeStr);
   if (interaction.channel == null || interaction.guild == null) return;
 
   let description = '';
   description += `**当選人数:** ${winners}人\n`;
   if (qualification != null) description += `**参加資格:** ${qualification.toString()}\n`;
   if (maximum != null) description += `**参加可能人数:** ${maximum}人\n`;
+  if (count > 0) description += `**開始人数:** ${count}人\n`;
+  if (time != null) description += `**開始時間:** ${timeToString(time)}(${timeToString(time, 'R')})\n`;
 
   let message = await interaction.channel.send({
     embeds: [
@@ -42,13 +49,14 @@ export async function lottery(interaction: ChatInputCommandInteraction) {
   })
   interaction.reply({content: '抽選を作成しました', ephemeral: true})
 
-  setData('guild', interaction.guild.id, ['lottery', 'list', message.id], {name, winners, qualification: qualification?.id, maximum, entries: [], owner: interaction.user.id})
+  setData('guild', interaction.guild.id, ['lottery', 'list', message.id], {name, winners, qualification: qualification?.id, maximum: maximum, count: count, entries: [], owner: interaction.user.id})
+  if (time != null) schedule('start-lottery', {message: [message.channelId, message.id]}, time);
 }
 
 export function entry(interaction: ButtonInteraction) {
   if (interaction.guild == null) return;
 
-  let lotteryData = getData('guild', interaction.guild.id, ['lottery', 'list', interaction.message.id]) as {qualification: string | null, maximum: number | null, entries: string[]};
+  let lotteryData = getData('guild', interaction.guild.id, ['lottery', 'list', interaction.message.id]) as {qualification: string | null, maximum: number | null, entries: string[], count: number};
   let entries = lotteryData.entries;
 
   if (entries.includes(interaction.user.id)) {
@@ -93,6 +101,8 @@ export function entry(interaction: ButtonInteraction) {
     ]
   });
   setData('guild', interaction.guild.id, ['lottery', 'list', interaction.message.id, 'entries'], entries);
+
+  if (lotteryData.count > 0 && entries.length >= lotteryData.count) start(interaction.message);
 }
 
 export function leave(interaction: ButtonInteraction) {
@@ -124,15 +134,23 @@ export function leave(interaction: ButtonInteraction) {
   interaction.reply({content: '参加をやめました', ephemeral: true})
 }
 
-export function start(interaction: ButtonInteraction) {
+export function startCommand(interaction: ButtonInteraction) {
   if (interaction.guild == null) return;
 
   let lotteryData = getData('guild', interaction.guild.id, ['lottery', 'list', interaction.message.id]) as {winners: number, entries: string[], owner: string};
-  let entries = [...lotteryData.entries];
   if (lotteryData.owner != interaction.user.id) {
     interaction.reply({content: '作成者以外は開始できません', ephemeral: true});
     return;
   }
+
+  start(interaction.message, interaction)
+}
+
+export function start(message: Message, interaction: ButtonInteraction | null = null) {
+  if (message.guild == null) return;
+
+  let lotteryData = getData('guild', message.guild.id, ['lottery', 'list', message.id]) as {winners: number, entries: string[], owner: string};
+  let entries = [...lotteryData.entries];
 
   let winners: string[] = [];
   for (let i = 0; i < lotteryData.winners && entries.length > 0; i++) {
@@ -141,12 +159,14 @@ export function start(interaction: ButtonInteraction) {
     entries.splice(index, 1);
   }
 
-  interaction.reply(winners.length == 0 ? '当選者はいませんでした' : winners.map(i => `<@${i}>`).join(', ') + 'が当選しました')
-  interaction.message.edit({
+  let resultMsg = winners.length == 0 ? '当選者はいませんでした' : winners.map(i => `<@${i}>`).join(', ') + 'が当選しました';
+  if (interaction == null) message.reply(resultMsg);
+  else interaction.reply(resultMsg);
+  message.edit({
     embeds: [
       {
-        title: interaction.message.embeds[0].title!,
-        color: interaction.message.embeds[0].color!,
+        title: message.embeds[0].title!,
+        color: message.embeds[0].color!,
         fields: [
           {
             name: '当選者',
@@ -158,5 +178,5 @@ export function start(interaction: ButtonInteraction) {
     components: []
   })
 
-  deleteData('guild', interaction.guild.id, ['lottery', 'list', interaction.message.id]);
+  deleteData('guild', message.guild.id, ['lottery', 'list', message.id]);
 }

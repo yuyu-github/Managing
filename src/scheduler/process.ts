@@ -1,7 +1,8 @@
 import { getAllowedMentions } from "../utils/mention.js";
 import { client } from "../main.js";
 import { getData } from "discordbot-data";
-import { end } from "../processes/vote/end.js";
+import { end as endVote } from "../processes/vote/end.js";
+import { start as startLottery } from "../commands/processes/lottery.js";
 
 export default async function (type: string, data: any) {
   switch (type) {
@@ -21,7 +22,18 @@ export default async function (type: string, data: any) {
       if (!Object.keys(votes ?? {}).includes(data.message[1])) return;
       try {
         let message = await channel.messages.fetch(data.message[1])
-        end(votes[data.message[1]], message);
+        endVote(votes[data.message[1]], message);
+      } catch {}
+    }
+    break;
+    case 'start-lottery': {
+      const channel = client.channels.cache.get(data.message[0]);
+      if (channel == null || !('guild' in channel && 'messages' in channel)) return;
+      const lotteries = getData('guild', channel.guildId!, ['lottery', 'list']) ?? {};
+      if (!Object.keys(lotteries ?? {}).includes(data.message[1])) return;
+      try {
+        let message = await channel.messages.fetch(data.message[1])
+        startLottery(message);
       } catch {}
     }
     break;
