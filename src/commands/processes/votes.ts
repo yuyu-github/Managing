@@ -78,16 +78,12 @@ export async function roleVote(interaction: ChatInputCommandInteraction) {
   if (guildRoles == null) return;
   const roles = interaction.member?.roles;
   if (roles == undefined || !('highest' in roles)) return;
-  const sameRole = getData<boolean>('guild', interaction.guildId!, ['vote', 'setting', 'same-role', 'role-vote']) ?? false;
 
-  const minCount = getData<number>('guild', interaction.guildId!, ['vote', 'setting', 'min-count', 'role-vote']) ?? 0;
-  const count = interaction.options.getInteger('count') ?? minCount;
+  const count = interaction.options.getInteger('count') ?? 0;
   const time = interaction.options.getString('time');
 
-  if (!canRoleManage(interaction.member, role, sameRole)) {
+  if (!canRoleManage(interaction.member, role)) {
     interaction.reply('自分より上のロールの投票をとることはできません');
-  }  else if (count < minCount) {
-    interaction.reply(`投票を終了する人数を${minCount}人未満にすることはできません`);
   } else if (!role.editable) {
     interaction.reply(`${role.name}を${contentText}する権限がありません`)
   } else {
@@ -126,18 +122,14 @@ export async function kickVote(interaction: ChatInputCommandInteraction) {
   if (guildRoles == null) return;
   const roles = interaction.member?.roles;
   if (roles == null || Array.isArray(roles)) return;
-  const sameRole = getData<boolean>('guild', interaction.guildId!, ['vote', 'setting', 'same-role', 'kick-vote']) ?? false;
 
-  const minCount = getData<number>('guild', interaction.guildId!, ['vote', 'setting', 'min-count', 'kick-vote']) ?? 0;
-  const count = interaction.options.getInteger('count') ?? minCount;
+  const count = interaction.options.getInteger('count') ?? 0;
   const time = interaction.options.getString('time');
 
   if (!member.kickable) {
     interaction.reply(user.toString() + 'をキックする権限がありません')
-  } else if (!canRoleManage(interaction.member, member.roles.highest, sameRole) || interaction.guild?.ownerId == member.id) {
+  } else if (!canRoleManage(interaction.member, member.roles.highest) || interaction.guild?.ownerId == member.id) {
     interaction.reply('自分より上のロールがある人の投票をとることはできません');
-  } else if (count < minCount) {
-    interaction.reply(`投票を終了する人数を${minCount}人未満にすることはできません`);
   } else {
     createVote(
       'kick-vote',
@@ -166,18 +158,14 @@ export async function banVote(interaction: ChatInputCommandInteraction) {
   if (guildRoles == null) return;
   const roles = interaction.member?.roles;
   if (roles == null || Array.isArray(roles)) return;
-  const sameRole = getData<boolean>('guild', interaction.guildId!, ['vote', 'setting', 'same-role', 'ban-vote']) ?? false;
 
-  const minCount = getData<number>('guild', interaction.guildId!, ['vote', 'setting', 'min-count', 'ban-vote']) ?? 0;
-  const count = interaction.options.getInteger('count') ?? minCount;
+  const count = interaction.options.getInteger('count') ?? 0;
   const time = interaction.options.getString('time');
 
   if (!member.bannable) {
     interaction.reply(user.toString() + 'をBANする権限がありません')
-  } else if (!canRoleManage(interaction.member, member.roles.highest, sameRole) || interaction.guild?.ownerId == member.id) {
+  } else if (!canRoleManage(interaction.member, member.roles.highest) || interaction.guild?.ownerId == member.id) {
     interaction.reply('自分より上のロールがある人の投票をとることはできません');
-  } else if (count < minCount) {
-    interaction.reply(`投票を終了する人数を${minCount}人未満にすることはできません`);
   } else {
     createVote(
       'ban-vote',
@@ -206,44 +194,26 @@ export async function unbanVote(interaction: ChatInputCommandInteraction) {
       return;
     }
 
-    const minCount = getData<number>('guild', interaction.guildId!, ['vote', 'setting', 'min-count', 'unban-vote']) ?? 0;
-    const count = interaction.options.getInteger('count') ?? minCount;
+    const count = interaction.options.getInteger('count') ?? 0;
     const time = interaction.options.getString('time');
 
-    if (count < minCount) {
-      interaction.reply(`投票を終了する人数を${minCount}人未満にすることはできません`);
-    } else {
-      createVote(
-        'unban-vote',
-        user.username + 'をBAN解除する',
-        'BAN解除するが8割を超えた場合BAN解除します\n投票終了人数 ' + count + '人',
-        [['⭕', 'BAN解除する'], ['❌', 'BAN解除しない']],
-        {
-          user: user.id
-        },
-        interaction.user,
-        {count, time},
-        async data => {
-          await interaction.reply({ content: '投票を作成しました', ephemeral: true })
-          return interaction.channel?.send(data)
-        },
-      )
-    }
+    
+    createVote(
+      'unban-vote',
+      user.username + 'をBAN解除する',
+      'BAN解除するが8割を超えた場合BAN解除します\n投票終了人数 ' + count + '人',
+      [['⭕', 'BAN解除する'], ['❌', 'BAN解除しない']],
+      {
+        user: user.id
+      },
+      interaction.user,
+      {count, time},
+      async data => {
+        await interaction.reply({ content: '投票を作成しました', ephemeral: true })
+        return interaction.channel?.send(data)
+      },
+    )
   }).catch(e => console.error(e));
-}
-
-export async function voteSetting(interaction: ChatInputCommandInteraction) {
-  switch (interaction.options.getSubcommand()) {
-    case 'min-count': {
-      setData('guild', interaction.guildId!, ['vote', 'setting', 'min-count', interaction.options.getString('type', true)], interaction.options.getInteger('value', true));
-    }
-    break;
-    case 'same-role': {
-      setData('guild', interaction.guildId!, ['vote', 'setting', 'same-role', interaction.options.getString('type', true)], interaction.options.getBoolean('value', true));
-    }
-    break;
-  }
-  interaction.reply('投票の設定を更新しました');
 }
 
 export async function countVote(interaction: ButtonInteraction) {

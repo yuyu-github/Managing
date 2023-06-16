@@ -26,7 +26,6 @@ export default async function (interaction: Interaction) {
       case 'kickvote': await votes.kickVote(interaction); break;
       case 'banvote': await votes.banVote(interaction); break;
       case 'unbanvote': await votes.unbanVote(interaction); break;
-      case 'vote-setting': votes.voteSetting(interaction); break;
       case 'stats': stats.stats(interaction); break;
       case 'member-stats': stats.memberStats(interaction); break;
       case 'ranking': stats.ranking(interaction); break;
