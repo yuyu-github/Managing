@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, Client, Colors, GuildMemberManager, Message } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, Client, Colors, GuildMemberManager, Message, PartialMessage } from "discord.js";
 import { deleteData, getData, setData } from "discordbot-data";
 import { parseTimeString, timeToString } from "../../utils/time.js";
 import { schedule } from "../../scheduler/scheduler.js";
@@ -179,4 +179,10 @@ export function start(message: Message, interaction: ButtonInteraction | null = 
   })
 
   deleteData('guild', message.guild.id, ['lottery', 'list', message.id]);
+}
+
+export function LotteryDeleteCheck(message: Message | PartialMessage) {
+  if (message.guildId == null) return;
+  const votes = getData('guild', message.guildId, ['lottery', 'list']) ?? {};
+  if (Object.keys(votes)?.includes?.(message.id)) deleteData('guild', message.guildId, ['lottery', 'list', message.id]);
 }

@@ -28,6 +28,7 @@ import forward from './processes/forward.js';
 import * as keep from './processes/keep.js';
 import * as joinLeaveMessage from './processes/join_leave_message.js';
 import { punishment } from './processes/punishment.js';
+import { LotteryDeleteCheck as lotteryDeleteCheck } from './commands/processes/lottery.js';
 
 process.chdir(path.dirname(path.dirname(fileURLToPath(import.meta.url))));
 
@@ -74,6 +75,7 @@ client.on(Events.MessageDelete, async message => {
     if (message.author != null && message.guild != null) action(message.guildId!, message.author.id, 'deleteMessage', message.webhookId == null);
 
     voteEvents.onMessageDelete(message);
+    lotteryDeleteCheck(message);
   } catch (e) {
     console.error(e);
   }
