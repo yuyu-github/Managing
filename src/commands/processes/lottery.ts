@@ -4,7 +4,7 @@ import { parseTimeString, timeToString } from "../../utils/time.js";
 import { schedule } from "../../scheduler/scheduler.js";
 
 export async function lottery(interaction: ChatInputCommandInteraction) {
-  const name = interaction.options.getString('name', true);
+  const name = interaction.options.getString('name') ?? '抽選';
   const winners = interaction.options.getInteger('winners') ?? 1;
   const qualification = interaction.options.getRole('qualification');
   const maximum = interaction.options.getInteger('maximum');

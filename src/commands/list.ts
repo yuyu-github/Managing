@@ -210,7 +210,6 @@ export default [
         name: 'name',
         description: '抽選の名前',
         type: ApplicationCommandOptionType.String,
-        required: true
       },
       {
         name: 'winners',
