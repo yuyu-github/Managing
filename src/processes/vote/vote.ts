@@ -21,8 +21,8 @@ export function vote(type: VoteType, title: string, description: string, choices
   let time = parseTimeString(endCondition.time);
 
   let endConditionDescrption = '';
-  if (endCondition.count > 0) endConditionDescrption += `**終了人数: ${endCondition.count}人**\n`;
-  if (time != null) endConditionDescrption += `**終了時間: **${timeToString(time)}\n`;
+  if (endCondition.count > 0) endConditionDescrption += `**終了人数: **${endCondition.count}人\n`;
+  if (time != null) endConditionDescrption += `**終了時間: **${timeToString(time)}(${timeToString(time, 'R')})\n`;
   Promise.resolve(sendFn({
     embeds: [
       {
