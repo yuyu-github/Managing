@@ -91,7 +91,7 @@ export function history(interaction: ChatInputCommandInteraction | ButtonInterac
               fields: displayList.map(i => {
                 let info = '';
                 if (args.user == '') info += `**ユーザー: **<@${i.user}>\n`;
-                if (i.punishment != '') info += `**処罰内容**: **${i.punishment}\n`;
+                if (i.punishment != '') info += `**処罰内容: **${i.punishment}\n`;
                 info += `**時間: **${timeToString(i.timestamp)}\n`;
                 info += `**違反ID: **${i.id}\n`;
                 return {
