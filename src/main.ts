@@ -128,8 +128,11 @@ client.on(Events.VoiceStateUpdate, async (oldState, newState) => {
         if (newState.channel?.type == ChannelType.GuildStageVoice) action(newState.guild.id, newState.member.id, 'joinStageChannel');
         if (oldState.channel?.type == ChannelType.GuildStageVoice) action(newState.guild.id, newState.member.id, 'leftStageChannel');
       }
+      if (oldState.channelId != null && newState.channelId == null) {
+        action(newState.guild.id, newState.member.id, 'endStreaming');
+      }
       if (!oldState.streaming && newState.streaming) action(newState.guild.id, newState.member.id, 'startStreaming');
-      if (oldState.streaming && !newState.streaming) action(newState.guild.id, newState.member.id, 'endStreaming');
+      if (oldState.streaming && !newState.streaming && oldState.channelId != null) action(newState.guild.id, newState.member.id, 'endStreaming');
 
       if (!oldState.serverMute && newState.serverMute) punishment(newState.guild.id, newState.member.id, 'serverMuted')
       if (!oldState.serverDeaf && newState.serverDeaf) punishment(newState.guild.id, newState.member.id, 'serverDeafed')
